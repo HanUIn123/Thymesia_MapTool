@@ -199,8 +199,6 @@ _bool CCalculator::PickingOnVertice(HWND hWnd, CMesh* pMeshBufferCom, CTransform
 
 	size_t j = 0;
 
-	_float fU, fV;
-
 	_bool isIntersect = false;
 
 	vector<IntersectVtx> m_Distance;

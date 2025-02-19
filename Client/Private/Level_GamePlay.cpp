@@ -62,6 +62,18 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
+<<<<<<< HEAD
+=======
+	ImGui::Begin("Object");
+	
+	const char* ObjectNames[] = {
+		"HORSE_P_WoodenFrame02_05",
+		"SM_P_Rag03",
+		"SM_Wall_Shelf",
+		"SM_WoodFence04",
+		"SM_WoodStairs03",
+	};
+>>>>>>> origin/main
 
 
 
@@ -94,11 +106,17 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 			{
 				m_fMeshPickPos = fPos;
 
-				cout << " %f" << m_fMeshPickPos.x;
+				m_fObjectPos[0] = fPos.x;
 
-				cout << " %f" << m_fMeshPickPos.y;
+				m_fObjectPos[1] = fPos.y;
 
-				cout << " %f" << m_fMeshPickPos.z;
+				m_fObjectPos[2] = fPos.z;
+
+				cout << m_fMeshPickPos.x << " ";
+
+				cout << m_fMeshPickPos.y << " ";
+
+				cout << m_fMeshPickPos.z << " ";
 			}
 		}
 	}

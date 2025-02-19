@@ -386,6 +386,11 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CSM_WoodenFence03::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_SM_WoodStairs03"),
+		CSM_WoodStairs03::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 #pragma endregion
 
 #pragma region 테스트용 사다리
