@@ -3,7 +3,7 @@
 #include "Client_Defines.h"
 #include "Level.h"
 #include "Object.h"
-
+#include "GameInstance.h"
 
 BEGIN(Engine)
 class CShader;
@@ -50,13 +50,17 @@ private:
 	vector<ID3D11ShaderResourceView*>		m_vecNonAnimModelSRVs;
 
 private:
-	void									Setting_ObjectList();
+	void									Add_NonAnimObjects();
+	void									Add_AnimObjects();
+	void									Setting_NonAnimObjectList();
 
 
 
 private:
 	_bool									m_bImguiHovered = { false };
-	_uint									m_iNonAnimModelIndex = {};
+	_bool									m_bNonAnimObjectMenuSelected = { false };
+	_bool									m_bAnimObjectMenuSelected = { false };
+	_int									m_iNonAnimModelIndex = {};
 
 private:
 	// 오브젝트 생성할 위치

@@ -1,17 +1,10 @@
 #pragma once
 #include "pch.h" 
 #include "Level_GamePlay.h"
-#include "GameInstance.h"
 #include "Camera_Free.h"
 #include "Layer.h"	
-<<<<<<< HEAD
-//#include "Shader.h"
-#include <DirectXTK/WICTextureLoader.h>
-#include <DirectXTK/DDSTextureLoader.h>
-=======
 
 #include "GameObject.h"
->>>>>>> origin/main
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CLevel { pDevice, pContext }
@@ -69,43 +62,7 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
-	/*ImGui::Begin("Object");
-	
-	const char* ObjectNames[] = {
-		"HORSE_P_WoodenFrame02_05",
-		"P_Rag03",
-		"SM_Wall_Shelf",
-		"SM_WoodFence04",
-		"SM_WoodStairs0",
-	};
 
-	ImGui::Combo("Object Type", &m_iObjectArray, ObjectNames, IM_ARRAYSIZE(ObjectNames));
-
-	ImGui::InputFloat3("Object_Pos", m_fObjectPos);
-	ImGui::InputFloat3("Object_Scale", m_fMeshScale);
-
-	if (ImGui::Button("Add_Objects"))
-	{
-		CObject::OBJECT_DESC Desc{};
-
-		Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
-		Desc.fFrustumRadius = 2.f;
-		Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
-
-		string ObjectName = "Prototype_GameObject_Object_";
-		string ItemName = ObjectNames[m_iObjectArray];
-
-		ObjectName += ItemName;
-
-		_tchar		wszFullName[MAX_PATH] = {};
-
-		MultiByteToWideChar(CP_ACP, 0, ObjectName.c_str(), strlen(ObjectName.c_str()), wszFullName, MAX_PATH);
-
-		m_Objects.push_back(reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, wszFullName, LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc)));
-	}
-<<<<<<< HEAD
-	
-	ImGui::End();*/
 
 
 	//if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered())
@@ -115,11 +72,17 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	static int iMenuTypeNumber = MENU_TYPE::MT_END;
 
 	ImGui::Begin("TOOL MENU");
+	if (ImGui::RadioButton("NONANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_NONANIMMODEL))
+	{
+		m_bNonAnimObjectMenuSelected = true;
+		m_bAnimObjectMenuSelected = false;
+	}
 	if (ImGui::RadioButton("ANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_ANIMMODEL))
 	{
-
+		m_bNonAnimObjectMenuSelected = false;
+		m_bAnimObjectMenuSelected = true;
 	}
-=======
+	
 
 	if (m_pGameInstance->isMouseEnter(DIM_LB))
 	{
@@ -140,17 +103,16 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		}
 	}
 
-	/*
-	ImGuiIO IO = ImGui::GetIO();
-
-	if (!IO.WantCaptureMouse)
-	{
-
-	}
-	*/
-
->>>>>>> origin/main
 	ImGui::End();
+
+	if (m_bNonAnimObjectMenuSelected)
+	{
+		Add_NonAnimObjects();
+	}
+	else if (m_bAnimObjectMenuSelected)
+	{
+		Add_AnimObjects();
+	}
 
 
 	if (iMenuTypeNumber == MENU_TYPE::MT_PICKING_ANIMMODEL || iMenuTypeNumber == MENU_TYPE::MT_PICKING_NONANIMMODEL)
@@ -168,7 +130,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		}
 	}
 
-	Setting_ObjectList();
+	Setting_NonAnimObjectList();
 }
 
 HRESULT CLevel_GamePlay::Render() 
@@ -402,28 +364,53 @@ HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageF
 	return S_OK;
 }
 
-void CLevel_GamePlay::Setting_ObjectList()
+void CLevel_GamePlay::Add_NonAnimObjects()
 {
-	/*ImGui::Begin("Object");
+	ImGui::Begin("Object");
 
-	const char* ObjectNames[] = {
-		"HORSE_P_WoodenFrame02_05",
-		"P_Rag03",
-		"SM_Wall_Shelf",
-		"SM_WoodFence04",
-		"SM_WoodStairs0",
-	};
+const char* ObjectNames[] = {
+	"HORSE_P_WoodenFrame02_05",
+	"P_Rag03",
+	"SM_Wall_Shelf",
+	"SM_WoodFence04",
+	"SM_WoodStairs0",
+};
 
-	ImGui::Combo("Object Type", &m_iObjectArray, ObjectNames, IM_ARRAYSIZE(ObjectNames));
+ImGui::Combo("Object Type", &m_iNonAnimModelIndex, ObjectNames, IM_ARRAYSIZE(ObjectNames));
 
-	ImGui::InputFloat3("Object_Pos", m_fObjectPos);
+ImGui::InputFloat3("Object_Pos", m_fObjectPos);
+ImGui::InputFloat3("Object_Scale", m_fMeshScale);
 
-	if (ImGui::Button("Add_Objects"))
-	{
-	}
+if (ImGui::Button("Add_Objects"))
+{
+	CObject::OBJECT_DESC Desc{};
 
-	ImGui::End();*/
+	Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
+	Desc.fFrustumRadius = 2.f;
+	Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
 
+	string ObjectName = "Prototype_GameObject_Object_";
+	//string ItemName = ObjectNames[m_iObjectArray];
+	string ItemName = ObjectNames[m_iNonAnimModelIndex];
+
+	ObjectName += ItemName;
+
+	_tchar		wszFullName[MAX_PATH] = {};
+
+	MultiByteToWideChar(CP_ACP, 0, ObjectName.c_str(), strlen(ObjectName.c_str()), wszFullName, MAX_PATH);
+
+	m_Objects.push_back(reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, wszFullName, LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc)));
+}
+ImGui::End();
+}
+
+void CLevel_GamePlay::Add_AnimObjects()
+{
+
+}
+
+void CLevel_GamePlay::Setting_NonAnimObjectList()
+{
 	if (ImGui::CollapsingHeader("Model List"))
 		return;
 
