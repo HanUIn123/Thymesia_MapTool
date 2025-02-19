@@ -70,7 +70,7 @@ void CMainApp::Update(_float fTimeDelta)
 
 	ImGui::Begin("DEBUG");
 
-	ImGui::SetWindowSize(ImVec2(500.f, 500.f));
+	//ImGui::SetWindowSize(ImVec2(500.f, 500.f));
 
 	m_pGameInstance->Update_Engine(fTimeDelta);
 
