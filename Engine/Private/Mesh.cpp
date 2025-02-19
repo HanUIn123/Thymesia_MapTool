@@ -50,14 +50,18 @@ HRESULT CMesh::Initialize_Prototype(CModel::MODEL eModelType, CModel* pModel, co
 	pNewIndices = new _uint[m_iNumIndices];
 	ZeroMemory(pNewIndices, sizeof(_uint) * m_iNumIndices);
 	//
+	m_iVtxFaces = pAIMesh->mNumFaces;
+
+	m_iIndices = new _uint[pAIMesh->mNumFaces * 3];
+
 
 	_uint			iNumIndices = { 0 };
 
 	for (size_t i = 0; i < pAIMesh->mNumFaces; i++)
-	{		
-		pIndices[iNumIndices++] = pNewIndices[iNumIndices] = pAIMesh->mFaces[i].mIndices[0];
-		pIndices[iNumIndices++] = pNewIndices[iNumIndices] = pAIMesh->mFaces[i].mIndices[1];
-		pIndices[iNumIndices++] = pNewIndices[iNumIndices] = pAIMesh->mFaces[i].mIndices[2];
+	{	
+		pIndices[iNumIndices++] = pNewIndices[iNumIndices] = m_iIndices[iNumIndices] = pAIMesh->mFaces[i].mIndices[0];
+		pIndices[iNumIndices++] = pNewIndices[iNumIndices] = m_iIndices[iNumIndices] = pAIMesh->mFaces[i].mIndices[1];
+		pIndices[iNumIndices++] = pNewIndices[iNumIndices] = m_iIndices[iNumIndices] = pAIMesh->mFaces[i].mIndices[2];
 	}
 
 
@@ -136,6 +140,8 @@ HRESULT CMesh::Ready_VertexBuffer_ForNonAnim(const aiMesh* pAIMesh, _fmatrix Pre
 	ZeroMemory(pVertices, sizeof(VTXMESH) * m_iNumVertices);
 	ZeroMemory(m_nonAnimpVertices, sizeof(VTXMESH) * m_iNumVertices);	
 
+	m_pPos = new _float3[m_iNumVertices];
+
 	for(size_t i =0; i < m_iNumVertices; i++)
 	{
 		/* 점의 정보 채워주기 */
@@ -162,10 +168,12 @@ HRESULT CMesh::Ready_VertexBuffer_ForNonAnim(const aiMesh* pAIMesh, _fmatrix Pre
 		/* 바이너리 저장 */	
 		memcpy(&m_nonAnimpVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));	
 		memcpy(&m_nonAnimpVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));	
-		//
 
+		m_pPos[i] = pVertices[i].vPosition;
 	}
-	
+
+	m_iVtxFaces = pAIMesh->mNumFaces;
+
 	ZeroMemory(&m_InitialData, sizeof(m_InitialData));
 	m_InitialData.pSysMem = pVertices;
 
@@ -196,6 +204,7 @@ HRESULT CMesh::Ready_VertexBuffer_ForAnim(CModel* pModel, const aiMesh* pAIMesh,
 	m_AnimVertices = new VTXANIMMESH[m_iNumVertices];
 	ZeroMemory(m_AnimVertices, sizeof(VTXANIMMESH) * m_iNumVertices);
 
+	m_pPos = new _float3[m_iNumVertices];
 
 	for(size_t i =0; i< m_iNumVertices; i++)
 	{
@@ -210,6 +219,8 @@ HRESULT CMesh::Ready_VertexBuffer_ForAnim(CModel* pModel, const aiMesh* pAIMesh,
 		memcpy(&m_AnimVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));	
 		memcpy(&m_AnimVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));	
 		memcpy(&m_AnimVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));	
+
+		m_pPos[i] = pVertices[i].vPosition;
 	}
 
 
@@ -348,6 +359,7 @@ HRESULT CMesh::Save_Mesh(ostream& os)
 
 	os.write((char*)&m_ModelType, sizeof(CModel::MODEL));
 	os.write((char*)&m_iNumBones, sizeof(_uint));
+	os.write((char*)&m_iVtxFaces, sizeof(_uint));
 
 	writeVectorToBinary(m_BoneIndices, os);
 	writeVectorToBinary(m_OffsetMatrices, os);
@@ -398,6 +410,8 @@ HRESULT CMesh::Load_Mesh(istream& is)
 	is.read((char*)&m_ModelType, sizeof(CModel::MODEL));
 
 	is.read((char*)&m_iNumBones, sizeof(_uint));
+	is.read((char*)&m_iVtxFaces, sizeof(_uint));
+
 	readVectorFromBinary(is, m_BoneIndices);
 	readVectorFromBinary(is, m_OffsetMatrices);
 
@@ -405,6 +419,14 @@ HRESULT CMesh::Load_Mesh(istream& is)
 	{
 		m_nonAnimpVertices = new VTXMESH[m_iNumVertices];
 		is.read((char*)(m_nonAnimpVertices), sizeof(VTXMESH) * m_iNumVertices);
+
+
+		m_pPos = new _float3[m_iNumVertices];
+
+		for (size_t i = 0; i < m_iNumVertices; i++)
+		{
+			m_pPos[i] = m_nonAnimpVertices[i].vPosition;
+		}
 
 		m_InitialData.pSysMem = m_nonAnimpVertices;
 		if (FAILED(__super::Create_BufferZ(&m_pVB, &m_MeshBufferdesc)))
@@ -415,6 +437,13 @@ HRESULT CMesh::Load_Mesh(istream& is)
 	{
 		m_AnimVertices = new VTXANIMMESH[m_iNumVertices];
 		is.read((char*)(m_AnimVertices), sizeof(VTXANIMMESH) * m_iNumVertices);
+
+		m_pPos = new _float3[m_iNumVertices];
+
+		for (size_t i = 0; i < m_iNumVertices; i++)
+		{
+			m_pPos[i] = m_AnimVertices[i].vPosition;
+		}
 
 		m_InitialData.pSysMem = m_AnimVertices;
 		if (FAILED(__super::Create_BufferZ(&m_pVB, &m_MeshBufferdesc)))
@@ -455,6 +484,17 @@ HRESULT CMesh::Load_Mesh(istream& is)
 
 	pNewIndices = new _uint[m_iNumIndices];
 	is.read((char*)(pNewIndices), sizeof(_uint) * m_iNumIndices);
+
+	m_iIndices = new _uint[m_iNumIndices];
+
+	_uint iNumIndices = { 0 };
+
+	for (size_t i = 0; i < m_iVtxFaces; i++)
+	{
+		m_iIndices[iNumIndices] = pNewIndices[iNumIndices++];
+		m_iIndices[iNumIndices] = pNewIndices[iNumIndices++];
+		m_iIndices[iNumIndices] = pNewIndices[iNumIndices++];
+	}
 
 
 	m_InitialData.pSysMem = pNewIndices;
@@ -509,5 +549,11 @@ void CMesh::Free()
 	Safe_Delete_Array(pNewIndices);	
 
 	Safe_Release(m_pStrBuffer);
+
+	if (m_isCloned == false)
+	{
+		Safe_Delete_Array(m_pPos);
+		Safe_Delete_Array(m_iIndices);
+	}
 
 }

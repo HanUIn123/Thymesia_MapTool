@@ -2,6 +2,7 @@
 
 #include "Client_Defines.h"
 #include "Level.h"
+#include "Object.h"
 
 BEGIN(Client)
 
@@ -35,6 +36,11 @@ private:
 	_float m_fObjectPos[3] = {};
 
 	_int   m_iObjectArray = { 0 };
+	_float  m_fMeshScale[3] = { };
+
+	list<CObject*> m_Objects;
+
+	_float3  m_fMeshPickPos = { 0.f, 0.f, 0.f };
 
 public:
 	static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -211,6 +211,9 @@
     <Filter Include="01.Utility\04.Components\VIBuffer\Particle_Instancing\Point\Sprite_Particle">
       <UniqueIdentifier>{f63cf44a-10c2-4932-afa1-60f296df041f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Components\Calculator">
+      <UniqueIdentifier>{e965d684-7de1-4f67-839b-51de22a3aff0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -417,6 +420,9 @@
     <ClInclude Include="..\public\Shadow.h">
       <Filter>01.Utility\16.Shadow</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Calculator.h">
+      <Filter>01.Utility\04.Components\Calculator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -607,6 +613,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Shadow.cpp">
       <Filter>01.Utility\16.Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Calculator.cpp">
+      <Filter>01.Utility\04.Components\Calculator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

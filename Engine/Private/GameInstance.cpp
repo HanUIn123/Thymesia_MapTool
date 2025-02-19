@@ -219,6 +219,11 @@ HRESULT CGameInstance::Add_GameObject_To_Layer(_uint iPrototypeLevelIndex, const
 	return m_pObject_Manager->Add_GameObject_To_Layer(iPrototypeLevelIndex, strPrototypeTag, iLevelIndex, strLayerTag, pArg, pName);
 }
 
+CGameObject* CGameInstance::Add_GameObject_To_Layer_Take(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLevelIndex, const _wstring& strLayerTag, void* pArg, _char* pName)
+{
+	return m_pObject_Manager->Add_GameObject_To_Layer_Take(iPrototypeLevelIndex, strPrototypeTag, iLevelIndex, strLayerTag, pArg, pName);
+}
+
 HRESULT CGameInstance::Sub_GameObject_To_Layer(_uint iLevelIndex, const _wstring& strLayerTag, CGameObject* _pGameObject)
 {
 	return m_pObject_Manager->Sub_GameObject_To_Layer(iLevelIndex, strLayerTag, _pGameObject);

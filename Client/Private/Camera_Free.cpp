@@ -37,7 +37,6 @@ HRESULT CCamera_Free::Initialize(void * pArg)
 
 void CCamera_Free::Priority_Update(_float fTimeDelta)
 {
-	
 	if (GetKeyState('W') & 0x8000)
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	if (GetKeyState('S') & 0x8000)

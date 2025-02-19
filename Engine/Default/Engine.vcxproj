@@ -173,6 +173,7 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\Bounding_AABB.h" />
     <ClInclude Include="..\public\Bounding_OBB.h" />
     <ClInclude Include="..\public\Bounding_Sphere.h" />
+    <ClInclude Include="..\Public\Calculator.h" />
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
@@ -243,6 +244,7 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\Bounding_AABB.cpp" />
     <ClCompile Include="..\private\Bounding_OBB.cpp" />
     <ClCompile Include="..\private\Bounding_Sphere.cpp" />
+    <ClCompile Include="..\Private\Calculator.cpp" />
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />

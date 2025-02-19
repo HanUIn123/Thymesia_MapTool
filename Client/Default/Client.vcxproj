@@ -172,6 +172,7 @@
     <ClInclude Include="..\Public\Boss_Varg.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
+    <ClInclude Include="..\Public\HORSE_P_WoodenFrame02_05.h" />
     <ClInclude Include="..\Public\Imgui\imconfig.h" />
     <ClInclude Include="..\Public\Imgui\imgui.h" />
     <ClInclude Include="..\Public\Imgui\imgui_impl_dx11.h" />
@@ -188,8 +189,11 @@
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\Public\Object.h" />
     <ClInclude Include="..\public\Player.h" />
+    <ClInclude Include="..\Public\P_Rag03.h" />
     <ClInclude Include="..\public\Sky.h" />
     <ClInclude Include="..\Public\SM_Wall_Shelf.h" />
+    <ClInclude Include="..\Public\SM_WoodenFence03.h" />
+    <ClInclude Include="..\Public\SM_WoodStairs03.h" />
     <ClInclude Include="..\public\Terrain.h" />
     <ClInclude Include="..\public\Weapon.h" />
     <ClInclude Include="Client.h" />
@@ -203,6 +207,7 @@
     <ClCompile Include="..\Private\Boss_Magician.cpp" />
     <ClCompile Include="..\Private\Boss_Varg.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
+    <ClCompile Include="..\Private\HORSE_P_WoodenFrame02_05.cpp" />
     <ClCompile Include="..\Private\Ladder.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
@@ -211,8 +216,11 @@
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\Private\Object.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
+    <ClCompile Include="..\Private\P_Rag03.cpp" />
     <ClCompile Include="..\private\Sky.cpp" />
     <ClCompile Include="..\Private\SM_Wall_Shelf.cpp" />
+    <ClCompile Include="..\Private\SM_WoodenFence03.cpp" />
+    <ClCompile Include="..\Private\SM_WoodStair03.cpp" />
     <ClCompile Include="..\private\Terrain.cpp" />
     <ClCompile Include="..\private\Weapon.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui.cpp" />

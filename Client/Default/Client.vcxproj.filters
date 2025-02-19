@@ -76,6 +76,18 @@
     <Filter Include="02.GameObject\Object\SM_Wall_Shelf">
       <UniqueIdentifier>{a66913f5-f531-4dd9-b0c7-ee0e9e0c9dec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Object\P_Rag03">
+      <UniqueIdentifier>{c610914a-579d-4d29-80a8-c80d87facad4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Object\HORSE_P_WoodenFrame02_05">
+      <UniqueIdentifier>{3fb7d247-54f2-4f37-9ccb-d902954fb9ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Object\SM_WoodFence03">
+      <UniqueIdentifier>{becb2bad-eb43-4229-a3b3-e36179aa2180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Object\SM_WoodStairs03">
+      <UniqueIdentifier>{bce90e2d-e2aa-49b9-be29-10fcd018f09d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -168,6 +180,18 @@
     <ClInclude Include="..\Public\SM_Wall_Shelf.h">
       <Filter>02.GameObject\Object\SM_Wall_Shelf</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\P_Rag03.h">
+      <Filter>02.GameObject\Object\P_Rag03</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HORSE_P_WoodenFrame02_05.h">
+      <Filter>02.GameObject\Object\HORSE_P_WoodenFrame02_05</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SM_WoodenFence03.h">
+      <Filter>02.GameObject\Object\SM_WoodFence03</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SM_WoodStairs03.h">
+      <Filter>02.GameObject\Object\SM_WoodStairs03</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -247,6 +271,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\SM_Wall_Shelf.cpp">
       <Filter>02.GameObject\Object\SM_Wall_Shelf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\P_Rag03.cpp">
+      <Filter>02.GameObject\Object\P_Rag03</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HORSE_P_WoodenFrame02_05.cpp">
+      <Filter>02.GameObject\Object\HORSE_P_WoodenFrame02_05</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SM_WoodenFence03.cpp">
+      <Filter>02.GameObject\Object\SM_WoodFence03</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SM_WoodStair03.cpp">
+      <Filter>02.GameObject\Object\SM_WoodStairs03</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -15,6 +15,14 @@
 #pragma region 환경요소 
 #include "Sky.h"
 #include "Terrain.h"
+
+
+#include "SM_Wall_Shelf.h"
+#include "P_Rag03.h"
+#include "SM_Wall_Shelf.h"
+#include "SM_WoodenFence03.h"
+#include "SM_WoodStairs03.h"
+#include "HORSE_P_WoodenFrame02_05.h"
 #pragma endregion 
 
 
@@ -296,14 +304,20 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 
 #pragma endregion
 
+#pragma region Calculator
 
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Calculator"),
+		CCalculator::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+#pragma endregion
 
 #pragma region 티메시아 캐릭터 
 	lstrcpyW(m_szLoadingText, TEXT("티메시아 모델을 생성한다."));	
 	/* For.Prototype_Component_Model_Kaku*/
 	PreTransformMatrix = /*XMMatrixScaling(0.015f, 0.015f, 0.015f) **/ XMMatrixRotationY(XMConvertToRadians(180.f));		
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Corner"),	
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Thymesia/realtest.fbx", CModel::MODEL_ANIM, PreTransformMatrix))))	
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Thymesia/realtest.fbx", CModel::MODEL_ANIM, PreTransformMatrix))))
 		return E_FAIL;		
 
 	///* For.Prototype_GameObject_Body_Player */
@@ -353,6 +367,23 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	//SM_WoodStairs03
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_HORSE_P_WoodenFrame02_05"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/HORSE_P_WoodenFrame02_05.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_SM_Wall_Shelf"),
+		CSM_Wall_Shelf::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_HORSE_P_WoodenFrame02_05"),
+		CHORSE_P_WoodenFrame02_05::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_SM_P_Rag03"),
+		CP_Rag03::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_SM_WoodenFence03"),
+		CSM_WoodenFence03::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 #pragma endregion
