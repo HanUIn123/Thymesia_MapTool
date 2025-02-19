@@ -81,7 +81,7 @@ const _float4x4* CModel::Get_RootMotionMatrix(const _char* pBoneName) const
 	return (*iter)->Get_CombinedRootMotionTransformationPtr();	
 }
 
-HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix)
+HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool bBinary)
 {
 	_uint			iFlag = {};
 
@@ -98,9 +98,9 @@ HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePa
 		iFlag |= aiProcess_GenNormals | aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate | aiProcess_GenUVCoords | aiProcess_SortByPType;
 	
-
-	if (FAILED(Load_Model(PreTransformMatrix)))	
-		return E_FAIL;	
+	if(!bBinary)
+		if (FAILED(Load_Model(PreTransformMatrix)))	
+			return E_FAIL;	
 	
 
 	/* 이것만으로 모든 로드작업은 끝난거다. */
@@ -121,26 +121,29 @@ HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePa
 
 #pragma region 바이너리화 Save용도
 
-	//
-	//m_pAIScene = m_Importer.ReadFile(pModelFilePath, iFlag);			
-	//if (nullptr == m_pAIScene)		
-	//	return E_FAIL;	
-	// 
-	//if (FAILED(Ready_Bones(m_pAIScene->mRootNode)))			
-	//	return E_FAIL;
-	//
-	//if (FAILED(Ready_Meshes(PreTransformMatrix)))	
-	//	return E_FAIL;
-	//
-	//if (FAILED(Ready_Materials(pModelFilePath)))	
-	//	return E_FAIL;
-	//
-	//
-	//if (FAILED(Ready_Animations()))	
-	//	return E_FAIL;
-	//
-	//if (FAILED(Save_Model(pModelFilePath)))
-	//	return E_FAIL;
+	
+	if (bBinary)
+	{
+		m_pAIScene = m_Importer.ReadFile(pModelFilePath, iFlag);
+		if (nullptr == m_pAIScene)
+			return E_FAIL;
+
+		if (FAILED(Ready_Bones(m_pAIScene->mRootNode)))
+			return E_FAIL;
+
+		if (FAILED(Ready_Meshes(PreTransformMatrix)))
+			return E_FAIL;
+
+		if (FAILED(Ready_Materials(pModelFilePath)))
+			return E_FAIL;
+
+
+		if (FAILED(Ready_Animations()))
+			return E_FAIL;
+
+		if (FAILED(Save_Model(pModelFilePath)))
+			return E_FAIL;
+	}
 	
 #pragma endregion
 
@@ -504,11 +507,11 @@ HRESULT CModel::Ready_Animations()
 	return S_OK;
 }
 
-CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _char * pModelFilePath, MODEL eModelType, _fmatrix PreTransformMatrix)
+CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _char * pModelFilePath, MODEL eModelType, _fmatrix PreTransformMatrix, _bool bBinary)
 {
 	CModel*	pInstance = new CModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(eModelType,pModelFilePath,PreTransformMatrix)))
+	if (FAILED(pInstance->Initialize_Prototype(eModelType,pModelFilePath,PreTransformMatrix, bBinary)))
 	{
 		MSG_BOX("Failed To Created : CModel");
 		Safe_Release(pInstance);

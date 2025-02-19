@@ -31,6 +31,9 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	void Mouse_Fix();
+
+private:
 	_float*				m_fPlayerPosition = {nullptr};
 	_float				m_fMouseSensor = {};
 	_bool				m_bStop = false;
@@ -43,6 +46,7 @@ private:
 	_vector				m_vCurCamPos = {};
 	_vector				m_vCurCamDir = {};
 	_float				m_fLerpTime  = {3.f};		
+	_float				m_fSensor = { 0.1f };
 
 public:
 	static CCamera_Free* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

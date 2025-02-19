@@ -173,6 +173,7 @@ HRESULT CPlayer::Ready_Components()
 
 HRESULT CPlayer::Ready_PartObjects()
 {
+	/*
 	CBody_Player::BODY_PLAYER_DESC BodyDesc{};	
 	
 	BodyDesc.pParentState = &m_iState;	
@@ -185,7 +186,7 @@ HRESULT CPlayer::Ready_PartObjects()
 		return E_FAIL;			
 	
 	m_pModel = dynamic_cast<CModel*>(Find_PartObject_Component(TEXT("Part_Body"), TEXT("Com_Model")));			
-
+	*/
 
 	return S_OK;
 }

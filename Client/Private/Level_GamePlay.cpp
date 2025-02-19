@@ -27,8 +27,8 @@ HRESULT CLevel_GamePlay::Initialize()
 
 
 	// 테스트용 사다리 레이어 준비 함수 호출
-	if (FAILED(Ready_Layer_Ladder(TEXT("Layer_Ladder"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_Ladder(TEXT("Layer_Ladder"))))
+	//	return E_FAIL;
 
 
 
@@ -36,14 +36,14 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+	//	return E_FAIL;
 
-	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))	
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))	
+	//	return E_FAIL;
 
-	if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
+	//	return E_FAIL;
 
 	if (FAILED(Ready_Lights()))	
 		return E_FAIL;	
@@ -57,7 +57,25 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
+	ImGui::Begin("Object");
 	
+	const char* ObjectNames[] = {
+		"HORSE_P_WoodenFrame02_05",
+		"P_Rag03",
+		"SM_Wall_Shelf",
+		"SM_WoodFence04",
+		"SM_WoodStairs0",
+	};
+
+	ImGui::Combo("Object Type", &m_iObjectArray, ObjectNames, IM_ARRAYSIZE(ObjectNames));
+
+	ImGui::InputFloat3("Object_Pos", m_fObjectPos);
+
+	if (ImGui::Button("Add_Objects"))
+	{
+	}
+	
+	ImGui::End();
 }
 
 HRESULT CLevel_GamePlay::Render() 
@@ -184,9 +202,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 {
 	if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Player"), LEVEL_GAMEPLAY, pLayerTag, nullptr)))	
 		return E_FAIL;	
-
-	if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_LobTrap"), LEVEL_GAMEPLAY, pLayerTag, nullptr)))
-		return E_FAIL;
 
 	return S_OK;
 }

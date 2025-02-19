@@ -64,14 +64,17 @@
     <Filter Include="02.GameObject\0.Ladder">
       <UniqueIdentifier>{8d0f4be0-587b-4a21-8752-52f739d79161}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\LobTrap">
-      <UniqueIdentifier>{a04912fe-774e-47db-acec-0001369a83bb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Boss">
       <UniqueIdentifier>{46740bbd-aaa2-41ea-90b6-48784443a5b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="999.ImGui">
       <UniqueIdentifier>{a5214818-106a-49c0-9230-8ec457f4fe20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Object">
+      <UniqueIdentifier>{edf65697-194c-4d78-8da5-7453cf6bc37a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Object\SM_Wall_Shelf">
+      <UniqueIdentifier>{a66913f5-f531-4dd9-b0c7-ee0e9e0c9dec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -129,9 +132,6 @@
     <ClInclude Include="..\Public\Ladder.h">
       <Filter>02.GameObject\0.Ladder</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\LobTrap.h">
-      <Filter>02.GameObject\LobTrap</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Boss_Magician.h">
       <Filter>02.GameObject\Boss</Filter>
     </ClInclude>
@@ -161,6 +161,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Imgui\imstb_truetype.h">
       <Filter>999.ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Object.h">
+      <Filter>02.GameObject\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SM_Wall_Shelf.h">
+      <Filter>02.GameObject\Object\SM_Wall_Shelf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -209,9 +215,6 @@
     <ClCompile Include="..\Private\Ladder.cpp">
       <Filter>02.GameObject\0.Ladder</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\LobTrap.cpp">
-      <Filter>02.GameObject\LobTrap</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Boss_Magician.cpp">
       <Filter>02.GameObject\Boss</Filter>
     </ClCompile>
@@ -238,6 +241,12 @@
     </ClCompile>
     <ClCompile Include="..\Public\Imgui\imgui_widgets.cpp">
       <Filter>999.ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Object.cpp">
+      <Filter>02.GameObject\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SM_Wall_Shelf.cpp">
+      <Filter>02.GameObject\Object\SM_Wall_Shelf</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
