@@ -1,14 +1,21 @@
+#pragma once
 #include "pch.h" 
 #include "Level_GamePlay.h"
 #include "GameInstance.h"
 #include "Camera_Free.h"
 #include "Layer.h"	
-
+//#include "Shader.h"
+#include <DirectXTK/WICTextureLoader.h>
+#include <DirectXTK/DDSTextureLoader.h>
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CLevel { pDevice, pContext }
 {
-	
+	//   Register_PreviewImage_In_ImGuiWindow(TEXT("../Bin/Resources/MyTextures/ImGui_PreviewImage/Enemies/BoomMonster.dds"), IMG_MONSTER, 1);
+	//Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/MyTextures/ImGui_PreviewImage/Enemies/BoomMonster.dds"), IMG_ANIM_MODEL, 1);
+	Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/WoodenFrame.dds"), IMG_NONANIM_MODEL, 1);
+
+
 }
 
 HRESULT CLevel_GamePlay::Initialize()
@@ -57,7 +64,7 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
-	ImGui::Begin("Object");
+	/*ImGui::Begin("Object");
 	
 	const char* ObjectNames[] = {
 		"HORSE_P_WoodenFrame02_05",
@@ -75,7 +82,39 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	{
 	}
 	
+	ImGui::End();*/
+
+
+	//if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered())
+	//	m_bImguiHovered = true;
+	ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered() ? m_bImguiHovered : !m_bImguiHovered;
+
+	static int iMenuTypeNumber = MENU_TYPE::MT_END;
+
+	ImGui::Begin("TOOL MENU");
+	if (ImGui::RadioButton("ANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_ANIMMODEL))
+	{
+
+	}
 	ImGui::End();
+
+
+	if (iMenuTypeNumber == MENU_TYPE::MT_PICKING_ANIMMODEL || iMenuTypeNumber == MENU_TYPE::MT_PICKING_NONANIMMODEL)
+	{
+		if (ImGui::Button("Save_Models"))
+		{
+
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Load_Models"))
+		{
+
+		}
+	}
+
+	Setting_ObjectList();
 }
 
 HRESULT CLevel_GamePlay::Render() 
@@ -260,6 +299,110 @@ HRESULT CLevel_GamePlay::Ready_Layer_Ladder(const _tchar* pLayerTag)
 	return S_OK;
 }
 
+HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageFilePath, IMGUI_TEXTURE_TYPE _eImguiTextureType, _uint _iTextureNumber)
+{
+	for (_uint i = 0; i < _iTextureNumber; ++i)
+	{
+		_tchar      szEXT[MAX_PATH] = {};
+		_wsplitpath_s(_pImageFilePath, nullptr, 0, nullptr, 0, nullptr, 0, szEXT, MAX_PATH);
+
+		for (_uint i = 0; i < _iTextureNumber; ++i)
+		{
+			//ID3D11Texture2D* pTexture2D = { nullptr };
+			ID3D11ShaderResourceView* pSRV = { nullptr };
+
+			_tchar                      szTextureFilePath[MAX_PATH] = TEXT("");
+
+			wsprintf(szTextureFilePath, _pImageFilePath, i);
+
+			HRESULT     hr = {};
+
+			if (false == lstrcmp(szEXT, TEXT(".dds")))
+			{
+				hr = CreateDDSTextureFromFile(m_pDevice, szTextureFilePath, nullptr, &pSRV);
+			}
+			else if (false == lstrcmp(szEXT, TEXT(".tga")))
+			{
+				hr = E_FAIL;
+			}
+			else
+			{
+				hr = CreateWICTextureFromFile(m_pDevice, szTextureFilePath, nullptr, &pSRV);
+			}
+
+			if (FAILED(hr))
+				return E_FAIL;
+
+			switch (_eImguiTextureType)
+			{
+			case IMG_ANIM_MODEL:
+				m_vecAnimModelSRVs.push_back(pSRV);
+				break;
+			case IMG_NONANIM_MODEL:
+				m_vecNonAnimModelSRVs.push_back(pSRV);
+				break;
+			}
+		}
+	}
+
+	return S_OK;
+}
+
+void CLevel_GamePlay::Setting_ObjectList()
+{
+	/*ImGui::Begin("Object");
+
+	const char* ObjectNames[] = {
+		"HORSE_P_WoodenFrame02_05",
+		"P_Rag03",
+		"SM_Wall_Shelf",
+		"SM_WoodFence04",
+		"SM_WoodStairs0",
+	};
+
+	ImGui::Combo("Object Type", &m_iObjectArray, ObjectNames, IM_ARRAYSIZE(ObjectNames));
+
+	ImGui::InputFloat3("Object_Pos", m_fObjectPos);
+
+	if (ImGui::Button("Add_Objects"))
+	{
+	}
+
+	ImGui::End();*/
+
+	if (ImGui::CollapsingHeader("Model List"))
+		return;
+
+	const char* szItems[] = { "Model List" };
+
+	static int iCurrentItem = 0;
+	ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
+
+	for (_uint i = 0; i < 3; ++i)
+	{
+		_uint  iTextureIndex = iCurrentItem * 3 + i;
+
+		if (iTextureIndex < m_vecNonAnimModelSRVs.size())
+		{
+			if (ImGui::ImageButton(("NonAnimModel" + to_string(iTextureIndex)).c_str(), (ImTextureID)m_vecNonAnimModelSRVs[iTextureIndex], ImVec2(50.0f, 50.0f)))
+			{
+				m_iNonAnimModelIndex = iTextureIndex;
+			}
+
+			if ((i + 1) % 3 != 0)
+			{
+				ImGui::SameLine();
+			}
+		}
+	}
+	
+
+
+
+
+
+}
+
 CLevel_GamePlay * CLevel_GamePlay::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
 	CLevel_GamePlay*	pInstance = new CLevel_GamePlay(pDevice, pContext);
@@ -278,4 +421,11 @@ void CLevel_GamePlay::Free()
 {
 	__super::Free();
 
+	for (auto& pSRV : m_vecAnimModelSRVs)
+		Safe_Release(pSRV);
+	m_vecAnimModelSRVs.clear();
+
+	for (auto& pSRV : m_vecNonAnimModelSRVs)
+		Safe_Release(pSRV);
+	m_vecNonAnimModelSRVs.clear();
 }

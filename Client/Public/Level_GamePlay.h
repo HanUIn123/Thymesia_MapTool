@@ -3,10 +3,21 @@
 #include "Client_Defines.h"
 #include "Level.h"
 
-BEGIN(Client)
 
+BEGIN(Engine)
+class CShader;
+class CTexture;
+END
+
+
+
+BEGIN(Client)
 class CLevel_GamePlay final : public CLevel
 {
+public:
+	enum IMGUI_TEXTURE_TYPE {IMG_ANIM_MODEL, IMG_NONANIM_MODEL, IMG_END};
+	enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI , MT_END  };
+
 private:
 	CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CLevel_GamePlay() = default;
@@ -29,6 +40,22 @@ private:
 
 	// 테스트용 사다리 레이어 추가
 	HRESULT	Ready_Layer_Ladder(const _tchar* pLayerTag);
+
+
+
+private:
+	HRESULT									Resister_ObjectList_PreviewImage(const _tchar* _pImageFilePath, IMGUI_TEXTURE_TYPE _eImguiTextureType, _uint _iTextureNumber);
+	vector<ID3D11ShaderResourceView*>		m_vecAnimModelSRVs;
+	vector<ID3D11ShaderResourceView*>		m_vecNonAnimModelSRVs;
+
+private:
+	void									Setting_ObjectList();
+
+
+
+private:
+	_bool									m_bImguiHovered = { false };
+	_uint									m_iNonAnimModelIndex = {};
 
 private:
 	// 오브젝트 생성할 위치
