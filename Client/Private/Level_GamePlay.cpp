@@ -4,9 +4,14 @@
 #include "GameInstance.h"
 #include "Camera_Free.h"
 #include "Layer.h"	
+<<<<<<< HEAD
 //#include "Shader.h"
 #include <DirectXTK/WICTextureLoader.h>
 #include <DirectXTK/DDSTextureLoader.h>
+=======
+
+#include "GameObject.h"
+>>>>>>> origin/main
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CLevel { pDevice, pContext }
@@ -77,10 +82,28 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	ImGui::Combo("Object Type", &m_iObjectArray, ObjectNames, IM_ARRAYSIZE(ObjectNames));
 
 	ImGui::InputFloat3("Object_Pos", m_fObjectPos);
+	ImGui::InputFloat3("Object_Scale", m_fMeshScale);
 
 	if (ImGui::Button("Add_Objects"))
 	{
+		CObject::OBJECT_DESC Desc{};
+
+		Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
+		Desc.fFrustumRadius = 2.f;
+		Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
+
+		string ObjectName = "Prototype_GameObject_Object_";
+		string ItemName = ObjectNames[m_iObjectArray];
+
+		ObjectName += ItemName;
+
+		_tchar		wszFullName[MAX_PATH] = {};
+
+		MultiByteToWideChar(CP_ACP, 0, ObjectName.c_str(), strlen(ObjectName.c_str()), wszFullName, MAX_PATH);
+
+		m_Objects.push_back(reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, wszFullName, LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc)));
 	}
+<<<<<<< HEAD
 	
 	ImGui::End();*/
 
@@ -96,6 +119,37 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	{
 
 	}
+=======
+
+	if (m_pGameInstance->isMouseEnter(DIM_LB))
+	{
+		for (auto& pObject : m_Objects)
+		{
+			_float3 fPos = pObject->Picking_Objects();
+
+			if (false == XMVector3Equal(XMLoadFloat3(&fPos), XMVectorSet(0.f, 0.f, 0.f, 0.f)))
+			{
+				m_fMeshPickPos = fPos;
+
+				cout << " %f" << m_fMeshPickPos.x;
+
+				cout << " %f" << m_fMeshPickPos.y;
+
+				cout << " %f" << m_fMeshPickPos.z;
+			}
+		}
+	}
+
+	/*
+	ImGuiIO IO = ImGui::GetIO();
+
+	if (!IO.WantCaptureMouse)
+	{
+
+	}
+	*/
+
+>>>>>>> origin/main
 	ImGui::End();
 
 

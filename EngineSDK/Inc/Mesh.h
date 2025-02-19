@@ -18,6 +18,20 @@ public:
 		return m_iMaterialIndex;	
 	}
 
+
+	//메시 피킹용 함수들
+	_float3* Get_VtxPos() const {
+		return m_pPos;
+	}
+
+	_uint* Get_Indices() const {
+		return m_iIndices;
+	}
+
+	_uint Get_VtxFaces() const {
+		return m_iVtxFaces;
+	}
+
 public:
 	virtual HRESULT Initialize_Prototype(CModel::MODEL eModelType, CModel* pModel, const aiMesh* pAIMesh, _fmatrix PreTransformMatrix);
 	virtual HRESULT Initialize(void* pArg) override;
@@ -48,6 +62,11 @@ private:
 	VTXANIMMESH*		  m_AnimVertices;	
 	CModel::MODEL         m_ModelType;	
 	_uint*				  pNewIndices;	
+
+	//메시 피킹용 변수들
+	_float3*			  m_pPos = {};
+	_uint*			      m_iIndices = {};
+	_uint				  m_iVtxFaces = {};
 
 private:
 	/*structed Buffer 관련 코드*/

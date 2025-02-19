@@ -24,6 +24,11 @@ public:
 	const _float4x4* Get_BoneMatrix(const _char* pBoneName) const;
 	const _float4x4* Get_RootMotionMatrix(const _char* pBoneName) const;
 
+
+	vector<class CMesh*> Get_Meshes() const {
+		return m_Meshes;
+	}
+
 public:
 	virtual HRESULT Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool bBinary);
 	virtual HRESULT Initialize(void* pArg) override;

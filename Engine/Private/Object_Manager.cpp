@@ -93,6 +93,41 @@ HRESULT CObject_Manager::Add_GameObject_To_Layer(_uint iPrototypeLevelIndex, con
 	return S_OK;
 }
 
+CGameObject* CObject_Manager::Add_GameObject_To_Layer_Take(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLevelIndex, const _wstring& strLayerTag, void* pArg, _char* pName)
+{
+	/* 레이어에 추가할 사본객체를 복제해서 가져온다. */
+	CGameObject* pGameObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::TYPE_GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
+	if (nullptr == pGameObject)
+		return nullptr;
+
+
+
+	/* 사본객체를 추가할 레이어를 찾자. */
+	CLayer* pLayer = Find_Layer(iLevelIndex, strLayerTag);
+
+	/* 사본객체를 추가할 렝이어가 없었다. \*/
+	/* 지정한 레이엉체 최초 추가하기위한 객체였다. */
+	/* 그러니까 레이어를 만들어야된다. */
+	if (nullptr == pLayer)
+	{
+		pLayer = CLayer::Create();
+
+		pLayer->Add_GameObject(pGameObject);
+		if (pName != nullptr)
+			pGameObject->Set_Name(pName);
+
+		m_pLayers[iLevelIndex].emplace(strLayerTag, pLayer);
+	}
+	else /* 사본객체를 추가할 레이어가 이미 있었다. 그러니까 그 레이어에 그냥 넣으면 되지./ */
+	{
+		pLayer->Add_GameObject(pGameObject);
+		if (pName != nullptr)
+			pGameObject->Set_Name(pName);
+	}
+
+	return pGameObject;
+}
+
 HRESULT CObject_Manager::Sub_GameObject_To_Layer(_uint iLevelIndex, const _wstring& strLayerTag, CGameObject* _pGameObject)	
 {
 	/* 사본객체를 추가할 레이어를 찾자. */

@@ -29,6 +29,7 @@ public:
 public:
 	/* 원형객체를 찾고 -> 복제하고 -> 지정한 레이어에 추가한다. */
 	HRESULT Add_GameObject_To_Layer(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLevelIndex, const _wstring& strLayerTag, void* pArg = nullptr, _char* pName = nullptr);	
+	CGameObject* Add_GameObject_To_Layer_Take(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLevelIndex, const _wstring& strLayerTag, void* pArg = nullptr, _char* pName = nullptr);
 	HRESULT Sub_GameObject_To_Layer(_uint iLevelIndex, const _wstring& strLayerTag, CGameObject* _pGameObject);		
 	CGameObject* Get_Player_GameObject_To_Layer(_uint iLevelIndex, const _wstring& strLayerTag);
 
