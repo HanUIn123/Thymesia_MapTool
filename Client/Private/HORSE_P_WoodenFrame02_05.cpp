@@ -27,6 +27,11 @@ HRESULT CHORSE_P_WoodenFrame02_05::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	//_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+
+
+
 	return S_OK;
 }
 

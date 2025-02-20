@@ -29,6 +29,10 @@ public:
 	virtual void Update(_float fTimeDelta) override;
 	virtual void Late_Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	  
+	virtual HRESULT Ready_Components();
+
+
 
 private:
 	void Mouse_Fix();
@@ -47,6 +51,9 @@ private:
 	_vector				m_vCurCamDir = {};
 	_float				m_fLerpTime  = {3.f};		
 	_float				m_fSensor = { 0.1f };
+
+
+
 
 public:
 	static CCamera_Free* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

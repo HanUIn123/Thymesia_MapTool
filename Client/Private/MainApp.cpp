@@ -68,7 +68,7 @@ void CMainApp::Update(_float fTimeDelta)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("DEBUG");
+	//ImGui::Begin("DEBUG");
 
 	//ImGui::SetWindowSize(ImVec2(500.f, 500.f));
 
@@ -104,7 +104,7 @@ HRESULT CMainApp::Render()
 	
 #endif
 
-	ImGui::End();
+	//ImGui::End();
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

@@ -5,6 +5,9 @@
 #include "Object.h"
 #include "GameInstance.h"
 
+#include "Camera_Free.h"
+#include "Terrain.h"
+
 BEGIN(Engine)
 class CShader;
 class CTexture;
@@ -44,6 +47,8 @@ private:
 
 
 
+
+
 private:
 	HRESULT									Resister_ObjectList_PreviewImage(const _tchar* _pImageFilePath, IMGUI_TEXTURE_TYPE _eImguiTextureType, _uint _iTextureNumber);
 	vector<ID3D11ShaderResourceView*>		m_vecAnimModelSRVs;
@@ -53,6 +58,11 @@ private:
 	void									Add_NonAnimObjects();
 	void									Add_AnimObjects();
 	void									Setting_NonAnimObjectList();
+
+private:
+	HRESULT									Pick_Object(MENU_TYPE _eMenuType);
+	_float3									m_fPickPos = {};
+
 
 
 
@@ -72,6 +82,11 @@ private:
 	list<CObject*> m_Objects;
 
 	_float3  m_fMeshPickPos = { 0.f, 0.f, 0.f };
+
+private:
+	CCamera_Free*							m_pCamera = { nullptr };
+	CTerrain*								m_pTerrain = { nullptr };
+
 
 public:
 	static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameObject.h"
+#include "VIBuffer_Terrain.h"
 
 BEGIN(Engine)
 
@@ -28,6 +29,9 @@ public:
 	virtual void Update(_float fTimeDelta) override;
 	virtual void Late_Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+
+	_float3 Terrain_PickPoint(HWND _hWnd, CVIBuffer_Terrain* _pTerrainBuffer);
+
 
 private:
 	_float				m_fFovy = {};

@@ -47,6 +47,10 @@ public:
 public:
 	class CComponent* Find_Component(const _wstring& strComponetTag);	
 
+public:
+	void Set_PrototypeTag(const _wstring& _strPrototypeTag) { m_strPrototypeTag = _strPrototypeTag; }
+	const _wstring& Get_PrototypeTag() const { return m_strPrototypeTag; }
+
 protected:
 	_char				        m_szName[MAX_PATH] = {};	
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -56,6 +60,8 @@ protected:
 
 protected:
 	map<const _wstring, class CComponent*>		m_Components;
+
+	_wstring                                m_strPrototypeTag;
 
 protected: 
 	_bool  m_bTriggerOnOff = { false }; 

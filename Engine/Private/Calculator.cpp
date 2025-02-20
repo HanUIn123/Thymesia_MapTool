@@ -10,7 +10,7 @@ CCalculator::CCalculator(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 }
 
 CCalculator::CCalculator(const CCalculator& Prototype)
-	: CComponent{ Prototype }
+	: CComponent( Prototype )
 {
 }
 
@@ -277,6 +277,8 @@ _bool CCalculator::PickingOnVertice(HWND hWnd, CMesh* pMeshBufferCom, CTransform
 		return false;
 	}
 }
+
+
 
 bool CCalculator::Intersects(
 	FXMVECTOR Origin, FXMVECTOR Direction, FXMVECTOR V0,

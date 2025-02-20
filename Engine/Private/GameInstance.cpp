@@ -249,6 +249,11 @@ _uint CGameInstance::Get_NumLevel()
 	return m_pObject_Manager->Get_NumLevel();	
 }
 
+CGameObject* CGameInstance::Get_GameObject(const _wstring& _strPrototypeTag, _uint _iLevelIndex, const _wstring& _strLayerTag)
+{
+	return m_pObject_Manager->Get_GameObject(_strPrototypeTag, _iLevelIndex, _strLayerTag);
+}
+
 #pragma endregion
 
 
