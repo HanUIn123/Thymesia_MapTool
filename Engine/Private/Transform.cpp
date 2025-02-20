@@ -278,9 +278,16 @@ HRESULT CTransform::Bind_ShaderResource(CShader * pShader, const _char * pConsta
 
 void CTransform::Scaling(const _float3 & vScale)
 {
-	Set_State(STATE_RIGHT, XMVector3Normalize(Get_State(STATE_RIGHT)) * vScale.x);
-	Set_State(STATE_UP, XMVector3Normalize(Get_State(STATE_UP)) * vScale.y);
-	Set_State(STATE_LOOK, XMVector3Normalize(Get_State(STATE_LOOK)) * vScale.z);
+	//Nan_Check
+
+	if(!XMVector3IsNaN(XMVector3Normalize(Get_State(STATE_RIGHT))* vScale.x))
+		Set_State(STATE_RIGHT, XMVector3Normalize(Get_State(STATE_RIGHT)) * vScale.x);
+
+	if (!XMVector3IsNaN(XMVector3Normalize(Get_State(STATE_UP)) * vScale.y))
+		Set_State(STATE_UP, XMVector3Normalize(Get_State(STATE_UP)) * vScale.y);
+
+	if (!XMVector3IsNaN(XMVector3Normalize(Get_State(STATE_LOOK)) * vScale.z))
+		Set_State(STATE_LOOK, XMVector3Normalize(Get_State(STATE_LOOK)) * vScale.z);
 
 	m_fScaling = vScale;
 
