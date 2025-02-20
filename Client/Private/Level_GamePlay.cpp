@@ -79,6 +79,11 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
     ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
 
+    if (ImGui::Button("UnPicking_Create"))
+    {
+        m_iNonAnimModelIndex = -1;
+    }
+
     if (m_bNonAnimObjectMenuSelected)
     {
         if (!IO.WantCaptureMouse)
@@ -93,7 +98,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
                         {
                             _float3 fPos = { 0.f ,0.f ,0.f };
 
-                            if (pObject->Picking_Objects(fPos))
+                            if (pObject != nullptr && pObject->Picking_Objects(fPos))
                             {
                                 m_fMeshPickPos = fPos;
 
@@ -111,6 +116,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
                                 cout << "\n";
 
+                                m_pCurrentObject = pObject;
                                 m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
 
                                 Add_NonAnimObjects();
@@ -133,25 +139,46 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         Add_AnimObjects();
     }
 
-    if (m_pCurrentObjectTransformCom != nullptr)
+    if (m_pCurrentObject != nullptr)
     {
         ImGui::Begin("Current Object Info");
 
-        _vector vCurPos = m_pCurrentObjectTransformCom->Get_State(CTransform::STATE_POSITION);
-        _vector vCurScale = XMLoadFloat3(&m_pCurrentObjectTransformCom->Get_Scale());
-        _vector vCurRotation = XMLoadFloat3(&m_pCurrentObjectTransformCom->Get_Rotation());
+        CObject::OBJECT_INFO Info{};
+
+        Info = m_pCurrentObject->Get_ObjectInfo();
+
+        _vector vCurPos = XMLoadFloat4(&Info.fPosition);
+        _vector vCurScale = XMLoadFloat3(&Info.fScale);
+        _vector vCurRotation = XMLoadFloat3(&Info.fRotation);
+        _float  fFrustumRadius = Info.fFrustumRadius;
 
         _float vCurPosArray[3] = { XMVectorGetX(vCurPos), XMVectorGetY(vCurPos),  XMVectorGetZ(vCurPos) };
         _float vCurScaleArray[3] = { XMVectorGetX(vCurScale), XMVectorGetY(vCurScale),  XMVectorGetZ(vCurScale) };
         _float vCurRotationArray[3] = { XMVectorGetX(vCurRotation), XMVectorGetY(vCurRotation),  XMVectorGetZ(vCurRotation) };
 
-        ImGui::InputFloat3("Position", vCurPosArray);
-        ImGui::InputFloat3("Scale", vCurScaleArray);
-        ImGui::InputFloat3("Rotation", vCurRotationArray);
+        ImGui::InputFloat2("Position_Min_Max", m_fPosMax);
+
+        ImGui::SliderFloat3("Position", vCurPosArray, m_fPosMax[0], m_fPosMax[1]);
+
+        ImGui::InputFloat2("Scale_Min_Max", m_fScaleMax);
+        ImGui::SliderFloat3("Scale", vCurScaleArray, m_fScaleMax[0], m_fScaleMax[1]);
+
+        ImGui::InputFloat2("Rotation_Min_Max", m_fRotationMax);
+        ImGui::SliderFloat3("Rotation", vCurRotationArray, m_fRotationMax[0], m_fRotationMax[1]);
+
+        ImGui::SliderFloat("fFrustumRadius", &fFrustumRadius, -100.f, 100.f);
 
         m_pCurrentObjectTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vCurPosArray[0], vCurPosArray[1], vCurPosArray[2], 1.f));
         m_pCurrentObjectTransformCom->Rotation(XMConvertToRadians(vCurRotationArray[0]), XMConvertToRadians(vCurRotationArray[1]), XMConvertToRadians(vCurRotationArray[2]));
         m_pCurrentObjectTransformCom->Scaling(_float3(vCurScaleArray[0], vCurScaleArray[1], vCurScaleArray[2]));
+        m_pCurrentObject->Set_FrustumRadius(fFrustumRadius);
+
+        if (ImGui::Button("Delete This Object"))
+        {
+            m_pGameInstance->Add_DeadObject(L"Layer_Object", m_pCurrentObject);
+
+            m_pCurrentObject = nullptr;
+        }
 
         ImGui::End();
     }
@@ -160,14 +187,14 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     {
         if (ImGui::Button("Save_Models"))
         {
-
+            Save_Objects();
         }
 
         ImGui::SameLine();
 
         if (ImGui::Button("Load_Models"))
         {
-
+            Load_Objects();
         }
     }
 
@@ -461,6 +488,120 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
                 ImGui::SameLine();
             }
         }
+    }
+}
+
+HRESULT CLevel_GamePlay::Save_Objects()
+{
+    wstring fileName;
+    OpenFileDialoge(L"ObjectData.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Create ObjectData File!");
+        return E_FAIL;
+    }
+
+
+    DWORD dwByte = 0;
+
+    _uint iObjectCount = static_cast<_uint>(m_Objects.size());
+    WriteFile(hFile, &iObjectCount, sizeof(_uint), &dwByte, nullptr);
+
+    for (auto& pObject : m_Objects)
+    {
+        if (nullptr != pObject)
+        {
+            CObject::OBJECT_INFO Info = pObject->Get_ObjectInfo();
+
+            WriteFile(hFile, Info.szName, MAX_PATH, &dwByte, nullptr);
+            WriteFile(hFile, &Info.fPosition, sizeof(_float4), &dwByte, nullptr);
+            WriteFile(hFile, &Info.fRotation, sizeof(_float3), &dwByte, nullptr);
+            WriteFile(hFile, &Info.fScale, sizeof(_float3), &dwByte, nullptr);
+            WriteFile(hFile, &Info.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
+        }
+    }
+
+    MSG_BOX("Save Monster Complete");
+    CloseHandle(hFile);
+
+    return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Load_Objects()
+{
+    wstring fileName;
+    OpenFileDialoge(L"ObjectData.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Load ObjectData File!");
+        return E_FAIL;
+    }
+
+    for (auto& pObject : m_Objects)
+    {
+        m_pGameInstance->Add_DeadObject(L"Layer_Object", pObject);
+    }
+    m_Objects.clear();
+
+    DWORD dwByte = 0;
+
+    _uint iSize = 0;
+
+    ReadFile(hFile, &iSize, sizeof(_uint), &dwByte, nullptr);
+
+    for (size_t i = 0; i < iSize; i++)
+    {
+        CObject::OBJECT_DESC Desc{};
+
+        _char szLoadName[MAX_PATH] = {};
+
+        ReadFile(hFile, szLoadName, MAX_PATH, &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fRotation, sizeof(_float3), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
+
+        Desc.ObjectName = szLoadName;
+
+        CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
+
+        if (pObject != nullptr)
+            m_Objects.push_back(pObject);
+    }
+
+}
+
+void CLevel_GamePlay::OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName)
+{
+    OPENFILENAME ofn;
+    _tchar szFile[MAX_PATH] = {};
+
+    ZeroMemory(&ofn, sizeof(ofn));
+
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = nullptr;
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrFilter = _pFilter;
+    ofn.nFilterIndex = 1;
+    ofn.lpstrDefExt = L"txt";
+    ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+    wcscpy_s(szFile, MAX_PATH, _pDefaultFileName);
+
+    if (GetSaveFileName(&ofn))
+    {
+        outFileName = szFile;
     }
 }
 

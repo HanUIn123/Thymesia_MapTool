@@ -69,6 +69,25 @@ _bool CObject::Picking_Objects(_float3& _fPos)
 	return false;
 }
 
+CObject::OBJECT_INFO CObject::Get_ObjectInfo()
+{
+	OBJECT_INFO pInfo{};
+
+	strcpy_s(pInfo.szName, m_MeshName);
+
+	pInfo.fFrustumRadius = m_fFrustumRadius;
+	pInfo.fScale		 = m_pTransformCom->Get_Scale();
+	pInfo.fRotation		 = m_pTransformCom->Get_Rotation();
+	XMStoreFloat4(&pInfo.fPosition, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
+	return pInfo;
+}
+
+void CObject::Set_FrustumRadius(_float fFrustumRadius)
+{
+	m_fFrustumRadius = fFrustumRadius;
+}
+
 HRESULT CObject::Ready_Components()
 {
 	/* Com_Shader */

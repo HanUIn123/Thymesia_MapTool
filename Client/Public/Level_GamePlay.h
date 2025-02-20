@@ -59,6 +59,11 @@ private:
 	void									Add_AnimObjects();
 	void									Setting_NonAnimObjectList();
 
+	HRESULT									Save_Objects();
+	HRESULT									Load_Objects();
+
+	void	                                OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName);
+
 private:
 	HRESULT									Pick_Object(MENU_TYPE _eMenuType);
 	_float3									m_fPickPos = {};
@@ -90,11 +95,16 @@ private:
 
 	_float3  m_fMeshPickPos = { 0.f, 0.f, 0.f };
 
+	_float   m_fPosMax[2] = { -100.f, 100.f };	
+	_float   m_fScaleMax[2] = { -1.f, 1.f };	
+	_float   m_fRotationMax[2] = { -180.f, 180.f };
+
 private:
 	CCamera_Free*							m_pCamera = { nullptr };
 	CTerrain*								m_pTerrain = { nullptr };
 
 	CTransform* m_pCurrentObjectTransformCom = { nullptr };
+	CObject* m_pCurrentObject = { nullptr };
 
 	_float3  m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
 
