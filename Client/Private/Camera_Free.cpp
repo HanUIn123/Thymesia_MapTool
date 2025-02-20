@@ -83,7 +83,24 @@ void CCamera_Free::Priority_Update(_float fTimeDelta)
 
 void CCamera_Free::Update(_float fTimeDelta)
 {
-	
+	ImGui::Begin("CurPos");
+
+	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	_float fCurPos[3] = { XMVectorGetX(vPos),  XMVectorGetY(vPos) ,  XMVectorGetZ(vPos) };
+
+	ImGui::Text("X: %f ", fCurPos[0]);
+	ImGui::Text("Y: %f ", fCurPos[1]);
+	ImGui::Text("Z: %f ", fCurPos[2]);
+
+	ImGui::InputFloat3("Camera Pos", m_fCurPos);
+
+	if (ImGui::Button("Teleport"))
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fCurPos[0], m_fCurPos[1], m_fCurPos[2], 1.f));
+	}
+
+	ImGui::End();
 }
 
 void CCamera_Free::Late_Update(_float fTimeDelta)

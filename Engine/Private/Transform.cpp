@@ -267,6 +267,8 @@ void CTransform::Rotation(_float fX, _float fY, _float fZ)
 	Set_State(STATE_RIGHT, XMVector3TransformNormal(vRight, RotationMatrix));
 	Set_State(STATE_UP, XMVector3TransformNormal(vUp, RotationMatrix));
 	Set_State(STATE_LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
+
+	m_fRotation = _float3(XMConvertToDegrees(fX), XMConvertToDegrees(fY), XMConvertToDegrees(fZ));
 }
 
 HRESULT CTransform::Bind_ShaderResource(CShader * pShader, const _char * pConstantName)
@@ -279,6 +281,8 @@ void CTransform::Scaling(const _float3 & vScale)
 	Set_State(STATE_RIGHT, XMVector3Normalize(Get_State(STATE_RIGHT)) * vScale.x);
 	Set_State(STATE_UP, XMVector3Normalize(Get_State(STATE_UP)) * vScale.y);
 	Set_State(STATE_LOOK, XMVector3Normalize(Get_State(STATE_LOOK)) * vScale.z);
+
+	m_fScaling = vScale;
 
 }
 
