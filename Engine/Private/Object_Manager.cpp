@@ -77,7 +77,8 @@ HRESULT CObject_Manager::Add_GameObject_To_Layer(_uint iPrototypeLevelIndex, con
 	{
 		pLayer = CLayer::Create();
 
-		pLayer->Add_GameObject(pGameObject);
+
+		pLayer->Add_GameObject(pGameObject, strPrototypeTag);
 		if (pName != nullptr)
 			pGameObject->Set_Name(pName);
 
@@ -85,7 +86,7 @@ HRESULT CObject_Manager::Add_GameObject_To_Layer(_uint iPrototypeLevelIndex, con
 	}
 	else /* 사본객체를 추가할 레이어가 이미 있었다. 그러니까 그 레이어에 그냥 넣으면 되지./ */
 	{
-		pLayer->Add_GameObject(pGameObject);
+		pLayer->Add_GameObject(pGameObject, strPrototypeTag);
 		if (pName != nullptr)
 			pGameObject->Set_Name(pName);	
 	}
@@ -112,7 +113,7 @@ CGameObject* CObject_Manager::Add_GameObject_To_Layer_Take(_uint iPrototypeLevel
 	{
 		pLayer = CLayer::Create();
 
-		pLayer->Add_GameObject(pGameObject);
+		pLayer->Add_GameObject(pGameObject, strPrototypeTag);
 		if (pName != nullptr)
 			pGameObject->Set_Name(pName);
 
@@ -120,7 +121,7 @@ CGameObject* CObject_Manager::Add_GameObject_To_Layer_Take(_uint iPrototypeLevel
 	}
 	else /* 사본객체를 추가할 레이어가 이미 있었다. 그러니까 그 레이어에 그냥 넣으면 되지./ */
 	{
-		pLayer->Add_GameObject(pGameObject);
+		pLayer->Add_GameObject(pGameObject, strPrototypeTag);
 		if (pName != nullptr)
 			pGameObject->Set_Name(pName);
 	}
@@ -181,6 +182,18 @@ CComponent* CObject_Manager::Find_Component(_uint iLevelIndex, const _wstring& s
 	/* 게임오브젝트 안에있는 컴포넌트 찾고*/
 
 	return nullptr;	
+}
+
+CGameObject* CObject_Manager::Get_GameObject(const _wstring& _strPrototypeTag, _uint _iLevelIndex, const _wstring& _strLayerTag)
+{
+	// 지정된 레벨과 레이어에서 게임 오브젝트를 찾음
+  // 근데 이러면 
+	CLayer* pLayer = Find_Layer(_iLevelIndex, _strLayerTag);
+	if (pLayer == nullptr)
+		return nullptr;  // 레이어가 없으면 nullptr 반환
+
+	// 레이어에서 게임 오브젝트를 찾음
+	return pLayer->Get_GameObject(_strPrototypeTag);
 }
 
 CLayer * CObject_Manager::Find_Layer(_uint iLevelIndex, const _wstring & strLayerTag)

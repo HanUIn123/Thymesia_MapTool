@@ -3,7 +3,7 @@
 
 #include "GameInstance.h"
 #include "Player.h"
-#include "Layer.h"
+//#include "Layer.h"
 
 CCamera_Free::CCamera_Free(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CCamera{ pDevice, pContext }
@@ -27,6 +27,9 @@ HRESULT CCamera_Free::Initialize(void * pArg)
 	FREE_CAMERA_DESC*		pDesc = static_cast<FREE_CAMERA_DESC*>(pArg);
 
 	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
 	m_fMouseSensor = pDesc->fMouseSensor;
@@ -108,6 +111,12 @@ void CCamera_Free::Late_Update(_float fTimeDelta)
 
 HRESULT CCamera_Free::Render()
 {
+	return S_OK;
+}
+
+HRESULT CCamera_Free::Ready_Components()
+{
+
 	return S_OK;
 }
 

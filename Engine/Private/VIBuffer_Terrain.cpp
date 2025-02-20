@@ -8,7 +8,9 @@ CVIBuffer_Terrain::CVIBuffer_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext*
 
 CVIBuffer_Terrain::CVIBuffer_Terrain(const CVIBuffer_Terrain& Prototype)
 	:CVIBuffer(Prototype)
-
+	, m_iNumverticesX{ Prototype.m_iNumverticesX }
+	, m_iNumverticesZ{ Prototype.m_iNumverticesZ }
+	, m_VertexPos{ Prototype.m_VertexPos }
 {
 
 }
@@ -24,11 +26,15 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _uint dwCntX, const  _uint
 	m_iIndexStride = 4;
 	m_iNumIndices = (dwCntX - 1) * (dwCntZ - 1) * 2 * 3;
 
-	m_iCntX = dwCntX;
-	m_iCntY = dwCntZ;
+	//m_iCntX = dwCntX;
+	//m_iCntY = dwCntZ;
+	m_iNumverticesX = dwCntX;
+	m_iNumverticesZ = dwCntZ;
 
 	/* 그러면 내가 해야할 일이 VTXNORTEX에 있는 POSITION, NORAML , Texcoord 내용 채워주기*/
 
+
+	m_VertexPos = new XMVECTOR[m_iNumVertices];
 	VTXNORTEX* pVertices = new VTXNORTEX[m_iNumVertices];
 
 	/*이제 여기서 버텍스 정보 넣어줘야하는데. 일단 path가 있는지부터 확인하자*/
@@ -44,6 +50,9 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _uint dwCntX, const  _uint
 				pVertices[dwCntZ * i + j].vPosition = _float3(j * dwVertexItv, 0.f, i);
 				pVertices[dwCntZ * i + j].vNormal = _float3(0.f, 1.f, 0.f);
 				pVertices[dwCntZ * i + j].vTexcoord = _float2(j * dwVertexItv / (dwCntX - 1.f), i / (dwCntZ - 1.f));
+
+
+				m_VertexPos[dwCntZ * i + j] = XMLoadFloat3(&pVertices[dwCntZ * i + j].vPosition);
 			}
 		}
 
@@ -155,6 +164,9 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _uint dwCntX, const  _uint
 				pVertices[iIndex].vPosition = _float3(j * dwVertexItv, (pPixel[iIndex] & 0x000000ff) / 10.f, i);
 				pVertices[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
 				pVertices[iIndex].vTexcoord = _float2(j * dwVertexItv / (dwCntX - 1.f), i / (dwCntZ - 1.f));
+
+
+				m_VertexPos[dwCntZ * i + j] = XMLoadFloat3(&pVertices[dwCntZ * i + j].vPosition);
 			}
 		}
 
@@ -301,4 +313,7 @@ CComponent* CVIBuffer_Terrain::Clone(void* pArg)
 void CVIBuffer_Terrain::Free()
 {
 	__super::Free();
+
+	if (false == m_isCloned)
+		Safe_Delete_Array(m_VertexPos);
 }

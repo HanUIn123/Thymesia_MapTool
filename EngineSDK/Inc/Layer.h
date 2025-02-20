@@ -16,10 +16,7 @@ private:
 	virtual ~CLayer() = default;
 
 public:
-	HRESULT Add_GameObject(class CGameObject* pGameObject) {
-		m_GameObjects.push_back(pGameObject);
-		return S_OK;
-	}
+	HRESULT Add_GameObject(class CGameObject* _pGameObject, const _wstring& _strProtoTypeTag);
 
 	void Priority_Update(_float fTimeDelta);
 	void Update(_float fTimeDelta);
@@ -30,10 +27,16 @@ public:
 
 
 public:
+	CGameObject* Get_GameObject(const _wstring& _strProtoTypeTag);
+
+
+public:
 	list<CGameObject*>& Get_GameObject_List() { return m_GameObjects; }	
 
 private:
 	list<class CGameObject*>			m_GameObjects;
+
+	map<const _wstring, class CGameObject*> m_mapGameObjects;
 
 public:
 	static CLayer* Create();

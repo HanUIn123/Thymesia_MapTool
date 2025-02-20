@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Object.h"
 
-#include "GameInstance.h"
+
 
 CObject::CObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CGameObject(pDevice, pContext)

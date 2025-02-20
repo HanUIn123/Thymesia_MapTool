@@ -48,6 +48,7 @@ public:
 	_bool PickingOnMesh(HWND hWnd, CMesh* pMeshBufferCom, CTransform* pMeshTransformCom, _Out_ _float& _fDist, _Out_ _vector& _fPos);
 	_bool PickingOnVertice(HWND hWnd, CMesh* pMeshBufferCom, CTransform* pMeshTransformCom, _Out_ _float& _fDist, _Out_ _vector& _fPos);
 
+
 	bool Intersects(
 		FXMVECTOR Origin, FXMVECTOR Direction, FXMVECTOR V0,
 		GXMVECTOR V1,

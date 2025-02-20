@@ -35,6 +35,11 @@ public:
 
 	CComponent* Find_Component(_uint iLevelIndex, const _wstring& strLayerTag, const _wstring& strComponentName);
 
+
+	CGameObject* Get_GameObject(const _wstring& _strPrototypeTag, _uint _iLevelIndex, const _wstring& _strLayerTag);
+
+
+
 	map<const _wstring, class CLayer*>* Get_Layers()   { return m_pLayers; }	
 	_uint								Get_NumLevel() { return m_iNumLevels; }	
 
