@@ -25,7 +25,7 @@ HRESULT CTransform::Initialize(void * pArg)
 	m_fSpeedPerSec = pDesc->fSpeedPerSec;
 	m_fRotationPerSec = pDesc->fRotationPerSec;	
 
-	if (pDesc->fPosition.x != 0.f && pDesc->fPosition.y != 0.f && pDesc->fPosition.z != 0.f)
+	if (!(pDesc->fPosition.x == 0.f && pDesc->fPosition.y == 0.f && pDesc->fPosition.z == 0.f))
 	{
 		m_fPosition = pDesc->fPosition;
 		m_fScaling = pDesc->fScaling;
