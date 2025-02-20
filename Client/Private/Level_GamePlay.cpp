@@ -58,64 +58,98 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
+
 	ImGui::Begin("Object");
 	
+	ImGuiIO IO = ImGui::GetIO();
+
 	const char* ObjectNames[] = {
 		"HORSE_P_WoodenFrame02_05",
 		"SM_P_Rag03",
 		"SM_Wall_Shelf",
 		"SM_WoodFence04",
 		"SM_WoodStairs03",
+		"P_BossAtriumCircle01",
+		"P_BossCemetery_02_02",
+		"P_BossCemetery_04",
 	};
 
 	ImGui::Combo("Object Type", &m_iObjectArray, ObjectNames, IM_ARRAYSIZE(ObjectNames));
 
 	ImGui::InputFloat3("Object_Pos", m_fObjectPos);
 	ImGui::InputFloat3("Object_Scale", m_fMeshScale);
+	ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
+	ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
 
 	if (ImGui::Button("Add_Objects"))
 	{
 		CObject::OBJECT_DESC Desc{};
 
 		Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
-		Desc.fFrustumRadius = 2.f;
+		Desc.fFrustumRadius = m_fFrustumRadius;
 		Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
+		Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
+		Desc.ObjectName = ObjectNames[m_iObjectArray];
 
-		string ObjectName = "Prototype_GameObject_Object_";
-		string ItemName = ObjectNames[m_iObjectArray];
+		CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
 
-		ObjectName += ItemName;
-
-		_tchar		wszFullName[MAX_PATH] = {};
-
-		MultiByteToWideChar(CP_ACP, 0, ObjectName.c_str(), strlen(ObjectName.c_str()), wszFullName, MAX_PATH);
-
-		m_Objects.push_back(reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, wszFullName, LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc)));
+		if(pObject != nullptr)
+			m_Objects.push_back(pObject);
 	}
 
-	if (m_pGameInstance->isMouseEnter(DIM_LB))
+	if (!IO.WantCaptureMouse)
 	{
-		for (auto& pObject : m_Objects)
+		if (m_pGameInstance->isMouseEnter(DIM_LB))
 		{
-			_float3 fPos = pObject->Picking_Objects();
-
-			if (false == XMVector3Equal(XMLoadFloat3(&fPos), XMVectorSet(0.f, 0.f, 0.f, 0.f)))
+			for (auto& pObject : m_Objects)
 			{
-				m_fMeshPickPos = fPos;
+				_float3 fPos = { 0.f ,0.f ,0.f };
 
-				m_fObjectPos[0] = fPos.x;
+				if (pObject->Picking_Objects(fPos))
+				{
+					m_fMeshPickPos = fPos;
 
-				m_fObjectPos[1] = fPos.y;
+					m_fObjectPos[0] = fPos.x;
 
-				m_fObjectPos[2] = fPos.z;
+					m_fObjectPos[1] = fPos.y;
 
-				cout << m_fMeshPickPos.x << " ";
+					m_fObjectPos[2] = fPos.z;
 
-				cout << m_fMeshPickPos.y << " ";
+					cout << m_fMeshPickPos.x << " ";
 
-				cout << m_fMeshPickPos.z << " ";
+					cout << m_fMeshPickPos.y << " ";
+
+					cout << m_fMeshPickPos.z << " ";
+
+					cout << "\n";
+
+					m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
+				}
 			}
 		}
+	}
+
+	if (m_pCurrentObjectTransformCom != nullptr)
+	{
+		ImGui::Begin("Current Object Info");
+
+		_vector vCurPos = m_pCurrentObjectTransformCom->Get_State(CTransform::STATE_POSITION);
+		_vector vCurScale = XMLoadFloat3(&m_pCurrentObjectTransformCom->Get_Scale());
+		_vector vCurRotation = XMLoadFloat3(&m_pCurrentObjectTransformCom->Get_Rotation());
+
+		_float vCurPosArray[3] = { XMVectorGetX(vCurPos), XMVectorGetY(vCurPos),  XMVectorGetZ(vCurPos)};
+		_float vCurScaleArray[3] = { XMVectorGetX(vCurScale), XMVectorGetY(vCurScale),  XMVectorGetZ(vCurScale) };
+		_float vCurRotationArray[3] = { XMVectorGetX(vCurRotation), XMVectorGetY(vCurRotation),  XMVectorGetZ(vCurRotation)};
+
+		ImGui::InputFloat3("Position", vCurPosArray);
+		ImGui::InputFloat3("Scale", vCurScaleArray);
+		ImGui::InputFloat3("Rotation", vCurRotationArray);
+
+		m_pCurrentObjectTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vCurPosArray[0], vCurPosArray[1], vCurPosArray[2], 1.f));
+		m_pCurrentObjectTransformCom->Rotation(XMConvertToRadians(vCurRotationArray[0]), XMConvertToRadians(vCurRotationArray[1]), XMConvertToRadians(vCurRotationArray[2]));
+		m_pCurrentObjectTransformCom->Scaling(_float3(vCurScaleArray[0], vCurScaleArray[1], vCurScaleArray[2]));
+
+		ImGui::End();
 	}
 
 	/*

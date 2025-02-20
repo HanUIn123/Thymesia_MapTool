@@ -22,17 +22,20 @@ HRESULT CObject::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	strcpy_s(m_MeshName, pDesc->ObjectName.c_str());
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&pDesc->fPosition));
+	m_pTransformCom->Rotation(XMConvertToRadians(pDesc->fRotation.x), XMConvertToRadians(pDesc->fRotation.y), XMConvertToRadians(pDesc->fRotation.z));
 
 	m_Meshes = m_pModelCom->Get_Meshes();
+
 
 	return S_OK;
 }
 
-_float3 CObject::Picking_Objects()
+_bool CObject::Picking_Objects(_float3& _fPos)
 {
 	vector <MESHINFO> vMesh;
 
@@ -58,10 +61,12 @@ _float3 CObject::Picking_Objects()
 				return false;
 			});
 
-		return vMesh.front().fPosition;
+		_fPos = vMesh.front().fPosition;
+
+		return true;
 	}
 
-	return _float3(0.f, 0.f, 0.f);
+	return false;
 }
 
 HRESULT CObject::Ready_Components()
@@ -76,6 +81,16 @@ HRESULT CObject::Ready_Components()
 		TEXT("Com_Calculator"), reinterpret_cast<CComponent**>(&m_pCalculatorCom))))
 		return E_FAIL;
 
+	CBounding_Sphere::BOUNDING_SPHERE_DESC SphereDesc{};
+
+	SphereDesc.fRadius = m_fFrustumRadius * 110.f;
+	SphereDesc.vCenter = _float3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_SPHERE"),
+		TEXT("Com_Colldier"), reinterpret_cast<CComponent**>(&m_pColliderCom), &SphereDesc)))
+		return E_FAIL;
+
+
 	return S_OK;
 }
 
@@ -86,4 +101,5 @@ void CObject::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pCalculatorCom);
+	Safe_Release(m_pColliderCom);
 }

@@ -55,8 +55,6 @@ public:
 		XMStoreFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[eState]), vState);		
 	}
 
-
-
 public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
@@ -93,7 +91,9 @@ public:
 	void Set_Speed(_float _fSpeed) { m_fSpeedPerSec = _fSpeed; }
 	void Set_RotationSpeed(_float _fSpeed) { m_fRotationPerSec = _fSpeed; }
 	_float3 Compute_Scaled();
-	
+
+	_float3 Get_Rotation() { return m_fRotation; }
+	_float3 Get_Scale() { return m_fScaling; }
 
 private:
 	/* 객체의 월드 상태를 원점을 기준으로 표현한 행렬(right, up, look, position).  */
@@ -102,6 +102,7 @@ private:
 	_float					m_fRotationPerSec = { 0.f };
 	_float4					m_fPosition = {};
 	_float3					m_fScaling = {};
+	_float3					m_fRotation = {}; // quaternion;
 
 
 

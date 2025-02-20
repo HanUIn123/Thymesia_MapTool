@@ -9,6 +9,7 @@ class CModel;
 class CShader;
 class CCalculator;
 class CMesh;
+class CCollider;
 END
 
 BEGIN(Client)
@@ -19,6 +20,8 @@ public:
 	typedef struct Object_Desc : public CGameObject::GAMEOBJECT_DESC
 	{
 		_float		fFrustumRadius = { 0.f };
+		_float3		fRotation = { };
+		string		ObjectName = {};
 
 	}OBJECT_DESC;
 
@@ -38,18 +41,21 @@ protected:
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:
-	_float3		 Picking_Objects();
+	_bool		 Picking_Objects(_float3& _fPos);
 
 protected:
 	//Components
 	CShader*	 m_pShaderCom = { nullptr };
 	CModel*		 m_pModelCom = { nullptr };
 	CCalculator* m_pCalculatorCom = { nullptr };
+	CCollider* m_pColliderCom = { nullptr };
 
 protected:
 	vector<CMesh*> m_Meshes;
 
 	_float		   m_fFrustumRadius = { 0.f };
+
+	_char		   m_MeshName[MAX_PATH] = {};
 
 protected:
 	virtual HRESULT Ready_Components();

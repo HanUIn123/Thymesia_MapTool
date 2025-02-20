@@ -33,14 +33,21 @@ private:
 
 private:
 	// 오브젝트 생성할 위치
-	_float m_fObjectPos[3] = {};
 
-	_int   m_iObjectArray = { 0 };
-	_float  m_fMeshScale[3] = { };
+	_int    m_iObjectArray = { 0 };
+
+	_float  m_fObjectPos[3] = { 1.f, 1.f ,1.f };
+	_float  m_fMeshScale[3] = { 0.01f, 0.01f, 0.01f };
+	_float  m_fObjectRotation[3] = { 0.f, 0.f, 0.f};
+	_float	m_fFrustumRadius = { 1.f };
 
 	list<CObject*> m_Objects;
 
 	_float3  m_fMeshPickPos = { 0.f, 0.f, 0.f };
+
+	CTransform* m_pCurrentObjectTransformCom = { nullptr };
+
+	_float3  m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
 
 public:
 	static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
