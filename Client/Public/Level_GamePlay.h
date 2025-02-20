@@ -8,9 +8,16 @@
 #include "Camera_Free.h"
 #include "Terrain.h"
 
+#include "Navigation.h"
+#include "Cell.h"
+
+
+
+
 BEGIN(Engine)
 class CShader;
 class CTexture;
+class CNavigation;
 END
 
 
@@ -21,6 +28,13 @@ class CLevel_GamePlay final : public CLevel
 public:
 	enum IMGUI_TEXTURE_TYPE {IMG_ANIM_MODEL, IMG_NONANIM_MODEL, IMG_END};
 	enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI , MT_END  };
+public:
+	struct CELL_POINTS
+	{
+		_float3 fCellPoints[3];
+		_float3 fPrevPoints[3];
+	};
+
 
 private:
 	CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -63,6 +77,31 @@ private:
 	HRESULT									Pick_Object(MENU_TYPE _eMenuType);
 	_float3									m_fPickPos = {};
 
+private:
+	HRESULT                             Picking_Points();
+	_float                              Compute_Cell_Distance(const XMFLOAT3& _NewPickingPoint, const XMFLOAT3& _PrevPickedPoint);
+	_bool                               Is_CWTriangle(const XMVECTOR& _NearestCellPoint1, const XMVECTOR& _NearestCellPoint2, const XMVECTOR& _PickedNewPoint);
+	pair<XMFLOAT3, XMFLOAT3>            Compute_NearPoints(const vector<CELL_POINTS>& _vecTagCells, const XMFLOAT3& _newPoints);
+	XMFLOAT3                            Pick_Closest_Cube(const XMFLOAT3& clickPos);
+	void                                Create_Line_Between_Cubes(const XMFLOAT3& point1, const XMFLOAT3& point2);
+	XMFLOAT3                            Compute_Closest_Point(const vector<XMFLOAT3>& vAllpoints, const XMFLOAT3& point1, const XMFLOAT3& point2);
+	_bool                               Is_Point_InTriangle(const XMVECTOR& _Point, const XMVECTOR& _VertexPoint0, const XMVECTOR& _VertexPoint1, const XMVECTOR& _VertexPoint2);
+	HRESULT                             Delete_Cell_Mode();
+	HRESULT                             Delete_Cell();
+
+	HRESULT								Save_Navi();
+	HRESULT								Load_Navi();
+
+private:
+	vector<_float3>                     m_vecPickedPoints;
+	vector<XMFLOAT3>                    m_vecSelectedCubes;
+	_uint                               m_iNumCellCount = {};
+	CELL_POINTS                         tagWholeCellPoints = {};
+	vector<CELL_POINTS>                 m_vecWholeCellPoints;
+	_bool                               m_bFirstPick = { true };
+	_bool                               m_bConnectingMode = false;
+	_bool                               m_bDeleteMode = { false };
+
 
 
 
@@ -70,11 +109,15 @@ private:
 	_bool									m_bImguiHovered = { false };
 	_bool									m_bNonAnimObjectMenuSelected = { false };
 	_bool									m_bAnimObjectMenuSelected = { false };
+	_bool									m_bNaviMenuSelected = { false };
+
 	_bool									m_bIsMeshPickingMode = { false };
 	_bool									m_bIsTerrainPickingMode = { false };
 
 
 	_int									m_iNonAnimModelIndex = {};
+
+
 
 private:
 	// 오브젝트 생성할 위치
@@ -93,10 +136,11 @@ private:
 private:
 	CCamera_Free*							m_pCamera = { nullptr };
 	CTerrain*								m_pTerrain = { nullptr };
+	CTransform*								m_pCurrentObjectTransformCom = { nullptr };
+	CNavigation*							m_pNavigation = { nullptr };
 
-	CTransform* m_pCurrentObjectTransformCom = { nullptr };
 
-	_float3  m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
+	_float3									m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
 
 public:
 	static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
