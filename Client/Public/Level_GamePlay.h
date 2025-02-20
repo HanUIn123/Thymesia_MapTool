@@ -70,6 +70,10 @@ private:
 	_bool									m_bImguiHovered = { false };
 	_bool									m_bNonAnimObjectMenuSelected = { false };
 	_bool									m_bAnimObjectMenuSelected = { false };
+	_bool									m_bIsMeshPickingMode = { false };
+	_bool									m_bIsTerrainPickingMode = { false };
+
+
 	_int									m_iNonAnimModelIndex = {};
 
 private:
@@ -86,16 +90,13 @@ private:
 
 	_float3  m_fMeshPickPos = { 0.f, 0.f, 0.f };
 
-<<<<<<< HEAD
 private:
 	CCamera_Free*							m_pCamera = { nullptr };
 	CTerrain*								m_pTerrain = { nullptr };
 
-=======
 	CTransform* m_pCurrentObjectTransformCom = { nullptr };
 
 	_float3  m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
->>>>>>> origin/main
 
 public:
 	static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
