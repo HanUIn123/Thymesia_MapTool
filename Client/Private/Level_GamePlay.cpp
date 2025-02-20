@@ -2,7 +2,7 @@
 #include "pch.h" 
 #include "Level_GamePlay.h"
 #include "Camera_Free.h"
-#include "Layer.h"	
+#include "Layer.h"   
 
 #include "GameObject.h"
 
@@ -34,26 +34,12 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
-<<<<<<< HEAD
     ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered() ? m_bImguiHovered : !m_bImguiHovered;
     static int iMenuTypeNumber = MENU_TYPE::MT_END;
-=======
 
-	ImGui::Begin("Object");
-	
-	ImGuiIO IO = ImGui::GetIO();
+    ImGui::Begin("Object");
 
-	const char* ObjectNames[] = {
-		"HORSE_P_WoodenFrame02_05",
-		"SM_P_Rag03",
-		"SM_Wall_Shelf",
-		"SM_WoodFence04",
-		"SM_WoodStairs03",
-		"P_BossAtriumCircle01",
-		"P_BossCemetery_02_02",
-		"P_BossCemetery_04",
-	};
->>>>>>> origin/main
+    ImGuiIO IO = ImGui::GetIO();
 
     ImGui::Begin("TOOL MENU");
     if (ImGui::RadioButton("NONANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_NONANIMMODEL))
@@ -67,46 +53,98 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNonAnimObjectMenuSelected = false;
         m_bAnimObjectMenuSelected = true;
     }
+    // if (ImGui::Button("Save_Models"))
+    if (ImGui::Button("Mesh Picking"))
+    {
+        m_bIsMeshPickingMode = true;
+        m_bIsTerrainPickingMode = false;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Terrain Picking"))
+    {
+        m_bIsTerrainPickingMode = true;
+        m_bIsMeshPickingMode = false;
+    }
 
-<<<<<<< HEAD
-=======
-	ImGui::InputFloat3("Object_Pos", m_fObjectPos);
-	ImGui::InputFloat3("Object_Scale", m_fMeshScale);
-	ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
-	ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
->>>>>>> origin/main
-
+    ImGui::InputFloat3("Object_Pos", m_fObjectPos);
+    ImGui::InputFloat3("Object_Scale", m_fMeshScale);
+    ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
+    ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
     if (m_bNonAnimObjectMenuSelected)
     {
-        if (m_pGameInstance->isMouseEnter(DIM_LB))
+        if (!IO.WantCaptureMouse)
         {
-            //  Mesh Picking
-            //if (m_bNonAnimObjectMenuSelected || m_bAnimObjectMenuSelected)
-            //{
-            //    for (auto& pObject : m_Objects)
-            //    {
-            //        _float3 fPos = pObject->Picking_Objects();
-
-<<<<<<< HEAD
-            //        if (false == XMVector3Equal(XMLoadFloat3(&fPos), XMVectorSet(0.f, 0.f, 0.f, 0.f)))
-            //        {
-            //            m_fPickPos = fPos;
-            //            Add_NonAnimObjects(); //  Mesh Picking 즉시 배치
-            //            return;
-            //        }
-            //    }
-            //}
-
-            //  Terrain Picking
-            if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_PICKING_NONANIMMODEL)))
+            if (m_pGameInstance->isMouseEnter(DIM_LB))
             {
-                Add_NonAnimObjects(); //  Terrain Picking 즉시 배치
+                if (m_bNonAnimObjectMenuSelected || m_bAnimObjectMenuSelected)
+                {
+                    if (m_bIsMeshPickingMode)
+                    {
+                        for (auto& pObject : m_Objects)
+                        {
+                            _float3 fPos = { 0.f ,0.f ,0.f };
+
+                            if (pObject->Picking_Objects(fPos))
+                            {
+                                m_fMeshPickPos = fPos;
+
+                                m_fObjectPos[0] = fPos.x;
+
+                                m_fObjectPos[1] = fPos.y;
+
+                                m_fObjectPos[2] = fPos.z;
+
+                                cout << m_fMeshPickPos.x << " ";
+
+                                cout << m_fMeshPickPos.y << " ";
+
+                                cout << m_fMeshPickPos.z << " ";
+
+                                cout << "\n";
+
+                                m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
+
+                                Add_NonAnimObjects();
+                            }
+                        }
+                    }
+                    else if (m_bIsTerrainPickingMode)
+                    {
+                        if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_PICKING_NONANIMMODEL)))
+                        {
+                            Add_NonAnimObjects();
+                        }
+                    }
+                }
             }
         }
     }
     else if (m_bAnimObjectMenuSelected)
     {
         Add_AnimObjects();
+    }
+
+    if (m_pCurrentObjectTransformCom != nullptr)
+    {
+        ImGui::Begin("Current Object Info");
+
+        _vector vCurPos = m_pCurrentObjectTransformCom->Get_State(CTransform::STATE_POSITION);
+        _vector vCurScale = XMLoadFloat3(&m_pCurrentObjectTransformCom->Get_Scale());
+        _vector vCurRotation = XMLoadFloat3(&m_pCurrentObjectTransformCom->Get_Rotation());
+
+        _float vCurPosArray[3] = { XMVectorGetX(vCurPos), XMVectorGetY(vCurPos),  XMVectorGetZ(vCurPos) };
+        _float vCurScaleArray[3] = { XMVectorGetX(vCurScale), XMVectorGetY(vCurScale),  XMVectorGetZ(vCurScale) };
+        _float vCurRotationArray[3] = { XMVectorGetX(vCurRotation), XMVectorGetY(vCurRotation),  XMVectorGetZ(vCurRotation) };
+
+        ImGui::InputFloat3("Position", vCurPosArray);
+        ImGui::InputFloat3("Scale", vCurScaleArray);
+        ImGui::InputFloat3("Rotation", vCurRotationArray);
+
+        m_pCurrentObjectTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vCurPosArray[0], vCurPosArray[1], vCurPosArray[2], 1.f));
+        m_pCurrentObjectTransformCom->Rotation(XMConvertToRadians(vCurRotationArray[0]), XMConvertToRadians(vCurRotationArray[1]), XMConvertToRadians(vCurRotationArray[2]));
+        m_pCurrentObjectTransformCom->Scaling(_float3(vCurScaleArray[0], vCurScaleArray[1], vCurScaleArray[2]));
+
+        ImGui::End();
     }
 
     if (iMenuTypeNumber == MENU_TYPE::MT_PICKING_ANIMMODEL || iMenuTypeNumber == MENU_TYPE::MT_PICKING_NONANIMMODEL)
@@ -126,87 +164,10 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     ImGui::End();
 
-    if(m_bNonAnimObjectMenuSelected)
+    if (m_bNonAnimObjectMenuSelected)
         Setting_NonAnimObjectList();
-=======
-		Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
-		Desc.fFrustumRadius = m_fFrustumRadius;
-		Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
-		Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
-		Desc.ObjectName = ObjectNames[m_iObjectArray];
 
-		CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
-
-		if(pObject != nullptr)
-			m_Objects.push_back(pObject);
-	}
-
-	if (!IO.WantCaptureMouse)
-	{
-		if (m_pGameInstance->isMouseEnter(DIM_LB))
-		{
-			for (auto& pObject : m_Objects)
-			{
-				_float3 fPos = { 0.f ,0.f ,0.f };
-
-				if (pObject->Picking_Objects(fPos))
-				{
-					m_fMeshPickPos = fPos;
-
-					m_fObjectPos[0] = fPos.x;
-
-					m_fObjectPos[1] = fPos.y;
-
-					m_fObjectPos[2] = fPos.z;
-
-					cout << m_fMeshPickPos.x << " ";
-
-					cout << m_fMeshPickPos.y << " ";
-
-					cout << m_fMeshPickPos.z << " ";
-
-					cout << "\n";
-
-					m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
-				}
-			}
-		}
-	}
-
-	if (m_pCurrentObjectTransformCom != nullptr)
-	{
-		ImGui::Begin("Current Object Info");
-
-		_vector vCurPos = m_pCurrentObjectTransformCom->Get_State(CTransform::STATE_POSITION);
-		_vector vCurScale = XMLoadFloat3(&m_pCurrentObjectTransformCom->Get_Scale());
-		_vector vCurRotation = XMLoadFloat3(&m_pCurrentObjectTransformCom->Get_Rotation());
-
-		_float vCurPosArray[3] = { XMVectorGetX(vCurPos), XMVectorGetY(vCurPos),  XMVectorGetZ(vCurPos)};
-		_float vCurScaleArray[3] = { XMVectorGetX(vCurScale), XMVectorGetY(vCurScale),  XMVectorGetZ(vCurScale) };
-		_float vCurRotationArray[3] = { XMVectorGetX(vCurRotation), XMVectorGetY(vCurRotation),  XMVectorGetZ(vCurRotation)};
-
-		ImGui::InputFloat3("Position", vCurPosArray);
-		ImGui::InputFloat3("Scale", vCurScaleArray);
-		ImGui::InputFloat3("Rotation", vCurRotationArray);
-
-		m_pCurrentObjectTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vCurPosArray[0], vCurPosArray[1], vCurPosArray[2], 1.f));
-		m_pCurrentObjectTransformCom->Rotation(XMConvertToRadians(vCurRotationArray[0]), XMConvertToRadians(vCurRotationArray[1]), XMConvertToRadians(vCurRotationArray[2]));
-		m_pCurrentObjectTransformCom->Scaling(_float3(vCurScaleArray[0], vCurScaleArray[1], vCurScaleArray[2]));
-
-		ImGui::End();
-	}
-
-	/*
-	ImGuiIO IO = ImGui::GetIO();
-
-	if (!IO.WantCaptureMouse)
-	{
-
-	}
-	*/
-
-	ImGui::End();
->>>>>>> origin/main
+    ImGui::End();
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -225,7 +186,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
         , m_pGameInstance->Get_Player_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Player")))))
         return E_FAIL;
 
-    LIGHT_DESC				LightDesc{};
+    LIGHT_DESC            LightDesc{};
 
     /* 2월 8일 빛 */
     LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
@@ -239,7 +200,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
     LightDesc.vDirection = _float4(1.f, 1.f, 1.f, 0.f);
     LightDesc.vDiffuse   = _float4(0.9f, 0.9f, 0.9f, 1.f);
     LightDesc.vAmbient   = _float4(0.5f, 0.5f, 0.5f, 1.f);
-    LightDesc.vSpecular  = _float4(0.3f, 0.3f, 0.3f, 1.f);	*/
+    LightDesc.vSpecular  = _float4(0.3f, 0.3f, 0.3f, 1.f);   */
 
     if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
         return E_FAIL;
@@ -267,7 +228,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Structure(const _tchar* pLayerTag)
     HANDLE hFile = CreateFile(TEXT("../Map_File/real143.bin"), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
     while (true)
     {
-        _tchar Layer_Name[MAX_PATH] = {}; //레이어 이름										
+        _tchar Layer_Name[MAX_PATH] = {}; //레이어 이름                              
         ReadFile(hFile, Layer_Name, MAX_PATH, &dwByte, nullptr);
 
         if (dwByte == 0)
@@ -299,7 +260,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Structure(const _tchar* pLayerTag)
 
         for (auto& Layers : Level_GamePlay)
         {
-            //auto& iter = find(Level_GamePlay.begin(), Level_GamePlay.end(), Layer_Name);	
+            //auto& iter = find(Level_GamePlay.begin(), Level_GamePlay.end(), Layer_Name);   
             auto iter = Level_GamePlay.find(Layer_Name);
 
             if (iter == Level_GamePlay.end())
@@ -329,8 +290,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar* pLayerTag)
 {
-    CCamera_Free::FREE_CAMERA_DESC		Desc = {};
-
+    CCamera_Free::FREE_CAMERA_DESC      Desc = {};
 
     Desc.vEye = _float3(0.f, 10.f, -7.f);
     Desc.vAt = _float3(0.f, 0.f, 0.f);
@@ -426,7 +386,7 @@ HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageF
             }
         }
     }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+
     return S_OK;
 }
 
@@ -436,28 +396,28 @@ void CLevel_GamePlay::Add_NonAnimObjects()
         return;
 
     const char* ObjectNames[] = {
-        "HORSE_P_WoodenFrame02_05",
-        "P_Rag03",
-        "SM_Wall_Shelf",
-        "SM_WoodFence04",
-        "SM_WoodStairs0",
+          "HORSE_P_WoodenFrame02_05",
+          "SM_P_Rag03",
+          "SM_Wall_Shelf",
+          "SM_WoodFence04",
+          "SM_WoodStairs03",
+          "P_BossAtriumCircle01",
+          "P_BossCemetery_02_02",
+          "P_BossCemetery_04",
     };
 
     CObject::OBJECT_DESC Desc{};
 
-    Desc.fPosition = { m_fPickPos.x, m_fPickPos.y, m_fPickPos.z, 1.f };
-    Desc.fFrustumRadius = 2.f;
-    Desc.fScaling = { 0.1f, 0.1f, 0.1f};
+    Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
+    Desc.fFrustumRadius = m_fFrustumRadius;
+    Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
+    Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
+    Desc.ObjectName = ObjectNames[m_iObjectArray];
 
-    string ObjectName = "Prototype_GameObject_Object_";
-    string ItemName = ObjectNames[m_iNonAnimModelIndex];
+    CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
 
-    ObjectName += ItemName;
-
-    _tchar wszFullName[MAX_PATH] = {};
-    MultiByteToWideChar(CP_ACP, 0, ObjectName.c_str(), strlen(ObjectName.c_str()), wszFullName, MAX_PATH);
-
-    m_Objects.push_back(reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, wszFullName, LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc)));
+    if (pObject != nullptr)
+        m_Objects.push_back(pObject);
 }
 
 void CLevel_GamePlay::Add_AnimObjects()
@@ -500,6 +460,10 @@ HRESULT CLevel_GamePlay::Pick_Object(MENU_TYPE _eMenuType)
 
     if (m_fPickPos.y < 0)
         return E_FAIL;
+
+    m_fObjectPos[0] = m_fPickPos.x;
+    m_fObjectPos[1] = m_fPickPos.y;
+    m_fObjectPos[2] = m_fPickPos.z;
 
     return S_OK;
 }
