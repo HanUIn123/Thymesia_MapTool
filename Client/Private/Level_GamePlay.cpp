@@ -47,11 +47,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     ImGui::Begin("Object");
 
-<<<<<<< HEAD
-=======
     ImGuiIO IO = ImGui::GetIO();
 
->>>>>>> origin/main
     ImGui::Begin("TOOL MENU");
     if (ImGui::RadioButton("NONANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_NONANIMMODEL))
     {
@@ -77,17 +74,11 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bIsMeshPickingMode = false;
     }
 
-<<<<<<< HEAD
-	ImGui::InputFloat3("Object_Pos", m_fObjectPos);
-	ImGui::InputFloat3("Object_Scale", m_fMeshScale);
-	ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
-	ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
-=======
     ImGui::InputFloat3("Object_Pos", m_fObjectPos);
     ImGui::InputFloat3("Object_Scale", m_fMeshScale);
     ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
     ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
->>>>>>> origin/main
+
     if (m_bNonAnimObjectMenuSelected)
     {
         if (!IO.WantCaptureMouse)
@@ -96,32 +87,6 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
             {
                 if (m_bNonAnimObjectMenuSelected || m_bAnimObjectMenuSelected)
                 {
-<<<<<<< HEAD
-                    for (auto& pObject : m_Objects)
-                    {
-                        _float3 fPos = { 0.f ,0.f ,0.f };
-
-                        if (pObject->Picking_Objects(fPos))
-                        {
-                            m_fMeshPickPos = fPos;
-
-                            m_fObjectPos[0] = fPos.x;
-
-                            m_fObjectPos[1] = fPos.y;
-
-                            m_fObjectPos[2] = fPos.z;
-
-                            cout << m_fMeshPickPos.x << " ";
-
-                            cout << m_fMeshPickPos.y << " ";
-
-                            cout << m_fMeshPickPos.z << " ";
-
-                            cout << "\n";
-
-                            m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
-
-=======
                     if (m_bIsMeshPickingMode)
                     {
                         for (auto& pObject : m_Objects)
@@ -156,21 +121,10 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
                     {
                         if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_PICKING_NONANIMMODEL)))
                         {
->>>>>>> origin/main
                             Add_NonAnimObjects();
                         }
                     }
                 }
-<<<<<<< HEAD
-
-
-                //  Terrain Picking
-                if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_PICKING_NONANIMMODEL)))
-                {
-                    Add_NonAnimObjects(); //  Terrain Picking 즉시 배치
-                }
-=======
->>>>>>> origin/main
             }
         }  
     }
@@ -202,10 +156,6 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         ImGui::End();
     }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
     if (iMenuTypeNumber == MENU_TYPE::MT_PICKING_ANIMMODEL || iMenuTypeNumber == MENU_TYPE::MT_PICKING_NONANIMMODEL)
     {
         if (ImGui::Button("Save_Models"))
@@ -225,10 +175,6 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     if (m_bNonAnimObjectMenuSelected)
         Setting_NonAnimObjectList();
-<<<<<<< HEAD
-	
-=======
->>>>>>> origin/main
 
     ImGui::End();
 }
@@ -460,14 +406,9 @@ void CLevel_GamePlay::Add_NonAnimObjects()
 
     const char* ObjectNames[] = {
           "HORSE_P_WoodenFrame02_05",
-<<<<<<< HEAD
           "P_Rag03",
           "SM_Wall_Shelf",
           "SM_WoodFence03",
-=======
-          "SM_P_Rag03",
-          "SM_Wall_Shelf",
->>>>>>> origin/main
           "SM_WoodFence04",
           "SM_WoodStairs03",
           "P_BossAtriumCircle01",
@@ -481,11 +422,7 @@ void CLevel_GamePlay::Add_NonAnimObjects()
     Desc.fFrustumRadius = m_fFrustumRadius;
     Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
     Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
-<<<<<<< HEAD
     Desc.ObjectName = ObjectNames[m_iNonAnimModelIndex];
-=======
-    Desc.ObjectName = ObjectNames[m_iObjectArray];
->>>>>>> origin/main
 
     CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
 
