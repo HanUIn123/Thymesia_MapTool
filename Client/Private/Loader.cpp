@@ -278,11 +278,17 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 #pragma endregion 
 
 #pragma region Navigation 
-	lstrcpyW(m_szLoadingText, TEXT("네비게이션 원형을 생성한다."));	
-	/* For.Prototype_Component_Navigation */	
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),	
-		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Navigation_File/test49.bin")))))	
-		return E_FAIL;	
+	//lstrcpyW(m_szLoadingText, TEXT("네비게이션 원형을 생성한다."));	
+	///* For.Prototype_Component_Navigation */	
+	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),	
+	//	CNavigation::Create(m_pDevice, m_pContext, TEXT("../Navigation_File/test49.bin")))))	
+	//	return E_FAIL;	
+	lstrcpyW(m_szLoadingText, TEXT("네비게이션 원형을 생성한다."));
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), CNavigation::CreateOnly(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+
 
 #pragma endregion 
 
