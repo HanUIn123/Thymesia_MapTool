@@ -70,6 +70,10 @@ private:
 	_bool									m_bImguiHovered = { false };
 	_bool									m_bNonAnimObjectMenuSelected = { false };
 	_bool									m_bAnimObjectMenuSelected = { false };
+	_bool									m_bIsMeshPickingMode = { false };
+	_bool									m_bIsTerrainPickingMode = { false };
+
+
 	_int									m_iNonAnimModelIndex = {};
 
 private:

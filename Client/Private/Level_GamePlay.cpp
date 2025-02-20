@@ -2,7 +2,7 @@
 #include "pch.h" 
 #include "Level_GamePlay.h"
 #include "Camera_Free.h"
-#include "Layer.h"	
+#include "Layer.h"   
 
 #include "GameObject.h"
 
@@ -45,10 +45,13 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered() ? m_bImguiHovered : !m_bImguiHovered;
     static int iMenuTypeNumber = MENU_TYPE::MT_END;
 
-	ImGui::Begin("Object");
-	
-	ImGuiIO IO = ImGui::GetIO();
+    ImGui::Begin("Object");
 
+<<<<<<< HEAD
+=======
+    ImGuiIO IO = ImGui::GetIO();
+
+>>>>>>> origin/main
     ImGui::Begin("TOOL MENU");
     if (ImGui::RadioButton("NONANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_NONANIMMODEL))
     {
@@ -61,11 +64,30 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNonAnimObjectMenuSelected = false;
         m_bAnimObjectMenuSelected = true;
     }
+    // if (ImGui::Button("Save_Models"))
+    if (ImGui::Button("Mesh Picking"))
+    {
+        m_bIsMeshPickingMode = true;
+        m_bIsTerrainPickingMode = false;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Terrain Picking"))
+    {
+        m_bIsTerrainPickingMode = true;
+        m_bIsMeshPickingMode = false;
+    }
 
+<<<<<<< HEAD
 	ImGui::InputFloat3("Object_Pos", m_fObjectPos);
 	ImGui::InputFloat3("Object_Scale", m_fMeshScale);
 	ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
 	ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
+=======
+    ImGui::InputFloat3("Object_Pos", m_fObjectPos);
+    ImGui::InputFloat3("Object_Scale", m_fMeshScale);
+    ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
+    ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
+>>>>>>> origin/main
     if (m_bNonAnimObjectMenuSelected)
     {
         if (!IO.WantCaptureMouse)
@@ -74,6 +96,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
             {
                 if (m_bNonAnimObjectMenuSelected || m_bAnimObjectMenuSelected)
                 {
+<<<<<<< HEAD
                     for (auto& pObject : m_Objects)
                     {
                         _float3 fPos = { 0.f ,0.f ,0.f };
@@ -98,10 +121,47 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
                             m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
 
+=======
+                    if (m_bIsMeshPickingMode)
+                    {
+                        for (auto& pObject : m_Objects)
+                        {
+                            _float3 fPos = { 0.f ,0.f ,0.f };
+
+                            if (pObject->Picking_Objects(fPos))
+                            {
+                                m_fMeshPickPos = fPos;
+
+                                m_fObjectPos[0] = fPos.x;
+
+                                m_fObjectPos[1] = fPos.y;
+
+                                m_fObjectPos[2] = fPos.z;
+
+                                cout << m_fMeshPickPos.x << " ";
+
+                                cout << m_fMeshPickPos.y << " ";
+
+                                cout << m_fMeshPickPos.z << " ";
+
+                                cout << "\n";
+
+                                m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
+
+                                Add_NonAnimObjects();
+                            }
+                        }
+                    }
+                    else if (m_bIsTerrainPickingMode)
+                    {
+                        if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_PICKING_NONANIMMODEL)))
+                        {
+>>>>>>> origin/main
                             Add_NonAnimObjects();
                         }
                     }
                 }
+<<<<<<< HEAD
 
 
                 //  Terrain Picking
@@ -109,6 +169,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
                 {
                     Add_NonAnimObjects(); //  Terrain Picking 즉시 배치
                 }
+=======
+>>>>>>> origin/main
             }
         }  
     }
@@ -140,7 +202,10 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         ImGui::End();
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
     if (iMenuTypeNumber == MENU_TYPE::MT_PICKING_ANIMMODEL || iMenuTypeNumber == MENU_TYPE::MT_PICKING_NONANIMMODEL)
     {
         if (ImGui::Button("Save_Models"))
@@ -158,9 +223,12 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     ImGui::End();
 
-    if(m_bNonAnimObjectMenuSelected)
+    if (m_bNonAnimObjectMenuSelected)
         Setting_NonAnimObjectList();
+<<<<<<< HEAD
 	
+=======
+>>>>>>> origin/main
 
     ImGui::End();
 }
@@ -181,7 +249,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
         , m_pGameInstance->Get_Player_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Player")))))
         return E_FAIL;
 
-    LIGHT_DESC				LightDesc{};
+    LIGHT_DESC            LightDesc{};
 
     /* 2월 8일 빛 */
     LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
@@ -195,7 +263,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
     LightDesc.vDirection = _float4(1.f, 1.f, 1.f, 0.f);
     LightDesc.vDiffuse   = _float4(0.9f, 0.9f, 0.9f, 1.f);
     LightDesc.vAmbient   = _float4(0.5f, 0.5f, 0.5f, 1.f);
-    LightDesc.vSpecular  = _float4(0.3f, 0.3f, 0.3f, 1.f);	*/
+    LightDesc.vSpecular  = _float4(0.3f, 0.3f, 0.3f, 1.f);   */
 
     if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
         return E_FAIL;
@@ -223,7 +291,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Structure(const _tchar* pLayerTag)
     HANDLE hFile = CreateFile(TEXT("../Map_File/real143.bin"), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
     while (true)
     {
-        _tchar Layer_Name[MAX_PATH] = {}; //레이어 이름										
+        _tchar Layer_Name[MAX_PATH] = {}; //레이어 이름                              
         ReadFile(hFile, Layer_Name, MAX_PATH, &dwByte, nullptr);
 
         if (dwByte == 0)
@@ -255,7 +323,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Structure(const _tchar* pLayerTag)
 
         for (auto& Layers : Level_GamePlay)
         {
-            //auto& iter = find(Level_GamePlay.begin(), Level_GamePlay.end(), Layer_Name);	
+            //auto& iter = find(Level_GamePlay.begin(), Level_GamePlay.end(), Layer_Name);   
             auto iter = Level_GamePlay.find(Layer_Name);
 
             if (iter == Level_GamePlay.end())
@@ -285,8 +353,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar* pLayerTag)
 {
-    CCamera_Free::FREE_CAMERA_DESC		Desc = {};
-
+    CCamera_Free::FREE_CAMERA_DESC      Desc = {};
 
     Desc.vEye = _float3(0.f, 10.f, -7.f);
     Desc.vAt = _float3(0.f, 0.f, 0.f);
@@ -382,7 +449,7 @@ HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageF
             }
         }
     }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+
     return S_OK;
 }
 
@@ -393,9 +460,14 @@ void CLevel_GamePlay::Add_NonAnimObjects()
 
     const char* ObjectNames[] = {
           "HORSE_P_WoodenFrame02_05",
+<<<<<<< HEAD
           "P_Rag03",
           "SM_Wall_Shelf",
           "SM_WoodFence03",
+=======
+          "SM_P_Rag03",
+          "SM_Wall_Shelf",
+>>>>>>> origin/main
           "SM_WoodFence04",
           "SM_WoodStairs03",
           "P_BossAtriumCircle01",
@@ -409,7 +481,11 @@ void CLevel_GamePlay::Add_NonAnimObjects()
     Desc.fFrustumRadius = m_fFrustumRadius;
     Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
     Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
+<<<<<<< HEAD
     Desc.ObjectName = ObjectNames[m_iNonAnimModelIndex];
+=======
+    Desc.ObjectName = ObjectNames[m_iObjectArray];
+>>>>>>> origin/main
 
     CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
 
