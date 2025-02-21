@@ -39,9 +39,9 @@ void CNonMoveObject::Update(_float fTimeDelta)
 #ifdef _DEBUG
 	_matrix matWorld = XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr());
 
-	XMVector3Normalize(matWorld.r[0]) * m_fFrustumRadius;
-	XMVector3Normalize(matWorld.r[1]) * m_fFrustumRadius;
-	XMVector3Normalize(matWorld.r[2]) * m_fFrustumRadius;
+	matWorld.r[0] = XMVector3Normalize(matWorld.r[0]) * m_fFrustumRadius;
+	matWorld.r[1] = XMVector3Normalize(matWorld.r[1]) * m_fFrustumRadius;
+	matWorld.r[2] = XMVector3Normalize(matWorld.r[2]) * m_fFrustumRadius;
 
 	m_pColliderCom->Update(matWorld);
 #endif

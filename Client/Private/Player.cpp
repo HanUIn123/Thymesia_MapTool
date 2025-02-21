@@ -126,10 +126,6 @@ void CPlayer::Update(_float fTimeDelta)
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr()));	
 
 	__super::Update(fTimeDelta);
-
-
-
-
 }
 
 void CPlayer::Late_Update(_float fTimeDelta)
@@ -192,6 +188,7 @@ HRESULT CPlayer::Ready_Components()
 
 HRESULT CPlayer::Ready_PartObjects()
 {
+<<<<<<< HEAD
 	
 	//CBody_Player::BODY_PLAYER_DESC BodyDesc{};	
 	//
@@ -206,6 +203,22 @@ HRESULT CPlayer::Ready_PartObjects()
 	//
 	//m_pModel = dynamic_cast<CModel*>(Find_PartObject_Component(TEXT("Part_Body"), TEXT("Com_Model")));			
 	//
+=======
+	
+	CBody_Player::BODY_PLAYER_DESC BodyDesc{};	
+	
+	BodyDesc.pParentState = &m_iState;	
+	BodyDesc.pParentWorldMatrix = m_pTransformCom->Get_WorldMatrix_Ptr();	
+	BodyDesc.fSpeedPerSec = 0.f;	
+	//BodyDesc.fSpeedPerSec = 1.f;
+	BodyDesc.fRotationPerSec = 0.f;		
+	
+	if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Body_Player"), &BodyDesc)))		
+		return E_FAIL;			
+	
+	m_pModel = dynamic_cast<CModel*>(Find_PartObject_Component(TEXT("Part_Body"), TEXT("Com_Model")));			
+	
+>>>>>>> origin/main
 
 	return S_OK;
 }
