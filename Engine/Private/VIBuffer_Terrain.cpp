@@ -47,7 +47,7 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _uint dwCntX, const  _uint
 		{
 			for (size_t j = 0; j < dwCntX; j++)
 			{
-				pVertices[dwCntZ * i + j].vPosition = _float3(j * dwVertexItv, 0.f, i);
+				pVertices[dwCntZ * i + j].vPosition = _float3(j * dwVertexItv, 0.0f, i);
 				pVertices[dwCntZ * i + j].vNormal = _float3(0.f, 1.f, 0.f);
 				pVertices[dwCntZ * i + j].vTexcoord = _float2(j * dwVertexItv / (dwCntX - 1.f), i / (dwCntZ - 1.f));
 
@@ -279,6 +279,17 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _uint dwCntX, const  _uint
 
 HRESULT CVIBuffer_Terrain::Initialize(void* pArg)
 {
+	//Buffer_Terrain_Desc* pDesc = static_cast<Buffer_Terrain_Desc*>(pArg);
+	//pDesc->fPosY;
+
+	//for (size_t i = 0; i < m_iNumverticesZ; i++)
+	//{
+	//	for (size_t j = 0; j < m_iNumverticesX; j++)
+	//	{
+	//		m_VertexPos[m_iNumverticesZ * i + j] = XMVectorSetY(m_VertexPos[m_iNumverticesZ * i + j], pDesc->fPosY);
+	//	}
+	//}
+
 	return S_OK;
 }
 

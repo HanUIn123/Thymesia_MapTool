@@ -15,6 +15,14 @@ BEGIN(Client)
 
 class CTerrain final : public CGameObject
 {
+public:
+	struct TERRAIN_DESC : public CGameObject::GAMEOBJECT_DESC
+	{
+		// y °®°í ÀÕ¾î¼­ 
+		_float				fTerrainPosY;
+
+	};
+
 private:
 	CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CTerrain(const CTerrain& Prototype);
@@ -28,16 +36,21 @@ public:
 	virtual void Late_Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	_float				Get_TerrainFloorPosY() { return m_pTerrainPosY; }
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CTexture* m_pTextureCom = { nullptr };
 	CVIBuffer_Terrain* m_pVIBufferCom = { nullptr };
 	CNavigation* m_pNavigationCom = { nullptr };
 
+	_float									m_pTerrainPosY = {};
 
 public:
-	HRESULT Ready_Components();
-	HRESULT Bind_ShaderResources();
+	HRESULT									Ready_Components(/*void* _pArg*/);
+	HRESULT									Bind_ShaderResources();
+
 
 public:
 	static CTerrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

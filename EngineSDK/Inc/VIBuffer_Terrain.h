@@ -6,6 +6,12 @@ BEGIN(Engine)
 class ENGINE_DLL CVIBuffer_Terrain : public CVIBuffer
 {
 public:
+	struct Buffer_Terrain_Desc
+	{
+		_float fPosY;
+	};
+
+public:
 	XMVECTOR* Get_VertexPos() const { return m_VertexPos; }
 	_uint     Get_NumVerticesX() const {return m_iNumverticesX;}
 	_uint     Get_NumVerticesZ() const {return m_iNumverticesZ;}

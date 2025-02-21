@@ -35,7 +35,11 @@ HRESULT CNavigation::Initialize_Prototype(const _tchar* pNavigationDataFile)
     _ulong  dwByte = {};
     HANDLE  hFile = CreateFile(pNavigationDataFile, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
-    while (true)
+    _uint iCellCountNum = {};
+    ReadFile(hFile, &iCellCountNum, sizeof(_uint), &dwByte, nullptr);
+
+    //while (true)
+    for (_uint i = 0; i < iCellCountNum; ++i)
     {
         _float3  vPoints[CCell::POINT_END] = {};
 

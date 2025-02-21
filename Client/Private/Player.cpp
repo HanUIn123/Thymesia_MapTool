@@ -45,17 +45,15 @@ HRESULT CPlayer::Initialize(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
-	///* 루트 모션 애니메션 코드 */
-	//m_pRootMatrix = m_pModel->Get_RootMotionMatrix("kaku");		
-	
-
-	// 시작 지점의 플레이어 위치 1_23일 
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, _fvector{ 232.f,62.f,60.f,1.f });			
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _fvector{ 0.0f, 0.0f, 0.0f,1.f });			
-
+	_vector vPlayerPos = XMVectorSet(4.0f, 0.0f, 4.0f, 1.0f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPlayerPos);
+	 
 	m_pGameInstance->Add_ObjCollider(GROUP_TYPE::PLAYER, this);
 
-	m_pTransformCom->Scaling(_float3{ 0.045f, 0.045f, 0.045f });
+	m_pTransformCom->Scaling(_float3{ 0.002f, 0.002f, 0.002f });
+
+	m_pNavigationCom->Set_CurrentNaviIndex(vPlayerPos);
+
 
 
     return S_OK;
@@ -82,8 +80,28 @@ void CPlayer::Priority_Update(_float fTimeDelta)
 	
 #pragma endregion 
 
-#pragma region KeyBoard Input
+#pragma region KeyBoard Input                
+	//if (m_pGameInstance->Get_DIKeyState(DIK_UP) & 0x80)
+	//{
+	//		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
+	//}
 
+	//if (m_pGameInstance->Get_DIKeyState(DIK_DOWN) & 0x80)
+	//{
+	//	m_pTransformCom->Go_Backward(fTimeDelta, m_pNavigationCom);
+	//}
+
+	//if (m_pGameInstance->Get_DIKeyState(DIK_LEFT) & 0x80)
+	//{
+	//	m_pTransformCom->Go_Left(fTimeDelta, m_pNavigationCom);
+	//}
+
+	//if (m_pGameInstance->Get_DIKeyState(DIK_RIGHT) & 0x80)
+	//{
+	//	m_pTransformCom->Go_Right(fTimeDelta, m_pNavigationCom);
+	//}
+
+	
 #pragma endregion 
 
 }
@@ -101,7 +119,8 @@ void CPlayer::Update(_float fTimeDelta)
 	//	if (m_pNavigationCom->isMove(vCurPosition))		
 	//		m_pTransformCom->Set_MulWorldMatrix(m_pRootMatrix);				
 	//}	
-
+	//_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, m_pNavigationCom->Compute_Height(vPosition)));
 
 
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr()));	
@@ -173,20 +192,20 @@ HRESULT CPlayer::Ready_Components()
 
 HRESULT CPlayer::Ready_PartObjects()
 {
-	/*
-	CBody_Player::BODY_PLAYER_DESC BodyDesc{};	
 	
-	BodyDesc.pParentState = &m_iState;	
-	BodyDesc.pParentWorldMatrix = m_pTransformCom->Get_WorldMatrix_Ptr();	
-	BodyDesc.fSpeedPerSec = 0.f;	
-	//BodyDesc.fSpeedPerSec = 1.f;
-	BodyDesc.fRotationPerSec = 0.f;		
-	
-	if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Body_Player"), &BodyDesc)))		
-		return E_FAIL;			
-	
-	m_pModel = dynamic_cast<CModel*>(Find_PartObject_Component(TEXT("Part_Body"), TEXT("Com_Model")));			
-	*/
+	//CBody_Player::BODY_PLAYER_DESC BodyDesc{};	
+	//
+	//BodyDesc.pParentState = &m_iState;	
+	//BodyDesc.pParentWorldMatrix = m_pTransformCom->Get_WorldMatrix_Ptr();	
+	//BodyDesc.fSpeedPerSec = 0.f;	
+	////BodyDesc.fSpeedPerSec = 1.f;
+	//BodyDesc.fRotationPerSec = 0.f;		
+	//
+	//if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Body_Player"), &BodyDesc)))		
+	//	return E_FAIL;			
+	//
+	//m_pModel = dynamic_cast<CModel*>(Find_PartObject_Component(TEXT("Part_Body"), TEXT("Com_Model")));			
+	//
 
 	return S_OK;
 }

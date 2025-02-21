@@ -62,10 +62,10 @@ public:
 public:
 	void Go_Straight_NoNavi(_float fTimeDelta);	
 	void Go_Straight(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
-	void Go_Backward(_float fTimeDelta);
+	void Go_Backward(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void Go_Backward_With_Navi(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
-	void Go_Left(_float fTimeDelta);
-	void Go_Right(_float fTimeDelta);
+	void Go_Left(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	void Go_Right(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void Go_Dir(_fvector vDir, class CNavigation* pNavigation, _float fTimeDelta);
 	void LookAt(_fvector vAt);
 	

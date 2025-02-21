@@ -25,6 +25,31 @@ CGameInstance::CGameInstance()
 
 }
 
+void CGameInstance::Click_Once(function<void()> _function)
+{
+	if (this->Get_DIMouseState(DIM_LB) & 0x80)
+	{
+		m_bClicked = true;
+	}
+	if (!(this->Get_DIMouseState(DIM_LB) & 0x80) && m_bClicked)
+	{
+		m_bClicked = false;
+		if (_function)
+			_function();
+	}
+}
+
+ID3D11Device* CGameInstance::Get_Device()
+{
+	return m_pGraphic_Device->Get_GraphicDevice();
+}
+
+ID3D11DeviceContext* CGameInstance::Get_Context()
+{
+	return m_pGraphic_Device->Get_DeviceContext();
+}
+
+
 HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC & EngineDesc, _Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext)
 {
 	m_iViewportWidth = EngineDesc.iViewportWidth;

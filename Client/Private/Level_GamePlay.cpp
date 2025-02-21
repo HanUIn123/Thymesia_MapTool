@@ -25,6 +25,8 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_GamePlay::Initialize()
 {
+
+
     if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
         return E_FAIL;
     if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
@@ -44,8 +46,11 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
-    //ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered() ? m_bImguiHovered : !m_bImguiHovered;
+    ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered() ? m_bImguiHovered : !m_bImguiHovered;
     static int iMenuTypeNumber = MENU_TYPE::MT_END;
+
+
+
 
     ImGui::Begin("Object");
 
@@ -71,13 +76,13 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNonAnimObjectMenuSelected = false;
         m_bAnimObjectMenuSelected = false;
     }
-    if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)  
+    if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)
     {
         m_bConnectingMode = true;
     }
     else
     {
-        m_bConnectingMode = false; 
+        m_bConnectingMode = false;
     }
 
 
@@ -87,12 +92,17 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     {
         m_bIsMeshPickingMode = true;
         m_bIsTerrainPickingMode = false;
+
+        if (nullptr != m_pCurrentObject)
+            m_fWholePickPos = m_fMeshPickPos;
+
     }
     ImGui::SameLine();
     if (ImGui::Button("Terrain Picking"))
     {
         m_bIsTerrainPickingMode = true;
         m_bIsMeshPickingMode = false;
+        //m_fWholePickPos = m_fPickPos;
     }
 
     ImGui::InputFloat3("Object_Pos", m_fObjectPos);
@@ -111,63 +121,25 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         {
             if (m_pGameInstance->isMouseEnter(DIM_LB))
             {
-                if (m_bNonAnimObjectMenuSelected || m_bAnimObjectMenuSelected)
-                {
-                    if (m_bIsMeshPickingMode)
-                    {
-                        for (auto& pObject : m_Objects)
-                        {
-                            _float3 fPos = { 0.f ,0.f ,0.f };
-
-                            if (pObject != nullptr && pObject->Picking_Objects(fPos))
-                            {
-                                m_fMeshPickPos = fPos;
-
-                                m_fObjectPos[0] = fPos.x;
-
-                                m_fObjectPos[1] = fPos.y;
-
-                                m_fObjectPos[2] = fPos.z;
-
-                                cout << m_fMeshPickPos.x << " ";
-
-                                cout << m_fMeshPickPos.y << " ";
-
-                                cout << m_fMeshPickPos.z << " ";
-
-                                cout << "\n";
-
-                                m_pCurrentObject = pObject;
-                                m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
-
-                                Add_NonAnimObjects();
-                            }
-                        }
-                    }
-                    else if (m_bIsTerrainPickingMode)
-                    {
-                        if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_PICKING_NONANIMMODEL)))
-                        {
-                            Add_NonAnimObjects();
-                        }
-                    }
-                }
+                Create_NonAnimObjects();                                                                                                                                                                                                                                                                                                                                                                             
             }
-        }  
+
+            // m_pGameInstance->Click_Once([&]() {Create_NonAnimObjects(); });
+
+        }
     }
     else if (m_bAnimObjectMenuSelected)
     {
         Add_AnimObjects();
     }
-    else if (m_bNaviMenuSelected)
+    else if (m_bNaviMenuSelected && !IO.WantCaptureMouse)
     {
         if (m_pGameInstance->isMouseEnter(DIM_LB))
         {
             Picking_Points();
         }
     }
-
-
+         
     if (m_pCurrentObject != nullptr)
     {
         ImGui::Begin("Current Object Info");
@@ -175,13 +147,13 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         CObject::OBJECT_INFO Info{};
 
         Info = m_pCurrentObject->Get_ObjectInfo();
-
+                                 
         _vector vCurPos = XMLoadFloat4(&Info.fPosition);
         _vector vCurScale = XMLoadFloat3(&Info.fScale);
         _vector vCurRotation = XMLoadFloat3(&Info.fRotation);
         _float  fFrustumRadius = Info.fFrustumRadius;
 
-        _float vCurPosArray[3] = { XMVectorGetX(vCurPos), XMVectorGetY(vCurPos),  XMVectorGetZ(vCurPos) };
+        _float vCurPosArray[3] = { XMVectorGetX(vCurPos), XMVectorGetY(vCurPos),  XMVectorGetZ(vCurPos) };                                                      
         _float vCurScaleArray[3] = { XMVectorGetX(vCurScale), XMVectorGetY(vCurScale),  XMVectorGetZ(vCurScale) };
         _float vCurRotationArray[3] = { XMVectorGetX(vCurRotation), XMVectorGetY(vCurRotation),  XMVectorGetZ(vCurRotation) };
 
@@ -231,19 +203,33 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     {
         if (ImGui::Button("Save_Navi"))
         {
-
+            if (FAILED(Save_Navi()))
+            {
+                ImGui::Text("Failed To Save Navigation Data!!");
+            }
+            else
+            {
+                ImGui::Text("Succed To Save Navigation Data!");
+            }
         }
 
         ImGui::SameLine();
 
         if (ImGui::Button("Load_Navi"))
         {
-
+            if (FAILED(Load_Navi()))
+            {
+                ImGui::Text("Failed To Load NaviData !");
+            }
+            else
+            {
+                ImGui::Text("Succeded To Load NaviData !");
+            }
         }
     }
 
     Delete_Cell_Mode();
-
+    //OnOff_WireFrameMode();
 
     ImGui::End();
 
@@ -258,6 +244,8 @@ HRESULT CLevel_GamePlay::Render()
 #ifdef _DEBUG
     SetWindowText(g_hWnd, TEXT("게임플레이 레벨입니다."));
 #endif
+
+
 
     return S_OK;
 }
@@ -293,8 +281,15 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar* pLayerTag)
 {
+    //CTerrain::TERRAIN_DESC TerrainDesc = {};
+    //for (_uint i = 0; i < 2; ++i)
+    //{
+    // 
+    //}
+
     if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, pLayerTag, nullptr)))
         return E_FAIL;
+
 
     if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag, nullptr)))
         return E_FAIL;
@@ -471,6 +466,51 @@ HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageF
     }
 
     return S_OK;
+}
+
+void CLevel_GamePlay::Create_NonAnimObjects()
+{
+    if (m_bNonAnimObjectMenuSelected || m_bAnimObjectMenuSelected)
+    {
+        if (m_bIsMeshPickingMode)
+        {
+            for (auto& pObject : m_Objects)
+            {
+                _float3 fPos = { 0.f ,0.f ,0.f };
+
+                if (pObject != nullptr && pObject->Picking_Objects(fPos))
+                {
+                    m_fMeshPickPos = fPos;
+
+                    m_fObjectPos[0] = fPos.x;
+
+                    m_fObjectPos[1] = fPos.y;
+
+                    m_fObjectPos[2] = fPos.z;
+
+                    cout << m_fMeshPickPos.x << " ";
+
+                    cout << m_fMeshPickPos.y << " ";
+
+                    cout << m_fMeshPickPos.z << " ";
+
+                    cout << "\n";
+
+                    m_pCurrentObject = pObject;
+                    m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
+
+                    Add_NonAnimObjects();
+                }
+            }
+        }
+        else if (m_bIsTerrainPickingMode)
+        {
+            if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_PICKING_NONANIMMODEL)))
+            {
+                Add_NonAnimObjects();
+            }
+        }
+    }                             
 }
 
 void CLevel_GamePlay::Add_NonAnimObjects()
@@ -668,22 +708,43 @@ HRESULT CLevel_GamePlay::Pick_Object(MENU_TYPE _eMenuType)
 
 HRESULT CLevel_GamePlay::Picking_Points()
 {
-    m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+    if (m_bIsMeshPickingMode)
+    {
+        for (auto& pObject : m_Objects)
+        {
+            _float3 fPos = { 0.f ,0.f ,0.f };
 
-    if (m_fPickPos.y == -0.5f)
+            if (pObject != nullptr && pObject->Picking_Objects(fPos))
+            {
+                m_fMeshPickPos = fPos;
+                m_pCurrentObject = pObject;
+                m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
+
+                m_fWholePickPos = m_fMeshPickPos;
+            }
+        }
+    }
+    else
+    {
+        m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+        m_fWholePickPos = m_fPickPos;
+    }
+
+
+    if (m_fWholePickPos.y == -0.5f)
         return S_OK;
 
-    m_fPickPos.y += 0.1f;
+    m_fWholePickPos.y += 0.1f;
 
     if (m_bDeleteMode)
     {
-        m_vecPickedPoints.push_back(m_fPickPos);
+        m_vecPickedPoints.push_back(m_fWholePickPos);
         return S_OK;
     }
 
     if (m_bConnectingMode)
     {
-        XMFLOAT3 vSelectedCordinate = Pick_Closest_Cube(m_fPickPos);
+        XMFLOAT3 vSelectedCordinate = Pick_Closest_Cube(m_fWholePickPos);
         if (vSelectedCordinate.x != FLT_MAX)
         {
             m_vecSelectedCubes.push_back(vSelectedCordinate);
@@ -698,7 +759,7 @@ HRESULT CLevel_GamePlay::Picking_Points()
         return S_OK;
     }
 
-    m_vecPickedPoints.push_back(m_fPickPos);
+    m_vecPickedPoints.push_back(m_fWholePickPos);
 
     if (m_vecPickedPoints.size() == 3 && m_bFirstPick)
     {
@@ -756,6 +817,8 @@ HRESULT CLevel_GamePlay::Picking_Points()
         m_iNumCellCount++;
         m_vecPickedPoints.clear();
     }
+
+
 
     return S_OK;
 }
@@ -986,15 +1049,87 @@ HRESULT CLevel_GamePlay::Delete_Cell()
 
 HRESULT CLevel_GamePlay::Save_Navi()
 {
+    wstring fileName;
+    OpenFileDialoge(L"NavigationData.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
 
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Create NavigationData File!");
+        return E_FAIL;
+    }
+
+    DWORD dwByte = 0;
+    WriteFile(hFile, &m_iNumCellCount, sizeof(_uint), &dwByte, nullptr);
+
+    for (auto& pCellPoints : m_vecWholeCellPoints)
+        WriteFile(hFile, pCellPoints.fCellPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+
+    MSG_BOX("Success Save");
+
+    CloseHandle(hFile);
+
+    return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Load_Navi()
 {
+    wstring fileName;
+    OpenFileDialoge(L"Select Navigation Data", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
 
+    if (fileName.empty())
+    {
+        MSG_BOX("No file selected!");
+        return E_FAIL;
+    }
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Open NavigationData File!");
+        return E_FAIL;
+    }
+
+    DWORD dwByte = 0;
+    _uint iLoadedCellCount = 0;
+
+    ReadFile(hFile, &iLoadedCellCount, sizeof(_uint), &dwByte, nullptr);
+
+    for (_uint i = 0; i < iLoadedCellCount; ++i)
+    {
+        CELL_POINTS cellPoints;
+        ReadFile(hFile, cellPoints.fCellPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+
+        _bool bIsDuplicate = false;
+        for (const auto& existingCell : m_vecWholeCellPoints)
+        {
+            if (memcmp(existingCell.fCellPoints, cellPoints.fCellPoints, sizeof(_float3) * 3) == 0)
+            {
+                bIsDuplicate = true;
+                break;
+            }
+        }
+
+        if (!bIsDuplicate)
+        {
+            m_pNavigation->Create_Cell(cellPoints.fCellPoints);
+            m_vecWholeCellPoints.push_back(cellPoints);
+            m_iNumCellCount++;
+        }
+    }
+
+    CloseHandle(hFile);
+
+    MSG_BOX("Navigation Data Loaded Successfully!");
 
     return S_OK;
 }
+
+
 
 CLevel_GamePlay* CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

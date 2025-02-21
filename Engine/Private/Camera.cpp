@@ -83,10 +83,10 @@ _float3 CCamera::Terrain_PickPoint(HWND _hWnd, CVIBuffer_Terrain* _pTerrainBuffe
 	XMVECTOR        vRayDir = XMVector3TransformNormal(vMousePos, matViewInverse);
 	vRayDir = XMVector3Normalize(vRayDir);
 
-	// 월드 -> 로컬 
-	XMMATRIX matWorldInverse = m_pTransformCom->Get_WorldMatrix_Inverse();
-	XMVector3TransformCoord(vRayPos, matWorldInverse);
-	XMVector3TransformNormal(vRayDir, matWorldInverse);
+	//// 월드 -> 로컬 
+	//XMMATRIX matWorldInverse = m_pTransformCom->Get_WorldMatrix_Inverse();
+	//XMVector3TransformCoord(vRayPos, matWorldInverse);
+	//XMVector3TransformNormal(vRayDir, matWorldInverse);
 
 	XMVECTOR* pMapToolTerrainBufferPos = _pTerrainBuffer->Get_VertexPos();
 
@@ -120,7 +120,7 @@ _float3 CCamera::Terrain_PickPoint(HWND _hWnd, CVIBuffer_Terrain* _pTerrainBuffe
 					XMFLOAT3
 					(
 						XMVectorGetX(pMapToolTerrainBufferPos[dwVtxId[1]]) + fU * (XMVectorGetX(pMapToolTerrainBufferPos[dwVtxId[2]]) - XMVectorGetX(pMapToolTerrainBufferPos[dwVtxId[1]])),
-						XMVectorGetY(pMapToolTerrainBufferPos[dwVtxId[1]]),
+						XMVectorGetY(pMapToolTerrainBufferPos[dwVtxId[1]])/* + _vecPosY[_iFloorNumber]*/,
 						XMVectorGetZ(pMapToolTerrainBufferPos[dwVtxId[1]]) + fV * (XMVectorGetZ(pMapToolTerrainBufferPos[dwVtxId[0]]) - XMVectorGetZ(pMapToolTerrainBufferPos[dwVtxId[1]]))
 					);
 
@@ -146,7 +146,7 @@ _float3 CCamera::Terrain_PickPoint(HWND _hWnd, CVIBuffer_Terrain* _pTerrainBuffe
 					XMFLOAT3
 					(
 						XMVectorGetX(pMapToolTerrainBufferPos[dwVtxId[1]]) + fU * (XMVectorGetX(pMapToolTerrainBufferPos[dwVtxId[2]]) - XMVectorGetX(pMapToolTerrainBufferPos[dwVtxId[1]])),
-						XMVectorGetY(pMapToolTerrainBufferPos[dwVtxId[1]]),
+						XMVectorGetY(pMapToolTerrainBufferPos[dwVtxId[1]])/* + _vecPosY[_iFloorNumber]*/,
 						XMVectorGetZ(pMapToolTerrainBufferPos[dwVtxId[1]]) + fV * (XMVectorGetZ(pMapToolTerrainBufferPos[dwVtxId[0]]) - XMVectorGetZ(pMapToolTerrainBufferPos[dwVtxId[1]]))
 					);
 				return vPickedPos;

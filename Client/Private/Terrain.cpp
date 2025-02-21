@@ -25,11 +25,28 @@ HRESULT CTerrain::Initialize_Prototype()
 
 HRESULT CTerrain::Initialize(void* pArg)
 {
+	TERRAIN_DESC* pDesc = static_cast<TERRAIN_DESC*>(pArg);
+
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	//m_pTerrainPosY = pDesc->fTerrainPosY;
+
+	//CVIBuffer_Terrain::Buffer_Terrain_Desc Desc = {};
+	//Desc.fPosY = m_pTerrainPosY;
+
+	//if (FAILED(Ready_Components(&Desc)))
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+
+
+	//if (pDesc->fTerrainPosY < 10.0f)
+	//	m_vecNavigationCom.push_back(m_pNavigationCom);
+	//else
+	//	m_vecNavigationCom.push_back(m_pNavigationCom);
+
+	_vector vTerrainPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vTerrainPos, m_pTerrainPosY));
 
 	return S_OK;
 }
@@ -60,6 +77,8 @@ HRESULT CTerrain::Render()
 
 	m_pVIBufferCom->Bind_InputAssembler();
 
+
+
 	m_pVIBufferCom->Render();
 
 #ifdef _DEBUG				
@@ -67,11 +86,16 @@ HRESULT CTerrain::Render()
 #endif // _DEBUG
 
 
+
+
 	return S_OK;
 }
 
-HRESULT CTerrain::Ready_Components()
+
+HRESULT CTerrain::Ready_Components(/*void* _pArg*/)
 {
+	
+
 	/* Com_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
@@ -84,7 +108,7 @@ HRESULT CTerrain::Ready_Components()
 
 	/* Com_VIBuffer */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"),
-		TEXT("Com_VIBuffer_Terrain"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
+		TEXT("Com_VIBuffer_Terrain"), reinterpret_cast<CComponent**>(&m_pVIBufferCom)/*, _pArg*/)))
 		return E_FAIL;
 
 	/* Com_Navigation */
@@ -111,6 +135,8 @@ HRESULT CTerrain::Bind_ShaderResources()
 
 	return S_OK;
 }
+
+
 
 CTerrain* CTerrain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -146,4 +172,7 @@ void CTerrain::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pTextureCom);
+
+
+	
 }
