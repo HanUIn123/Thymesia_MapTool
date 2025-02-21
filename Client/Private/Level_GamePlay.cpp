@@ -809,7 +809,9 @@ HRESULT CLevel_GamePlay::Picking_Points()
 
             if (pObject != nullptr && pObject->Picking_Objects(fPos))
             {
-                m_fMeshPickPos = fPos;
+                m_fMeshPickPos.x = fPos.x;
+                m_fMeshPickPos.y = fPos.y + 0.1f;
+                m_fMeshPickPos.z = fPos.z;
                 m_pCurrentObject = pObject;
                 m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
 
@@ -1142,7 +1144,6 @@ HRESULT CLevel_GamePlay::Delete_Cell()
 
 HRESULT CLevel_GamePlay::Save_Navi()
 {
-<<<<<<< HEAD
     wstring fileName;
     OpenFileDialoge(L"NavigationData.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
     if (fileName.empty())
@@ -1166,8 +1167,6 @@ HRESULT CLevel_GamePlay::Save_Navi()
 
     CloseHandle(hFile);
 
-=======
->>>>>>> origin/main
     return S_OK;
 }
 

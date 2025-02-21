@@ -74,14 +74,8 @@ private:
     void									Add_AnimObjects();
     void									Setting_NonAnimObjectList();
 
-<<<<<<< HEAD
     HRESULT									Save_Objects();
     HRESULT									Load_Objects();
-=======
-	HRESULT									Save_Objects();
-
-	HRESULT									Load_Objects();
->>>>>>> origin/main
 
     void	                                OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName);
 
@@ -146,12 +140,6 @@ private:
     list<CObject*> m_Objects;
 
     _float3  m_fMeshPickPos = { 0.f, 0.f, 0.f };
-
-<<<<<<< HEAD
-    _float   m_fPosMax[2] = { -100.f, 100.f };
-    _float   m_fScaleMax[2] = { -1.f, 1.f };
-    _float   m_fRotationMax[2] = { -180.f, 180.f };
-
 private:
     CCamera_Free* m_pCamera = { nullptr };
     CTerrain* m_pTerrain = {nullptr};
@@ -165,21 +153,10 @@ private:
 
 private:
     vector<_float>							m_vecTerrainPosY;
-=======
 	_float   m_fPosMax[2] = { -100.f, 100.f };	
 	_float   m_fScaleMax[2] = { -1.f, 1.f };	
 	_float   m_fRotationMax[2] = { -180.f, 180.f };
 	_float	 m_fRadiusMax = { 100.f };
-
-private:
-	CCamera_Free*							m_pCamera = { nullptr };
-	CTerrain*								m_pTerrain = { nullptr };
-	CNavigation*							m_pNavigation = { nullptr };
-
-	CTransform*								m_pCurrentObjectTransformCom = { nullptr };
-	CObject*								m_pCurrentObject = { nullptr };
->>>>>>> origin/main
-
 
 public:
     static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
