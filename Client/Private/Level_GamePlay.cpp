@@ -18,7 +18,51 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircle01.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossCemetery_02_02.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossCemetery_04.dds"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossCemetery_05.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossCemetery_06.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossInteriorArches02.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_ChurchWindowGrilles01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_LongStairs01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Plains_CastleArch_Ruin_01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Trim_01a.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01c.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01d.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01e.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing_base01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing_pillar01_2.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing01_3.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Brick_stone_stairs_1_a.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Gate_17d.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_ground_Road_Middle_250x250cm_1_a.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/T_P_BossRoomVines01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossArtriumCircleRailing_Down02.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossArtriumCircleRailing_Down03.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossArtriumCircleRailing_Down04.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircleRailing_Top01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircleRailing_Up01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircleRailing_Up02.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircleRailing_Up04.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircleRailing_Up03.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing03_1.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Fortress_BossDoor_Left01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Fortress_BossDoor_Right01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Debris_01a.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Scafold_01b.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Scafold_01c.png"), IMG_NONANIM_MODEL, 1);
 
+    /*
+   "T_P_BossRoomVines01",
+          "P_BossArtriumCircleRailing_Down02"
+          ,"P_BossArtriumCircleRailing_Down03"
+          ,"P_BossArtriumCircleRailing_Down04"
+          ,"P_BossAtriumCircleRailing_Top01"
+          ,"P_BossAtriumCircleRailing_Up01"
+          ,"P_BossAtriumCircleRailing_Up02"
+          ,"P_BossAtriumCircleRailing_Up04"
+          ,"P_BossAtriumCircleRailing_Up03"
+          ,
+
+    */
     // 레이어 이름이랑, 객체 주소
     //m_pGameInstance->Add_DeadObject()
 }
@@ -103,6 +147,11 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     if (ImGui::Button("UnPicking_Create"))
     {
         m_iNonAnimModelIndex = -1;
+    }
+
+    if (ImGui::Button("Create_Object"))
+    {
+        Add_NonAnimObjects();
     }
 
     if (m_bNonAnimObjectMenuSelected)
@@ -195,7 +244,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         ImGui::InputFloat2("Rotation_Min_Max", m_fRotationMax);
         ImGui::SliderFloat3("Rotation", vCurRotationArray, m_fRotationMax[0], m_fRotationMax[1]);
 
-        ImGui::SliderFloat("fFrustumRadius", &fFrustumRadius, -100.f, 100.f);
+        ImGui::InputFloat("Radius_MAx", &m_fRadiusMax);
+        ImGui::SliderFloat("fFrustumRadius", &fFrustumRadius, 0.f, m_fRadiusMax);
 
         m_pCurrentObjectTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vCurPosArray[0], vCurPosArray[1], vCurPosArray[2], 1.f));
         m_pCurrentObjectTransformCom->Rotation(XMConvertToRadians(vCurRotationArray[0]), XMConvertToRadians(vCurRotationArray[1]), XMConvertToRadians(vCurRotationArray[2]));
@@ -206,6 +256,15 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         {
             m_pGameInstance->Add_DeadObject(L"Layer_Object", m_pCurrentObject);
 
+            for (list<CObject*>::iterator pObject = m_Objects.begin(); pObject != m_Objects.end();)
+            {
+                if ((*pObject) == m_pCurrentObject)
+                {
+                   pObject = m_Objects.erase(pObject);
+                }
+                else
+                   pObject++;
+            }
             m_pCurrentObject = nullptr;
         }
 
@@ -488,6 +547,38 @@ void CLevel_GamePlay::Add_NonAnimObjects()
           "P_BossAtriumCircle01",
           "P_BossCemetery_02_02",
           "P_BossCemetery_04",
+          "P_BossCemetery_05",
+          "P_BossCemetery_06",
+          "P_BossInteriorArches02",
+          "P_ChurchWindowGrilles01",
+          "P_LongStairs01",
+          "SM_Plains_CastleArch_Ruin_01",
+          "SM_Trim_01a",
+          "SM_Wall_8x8_Broken_01c",
+          "SM_Wall_8x8_Broken_01d",
+          "SM_Wall_8x8_Broken_01e", 
+          "Railing_base01",
+          "Railing_pillar01_2",
+          "Railing01_3",
+          "SM_Brick_stone_stairs_1_a",
+          "SM_Gate_17d",
+          "SM_ground_Road_Middle_250x250cm_1_a",
+          "T_P_BossRoomVines01",
+          "P_BossArtriumCircleRailing_Down02"
+          ,"P_BossArtriumCircleRailing_Down03"
+          ,"P_BossArtriumCircleRailing_Down04"
+          ,"P_BossAtriumCircleRailing_Top01"
+          ,"P_BossAtriumCircleRailing_Up01"
+          ,"P_BossAtriumCircleRailing_Up02"
+          ,"P_BossAtriumCircleRailing_Up04"
+          ,"P_BossAtriumCircleRailing_Up03"
+          ,"Railing03_1"
+          "P_Fortress_BossDoor_Left01",
+          "P_Fortress_BossDoor_Right01",
+          "SM_Debris_01a",
+          "SM_Scafold_01b",
+          "SM_Scafold_01c"
+          ,
     };
 
     CObject::OBJECT_DESC Desc{};
@@ -519,7 +610,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
     static int iCurrentItem = 0;
     ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-    for (_uint i = 0; i < 9; ++i)
+    for (_uint i = 0; i < 40; ++i)
     {
         _uint  iTextureIndex = iCurrentItem * 3 + i;
 
@@ -530,7 +621,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
                 m_iNonAnimModelIndex = iTextureIndex;
             }
 
-            if ((i + 1) % 3 != 0)
+            if ((i + 1) % 4 != 0)
             {
                 ImGui::SameLine();
             }
@@ -625,6 +716,8 @@ HRESULT CLevel_GamePlay::Load_Objects()
         if (pObject != nullptr)
             m_Objects.push_back(pObject);
     }
+
+    CloseHandle(hFile);
 
 }
 
@@ -986,7 +1079,7 @@ HRESULT CLevel_GamePlay::Delete_Cell()
 
 HRESULT CLevel_GamePlay::Save_Navi()
 {
-
+    return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Load_Navi()

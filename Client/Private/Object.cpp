@@ -102,7 +102,7 @@ HRESULT CObject::Ready_Components()
 
 	CBounding_Sphere::BOUNDING_SPHERE_DESC SphereDesc{};
 
-	SphereDesc.fRadius = m_fFrustumRadius * 110.f;
+	SphereDesc.fRadius = m_fFrustumRadius;
 	SphereDesc.vCenter = _float3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_SPHERE"),

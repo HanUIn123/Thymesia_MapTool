@@ -107,10 +107,6 @@ void CPlayer::Update(_float fTimeDelta)
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr()));	
 
 	__super::Update(fTimeDelta);
-
-
-
-
 }
 
 void CPlayer::Late_Update(_float fTimeDelta)
@@ -173,7 +169,7 @@ HRESULT CPlayer::Ready_Components()
 
 HRESULT CPlayer::Ready_PartObjects()
 {
-	/*
+	
 	CBody_Player::BODY_PLAYER_DESC BodyDesc{};	
 	
 	BodyDesc.pParentState = &m_iState;	
@@ -186,7 +182,7 @@ HRESULT CPlayer::Ready_PartObjects()
 		return E_FAIL;			
 	
 	m_pModel = dynamic_cast<CModel*>(Find_PartObject_Component(TEXT("Part_Body"), TEXT("Com_Model")));			
-	*/
+	
 
 	return S_OK;
 }
