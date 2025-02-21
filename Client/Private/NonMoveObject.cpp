@@ -73,10 +73,10 @@ HRESULT CNonMoveObject::Render()
 		m_pModelCom->Render(i);
 	}
 
-
-#ifdef _DEBUG
-	m_pColliderCom->Render();
-#endif
+	if (m_bFrustumSphere)
+	{
+		m_pColliderCom->Render();
+	}
 
 	return S_OK;
 }

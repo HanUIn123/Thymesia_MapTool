@@ -58,6 +58,9 @@ public:
 	OBJECT_INFO  Get_ObjectInfo();
 
 	void		 Set_FrustumRadius(_float fFrustumRadius);
+	void         Set_FrustumSphere(_bool bSphere) {
+		m_bFrustumSphere = bSphere;
+	}
 
 protected:
 	//Components
@@ -74,6 +77,8 @@ protected:
 	_float3		   m_fScale		= { 0.f, 0.f, 0.f };
 
 	_char		   m_MeshName[MAX_PATH] = {};
+
+	_bool		   m_bFrustumSphere = { true };
 
 protected:
 	virtual HRESULT Ready_Components();

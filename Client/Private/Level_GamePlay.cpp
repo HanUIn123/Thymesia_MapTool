@@ -47,24 +47,10 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Fortress_BossDoor_Left01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Fortress_BossDoor_Right01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Debris_01a.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Debris_02a.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Scafold_01b.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Scafold_01c.png"), IMG_NONANIM_MODEL, 1);
 
-    /*
-   "T_P_BossRoomVines01",
-          "P_BossArtriumCircleRailing_Down02"
-          ,"P_BossArtriumCircleRailing_Down03"
-          ,"P_BossArtriumCircleRailing_Down04"
-          ,"P_BossAtriumCircleRailing_Top01"
-          ,"P_BossAtriumCircleRailing_Up01"
-          ,"P_BossAtriumCircleRailing_Up02"
-          ,"P_BossAtriumCircleRailing_Up04"
-          ,"P_BossAtriumCircleRailing_Up03"
-          ,
-
-    */
-    // 레이어 이름이랑, 객체 주소
-    //m_pGameInstance->Add_DeadObject()
 }
 
 HRESULT CLevel_GamePlay::Initialize()
@@ -125,6 +111,15 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     }
 
 
+    if (ImGui::Button("Turn FrustumSphere"))
+    {
+        m_bFrustumSphere = !m_bFrustumSphere;
+
+        for (auto& pObject : m_Objects)
+        {
+            pObject->Set_FrustumSphere(m_bFrustumSphere);
+        }
+    }
 
     // if (ImGui::Button("Save_Models"))
     if (ImGui::Button("Mesh Picking"))
@@ -576,6 +571,7 @@ void CLevel_GamePlay::Add_NonAnimObjects()
           "P_Fortress_BossDoor_Left01",
           "P_Fortress_BossDoor_Right01",
           "SM_Debris_01a",
+          "SM_Debris_02a",
           "SM_Scafold_01b",
           "SM_Scafold_01c"
           ,
@@ -610,7 +606,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
     static int iCurrentItem = 0;
     ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-    for (_uint i = 0; i < 40; ++i)
+    for (_uint i = 0; i < 41; ++i)
     {
         _uint  iTextureIndex = iCurrentItem * 3 + i;
 
