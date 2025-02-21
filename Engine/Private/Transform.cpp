@@ -280,13 +280,13 @@ void CTransform::Scaling(const _float3 & vScale)
 {
 	//Nan_Check
 
-	if(!XMVector3IsNaN(XMVector3Normalize(Get_State(STATE_RIGHT))* vScale.x))
+	if((!XMVector3IsNaN(XMVector3Normalize(Get_State(STATE_RIGHT))* vScale.x)) && !(vScale.x == 0.f))
 		Set_State(STATE_RIGHT, XMVector3Normalize(Get_State(STATE_RIGHT)) * vScale.x);
 
-	if (!XMVector3IsNaN(XMVector3Normalize(Get_State(STATE_UP)) * vScale.y))
+	if ((!XMVector3IsNaN(XMVector3Normalize(Get_State(STATE_UP)) * vScale.y)) && !(vScale.y == 0.f))
 		Set_State(STATE_UP, XMVector3Normalize(Get_State(STATE_UP)) * vScale.y);
 
-	if (!XMVector3IsNaN(XMVector3Normalize(Get_State(STATE_LOOK)) * vScale.z))
+	if ((!XMVector3IsNaN(XMVector3Normalize(Get_State(STATE_LOOK)) * vScale.z)) && !(vScale.z == 0.f))
 		Set_State(STATE_LOOK, XMVector3Normalize(Get_State(STATE_LOOK)) * vScale.z);
 
 	m_fScaling = vScale;

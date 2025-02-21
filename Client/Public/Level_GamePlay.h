@@ -35,6 +35,12 @@ public:
 		_float3 fPrevPoints[3];
 	};
 
+	typedef struct Mesh_Pos
+	{
+		_float fDist;
+		_float3 fPosition;
+		CObject* pObject;
+	}MESHPOS;
 
 private:
 	CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

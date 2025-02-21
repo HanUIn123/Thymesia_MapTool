@@ -53,7 +53,7 @@ protected:
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:
-	_bool		 Picking_Objects(_float3& _fPos);
+	_bool		 Picking_Objects(MESHINFO& pInfo);
 
 	OBJECT_INFO  Get_ObjectInfo();
 

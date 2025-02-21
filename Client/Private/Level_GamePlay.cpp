@@ -50,6 +50,13 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Debris_02a.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Scafold_01b.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Scafold_01c.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_14.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_16.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_13.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_rock_03.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_curb_02.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Brick_Floor.png"), IMG_NONANIM_MODEL, 1);
 
 }
 
@@ -159,33 +166,57 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
                 {
                     if (m_bIsMeshPickingMode)
                     {
+                        vector<Mesh_Pos> vMesh;
+
                         for (auto& pObject : m_Objects)
                         {
+
+                            CObject::MESHINFO pInfo;
+
+                            if (pObject != nullptr && pObject->Picking_Objects(pInfo))
+                            {
+                                Mesh_Pos vPos{};
+                                vPos.fPosition = pInfo.fPosition;
+                                vPos.fDist = pInfo.fDist;
+                                vPos.pObject = pObject;
+
+                                vMesh.push_back(vPos);
+                            }
+                        }
+
+                        if (vMesh.size() != 0)
+                        {
+                            sort(vMesh.begin(), vMesh.end(), [](Mesh_Pos a, Mesh_Pos b) {
+                                if (a.fDist < b.fDist) return true;
+                                else
+                                    return false;
+                                });
+
                             _float3 fPos = { 0.f ,0.f ,0.f };
 
-                            if (pObject != nullptr && pObject->Picking_Objects(fPos))
-                            {
-                                m_fMeshPickPos = fPos;
+                            fPos = vMesh.front().fPosition;
 
-                                m_fObjectPos[0] = fPos.x;
+                            m_fMeshPickPos = fPos;
 
-                                m_fObjectPos[1] = fPos.y;
+                            m_fObjectPos[0] = fPos.x;
 
-                                m_fObjectPos[2] = fPos.z;
+                            m_fObjectPos[1] = fPos.y;
 
-                                cout << m_fMeshPickPos.x << " ";
+                            m_fObjectPos[2] = fPos.z;
 
-                                cout << m_fMeshPickPos.y << " ";
+                            cout << m_fMeshPickPos.x << " ";
 
-                                cout << m_fMeshPickPos.z << " ";
+                            cout << m_fMeshPickPos.y << " ";
 
-                                cout << "\n";
+                            cout << m_fMeshPickPos.z << " ";
 
-                                m_pCurrentObject = pObject;
-                                m_pCurrentObjectTransformCom = pObject->Get_Transfrom();
+                            cout << "\n";
 
-                                Add_NonAnimObjects();
-                            }
+                            m_pCurrentObject = vMesh.front().pObject;
+                            m_pCurrentObjectTransformCom = m_pCurrentObject->Get_Transfrom();
+
+                            Add_NonAnimObjects();
+
                         }
                     }
                     else if (m_bIsTerrainPickingMode)
@@ -567,14 +598,22 @@ void CLevel_GamePlay::Add_NonAnimObjects()
           ,"P_BossAtriumCircleRailing_Up02"
           ,"P_BossAtriumCircleRailing_Up04"
           ,"P_BossAtriumCircleRailing_Up03"
-          ,"Railing03_1"
+          ,"Railing03_1",
           "P_Fortress_BossDoor_Left01",
           "P_Fortress_BossDoor_Right01",
           "SM_Debris_01a",
           "SM_Debris_02a",
           "SM_Scafold_01b",
-          "SM_Scafold_01c"
-          ,
+          "SM_Scafold_01c",
+            "SM_fence_14",
+            "SM_fence_16",
+            "SM_fence_13",
+            "SM_rock_03",
+            "SM_curb_02",
+            "P_CemeteryStairs01",
+            "Brick_Floor",
+
+
     };
 
     CObject::OBJECT_DESC Desc{};
@@ -606,7 +645,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
     static int iCurrentItem = 0;
     ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-    for (_uint i = 0; i < 41; ++i)
+    for (_uint i = 0; i < 48; ++i)
     {
         _uint  iTextureIndex = iCurrentItem * 3 + i;
 

@@ -35,7 +35,7 @@ HRESULT CObject::Initialize(void* pArg)
 	return S_OK;
 }
 
-_bool CObject::Picking_Objects(_float3& _fPos)
+_bool CObject::Picking_Objects(MESHINFO &pInfo)
 {
 	vector <MESHINFO> vMesh;
 
@@ -61,7 +61,8 @@ _bool CObject::Picking_Objects(_float3& _fPos)
 				return false;
 			});
 
-		_fPos = vMesh.front().fPosition;
+		pInfo.fPosition = vMesh.front().fPosition;
+		pInfo.fDist = vMesh.front().fDist;
 
 		return true;
 	}
@@ -102,7 +103,7 @@ HRESULT CObject::Ready_Components()
 
 	CBounding_Sphere::BOUNDING_SPHERE_DESC SphereDesc{};
 
-	SphereDesc.fRadius = m_fFrustumRadius;
+	SphereDesc.fRadius = 1.f;
 	SphereDesc.vCenter = _float3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_SPHERE"),
