@@ -158,6 +158,20 @@ private:
 	_float   m_fRotationMax[2] = { -180.f, 180.f };
 	_float	 m_fRadiusMax = { 100.f };
 
+<<<<<<< HEAD
+=======
+private:
+	CCamera_Free*							m_pCamera = { nullptr };
+	CTerrain*								m_pTerrain = { nullptr };
+	CNavigation*							m_pNavigation = { nullptr };
+
+	CTransform*								m_pCurrentObjectTransformCom = { nullptr };
+	CObject*								m_pCurrentObject = { nullptr };
+
+	_float3									m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
+
+	_bool									m_bFrustumSphere = { false };
+>>>>>>> origin/main
 public:
     static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual void Free() override;
