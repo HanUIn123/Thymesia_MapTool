@@ -70,24 +70,26 @@ private:
 
 
 private:
-	HRESULT									Resister_ObjectList_PreviewImage(const _tchar* _pImageFilePath, IMGUI_TEXTURE_TYPE _eImguiTextureType, _uint _iTextureNumber);
-	vector<ID3D11ShaderResourceView*>		m_vecAnimModelSRVs;
-	vector<ID3D11ShaderResourceView*>		m_vecNonAnimModelSRVs;
+	HRESULT								Resister_ObjectList_PreviewImage(const _tchar* _pImageFilePath, IMGUI_TEXTURE_TYPE _eImguiTextureType, _uint _iTextureNumber);
+	vector<ID3D11ShaderResourceView*>	m_vecAnimModelSRVs;
+	vector<ID3D11ShaderResourceView*>	m_vecNonAnimModelSRVs;
 
 private:
-	void									Add_NonAnimObjects();
-	void									Add_AnimObjects();
-	void									Setting_NonAnimObjectList();
+	void								Add_NonAnimObjects();
+	void								Add_AnimObjects();
+	void								Setting_NonAnimObjectList();
 
-	HRESULT									Save_Objects();
+	void								Active_PreviewModelImage();
+	
 
-	HRESULT									Load_Objects();
+	HRESULT								Save_Objects();
+	HRESULT								Load_Objects();
+	void	                            OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName);
 
-	void	                                OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName);
 
 private:
-	HRESULT									Pick_Object(MENU_TYPE _eMenuType);
-	_float3									m_fPickPos = {};
+	HRESULT								Pick_Object(MENU_TYPE _eMenuType);
+	_float3								m_fPickPos = {};
 
 private:
 	HRESULT                             Picking_Points();
@@ -118,18 +120,18 @@ private:
 
 
 private:
-	_bool									m_bImguiHovered = { false };
-	_bool									m_bNonAnimObjectMenuSelected = { false };
-	_bool									m_bAnimObjectMenuSelected = { false };
-	_bool									m_bNaviMenuSelected = { false };
+	_bool								m_bImguiHovered = { false };
+	_bool								m_bNonAnimObjectMenuSelected = { false };
+	_bool								m_bAnimObjectMenuSelected = { false };
+	_bool								m_bNaviMenuSelected = { false };
 
-	_bool									m_bIsMeshPickingMode = { false };
-	_bool									m_bIsTerrainPickingMode = { false };
+	_bool								m_bIsMeshPickingMode = { false };
+	_bool								m_bIsTerrainPickingMode = { false };
 
 
-	_int									m_iNonAnimModelIndex = {};
+	_int								m_iNonAnimModelIndex = {};
 
-	_float3									m_fWholePickPos = {};
+	_float3								m_fWholePickPos = {};
 
 
 private:
@@ -150,7 +152,57 @@ private:
 	_float   m_fScaleMax[2] = { -1.f, 1.f };	
 	_float   m_fRotationMax[2] = { -180.f, 180.f };
 	_float	 m_fRadiusMax = { 100.f };
-
+	const char* m_strObjectNames[256] = 
+	{
+		"HORSE_P_WoodenFrame02_05",
+		  "P_Rag03",
+		  "SM_Wall_Shelf",
+		  "SM_WoodFence03",
+		  "SM_WoodFence04",
+		  "SM_WoodStairs03",
+		  "P_BossAtriumCircle01",
+		  "P_BossCemetery_02_02",
+		  "P_BossCemetery_04",
+		  "P_BossCemetery_05",
+		  "P_BossCemetery_06",
+		  "P_BossInteriorArches02",
+		  "P_ChurchWindowGrilles01",
+		  "P_LongStairs01",
+		  "SM_Plains_CastleArch_Ruin_01",
+		  "SM_Trim_01a",
+		  "SM_Wall_8x8_Broken_01c",
+		  "SM_Wall_8x8_Broken_01d",
+		  "SM_Wall_8x8_Broken_01e",
+		  "Railing_base01",
+		  "Railing_pillar01_2",
+		  "Railing01_3",
+		  "SM_Brick_stone_stairs_1_a",
+		  "SM_Gate_17d",
+		  "SM_ground_Road_Middle_250x250cm_1_a",
+		  "T_P_BossRoomVines01",
+		  "P_BossArtriumCircleRailing_Down02"
+		  ,"P_BossArtriumCircleRailing_Down03"
+		  ,"P_BossArtriumCircleRailing_Down04"
+		  ,"P_BossAtriumCircleRailing_Top01"
+		  ,"P_BossAtriumCircleRailing_Up01"
+		  ,"P_BossAtriumCircleRailing_Up02"
+		  ,"P_BossAtriumCircleRailing_Up04"
+		  ,"P_BossAtriumCircleRailing_Up03"
+		  ,"Railing03_1",
+		  "P_Fortress_BossDoor_Left01",
+		  "P_Fortress_BossDoor_Right01",
+		  "SM_Debris_01a",
+		  "SM_Debris_02a",
+		  "SM_Scafold_01b",
+		  "SM_Scafold_01c",
+			"SM_fence_14",
+			"SM_fence_16",
+			"SM_fence_13",
+			"SM_rock_03",
+			"SM_curb_02",
+			"P_CemeteryStairs01",
+			"Brick_Floor", 
+	};
 private:
 	CCamera_Free*							m_pCamera = { nullptr };
 	CTerrain*								m_pTerrain = { nullptr };
@@ -158,6 +210,11 @@ private:
 
 	CTransform*								m_pCurrentObjectTransformCom = { nullptr };
 	CObject*								m_pCurrentObject = { nullptr };
+
+	CTransform*								m_pPrevObjectTrasnformCom = { nullptr };
+	CObject*								m_pPrevObject = { nullptr };
+
+
 
 	_float3									m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
 

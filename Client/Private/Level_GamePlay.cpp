@@ -129,7 +129,6 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         }
     }
 
-    // if (ImGui::Button("Save_Models"))
     if (ImGui::Button("Mesh Picking"))
     {
         m_bIsMeshPickingMode = true;
@@ -171,7 +170,6 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
                         for (auto& pObject : m_Objects)
                         {
-
                             CObject::MESHINFO pInfo;
 
                             if (pObject != nullptr && pObject->Picking_Objects(pInfo))
@@ -327,6 +325,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
             Load_Navi();
         }
     }
+
+    Active_PreviewModelImage();
 
     Delete_Cell_Mode();
 
@@ -564,67 +564,13 @@ void CLevel_GamePlay::Add_NonAnimObjects()
     if (m_iNonAnimModelIndex == -1)
         return;
 
-    const char* ObjectNames[] = {
-          "HORSE_P_WoodenFrame02_05",
-          "P_Rag03",
-          "SM_Wall_Shelf",
-          "SM_WoodFence03",
-          "SM_WoodFence04",
-          "SM_WoodStairs03",
-          "P_BossAtriumCircle01",
-          "P_BossCemetery_02_02",
-          "P_BossCemetery_04",
-          "P_BossCemetery_05",
-          "P_BossCemetery_06",
-          "P_BossInteriorArches02",
-          "P_ChurchWindowGrilles01",
-          "P_LongStairs01",
-          "SM_Plains_CastleArch_Ruin_01",
-          "SM_Trim_01a",
-          "SM_Wall_8x8_Broken_01c",
-          "SM_Wall_8x8_Broken_01d",
-          "SM_Wall_8x8_Broken_01e", 
-          "Railing_base01",
-          "Railing_pillar01_2",
-          "Railing01_3",
-          "SM_Brick_stone_stairs_1_a",
-          "SM_Gate_17d",
-          "SM_ground_Road_Middle_250x250cm_1_a",
-          "T_P_BossRoomVines01",
-          "P_BossArtriumCircleRailing_Down02"
-          ,"P_BossArtriumCircleRailing_Down03"
-          ,"P_BossArtriumCircleRailing_Down04"
-          ,"P_BossAtriumCircleRailing_Top01"
-          ,"P_BossAtriumCircleRailing_Up01"
-          ,"P_BossAtriumCircleRailing_Up02"
-          ,"P_BossAtriumCircleRailing_Up04"
-          ,"P_BossAtriumCircleRailing_Up03"
-          ,"Railing03_1",
-          "P_Fortress_BossDoor_Left01",
-          "P_Fortress_BossDoor_Right01",
-          "SM_Debris_01a",
-          "SM_Debris_02a",
-          "SM_Scafold_01b",
-          "SM_Scafold_01c",
-            "SM_fence_14",
-            "SM_fence_16",
-            "SM_fence_13",
-            "SM_rock_03",
-            "SM_curb_02",
-            "P_CemeteryStairs01",
-            "Brick_Floor",
-
-
-    };
-
     CObject::OBJECT_DESC Desc{};
 
     Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
     Desc.fFrustumRadius = m_fFrustumRadius;
     Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
     Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
-    Desc.ObjectName = ObjectNames[m_iNonAnimModelIndex];
-
+    Desc.ObjectName = m_strObjectNames[m_iNonAnimModelIndex];
     CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
 
     if (pObject != nullptr)
@@ -655,11 +601,65 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
             if (ImGui::ImageButton(("NonAnimModel" + to_string(iTextureIndex)).c_str(), (ImTextureID)m_vecNonAnimModelSRVs[iTextureIndex], ImVec2(50.0f, 50.0f)))
             {
                 m_iNonAnimModelIndex = iTextureIndex;
+
+                Safe_Release(m_pPrevObject);
+                m_pPrevObjectTrasnformCom = nullptr;
+
+                CObject::OBJECT_DESC ObjectDesc = {};
+                ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+                ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+                ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f};
+                ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+                ObjectDesc.ObjectName = m_strObjectNames[m_iNonAnimModelIndex];
+
+                m_pPrevObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &ObjectDesc));
+
+                if (nullptr != m_pPrevObject)
+                {
+                    m_pPrevObjectTrasnformCom = m_pPrevObject->Get_Transfrom();
+                }
             }
 
             if ((i + 1) % 4 != 0)
             {
                 ImGui::SameLine();
+            }
+        }
+    }
+}
+
+void CLevel_GamePlay::Active_PreviewModelImage()
+{
+    _float3 vMousePos;
+    if (m_bNonAnimObjectMenuSelected && m_pPrevObject && m_bIsTerrainPickingMode)
+    {
+        vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+
+        if (nullptr != m_pPrevObjectTrasnformCom)
+        {
+            m_pPrevObjectTrasnformCom->Scaling(_float3(0.01f, 0.01f, 0.01f));
+            m_pPrevObjectTrasnformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vMousePos.x, vMousePos.y, vMousePos.z, 1.0f));
+        }
+    }
+    else if (m_bNonAnimObjectMenuSelected && m_pPrevObject && m_bIsMeshPickingMode)
+    {
+        for (auto& pObject : m_Objects)
+        {
+            CObject::MESHINFO pInfo;
+
+            if (pObject != nullptr && pObject->Picking_Objects(pInfo))
+            {
+                Mesh_Pos vPos{};
+                vPos.fPosition = pInfo.fPosition;
+                vPos.fDist = pInfo.fDist;
+                vPos.pObject = pObject;
+                vMousePos = vPos.fPosition;
+
+                if (nullptr != m_pPrevObjectTrasnformCom)
+                {
+                    m_pPrevObjectTrasnformCom->Scaling(_float3(0.01f, 0.01f, 0.01f));
+                    m_pPrevObjectTrasnformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vMousePos.x, vMousePos.y, vMousePos.z, 1.0f));
+                }
             }
         }
     }
