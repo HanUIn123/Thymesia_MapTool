@@ -129,6 +129,7 @@ private:
 
 	_int									m_iNonAnimModelIndex = {};
 
+	_float3									m_fWholePickPos = {};
 
 
 private:

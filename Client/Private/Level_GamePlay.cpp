@@ -317,14 +317,14 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     {
         if (ImGui::Button("Save_Navi"))
         {
-
+            Save_Navi();
         }
 
         ImGui::SameLine();
 
         if (ImGui::Button("Load_Navi"))
         {
-
+            Load_Navi();
         }
     }
 
@@ -797,22 +797,44 @@ HRESULT CLevel_GamePlay::Pick_Object(MENU_TYPE _eMenuType)
 
 HRESULT CLevel_GamePlay::Picking_Points()
 {
-    m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+    if (m_bIsMeshPickingMode)
+    {
+        for (auto& pObject : m_Objects)
+        {
+            _float3 fPos = { 0.f, 0.f, 0.f };
+            CObject::MESHINFO pInfo;
 
-    if (m_fPickPos.y == -0.5f)
+            if (pObject != nullptr && pObject->Picking_Objects(pInfo))
+            {
+                Mesh_Pos vPos{};
+                vPos.fPosition = pInfo.fPosition;
+                vPos.fDist = pInfo.fDist;
+                vPos.pObject = pObject;
+                m_fWholePickPos = vPos.fPosition;
+            }
+        }
+    }
+    else
+    {
+        m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+        m_fWholePickPos = m_fPickPos;
+    }
+
+    if (m_fWholePickPos.y == -0.5f)
         return S_OK;
 
-    m_fPickPos.y += 0.1f;
+    m_fWholePickPos.y += 0.1f;
 
     if (m_bDeleteMode)
     {
-        m_vecPickedPoints.push_back(m_fPickPos);
+        m_vecPickedPoints.push_back(m_fWholePickPos);
         return S_OK;
     }
 
     if (m_bConnectingMode)
     {
-        XMFLOAT3 vSelectedCordinate = Pick_Closest_Cube(m_fPickPos);
+        XMFLOAT3 vSelectedCordinate = Pick_Closest_Cube(m_fWholePickPos);
+
         if (vSelectedCordinate.x != FLT_MAX)
         {
             m_vecSelectedCubes.push_back(vSelectedCordinate);
@@ -827,7 +849,7 @@ HRESULT CLevel_GamePlay::Picking_Points()
         return S_OK;
     }
 
-    m_vecPickedPoints.push_back(m_fPickPos);
+    m_vecPickedPoints.push_back(m_fWholePickPos);
 
     if (m_vecPickedPoints.size() == 3 && m_bFirstPick)
     {
@@ -836,7 +858,6 @@ HRESULT CLevel_GamePlay::Picking_Points()
         tagWholeCellPoints.fCellPoints[2] = m_vecPickedPoints[2];
 
         m_pNavigation->Create_Cell(tagWholeCellPoints.fCellPoints);
-
         m_vecWholeCellPoints.push_back(tagWholeCellPoints);
 
         tagWholeCellPoints.fPrevPoints[0] = tagWholeCellPoints.fCellPoints[0];
@@ -844,38 +865,29 @@ HRESULT CLevel_GamePlay::Picking_Points()
 
         m_iNumCellCount++;
         m_bFirstPick = false;
-
         m_vecPickedPoints.clear();
     }
-    else if (m_vecPickedPoints.size() < 3 && m_bFirstPick == false)
+    else if (m_vecPickedPoints.size() < 3 && !m_bFirstPick)
     {
-        // m_vecPickedPoints[0] 가 이제 고정적으로, 내가 "새로" 찍는 한 점을 의미함.
-        // m_vecWholeCellPoints 에 있는 모든 cell points 들이랑 계산해서 나온 가장 가까운 두점이 
-        // Compute_NearPoints 라는 <xmfloat3, xmfloat3> 라고 pair 타입으로 담고 있는 NearPoints로 처리함.
+        // m_vecPickedPoints[0]는 고정된 새로 선택한 점을 의미함.
+        // m_vecWholeCellPoints에 있는 모든 cell points 중 가장 가까운 두 점을 찾음.
         auto NearPoints = Compute_NearPoints(m_vecWholeCellPoints, m_vecPickedPoints[0]);
 
-        // 이제 내가 딱 새로 찍은 점하고 NearPoints의 첫 번째 원소 랑 두 번째 원소가, 어우러져서 Cell을 만듬!! 
+        // 가장 가까운 두 점과 새로 선택한 점을 이용해 Cell을 생성.
         tagWholeCellPoints.fCellPoints[0] = NearPoints.first;
         tagWholeCellPoints.fCellPoints[1] = NearPoints.second;
         tagWholeCellPoints.fCellPoints[2] = m_vecPickedPoints[0];
 
-        // 그리고 그 어우러져 만들어진 Cell 이 시계방향으로 된건지 아닌지, IsCWTriangle 함수로 판단하자.
-        // vNewCellpoint1 가 내가 찍은 점과 가장 가까운 점의 첫 번째 원소의 point.
-        // vNewCellpoint2 가 내가 찍은 점과 가장 가까운 점의 두 번째 원소의 point.
-        // vNewCellpoint3 가 내가 찍은 점 point.
+        // 생성된 Cell이 시계방향인지 판단.
         XMVECTOR vNewCellpoint1 = XMLoadFloat3(&tagWholeCellPoints.fCellPoints[0]);
         XMVECTOR vNewCellpoint2 = XMLoadFloat3(&tagWholeCellPoints.fCellPoints[1]);
         XMVECTOR vNewCellpoint3 = XMLoadFloat3(&tagWholeCellPoints.fCellPoints[2]);
 
-        if (Is_CWTriangle(vNewCellpoint1, vNewCellpoint2, vNewCellpoint3))
-        {
-            // 강제적으로 그냥 순서 바꿔버림. 이거안하면 겹쳐짐. (근데 막 찍으면 그래도 겹쳐짐;모르겟음)
-            // 아무리 해도 찍다보면 [2] - [0] - [1] 해야하는데 씨발놈이, [2] - [1] - [0] 이렇게 되버림;;
-            // 그래서 바꿔버림 여기서 강제적으로 위 순서로 되게.
+        if (Is_CWTriangle(vNewCellpoint1, vNewCellpoint2, vNewCellpoint3)) {
+            // 강제로 순서를 변경하여 올바른 방향으로 만듦.
             swap(tagWholeCellPoints.fCellPoints[1], tagWholeCellPoints.fCellPoints[2]);
 
             m_pNavigation->Create_Cell(tagWholeCellPoints.fCellPoints);
-
             m_vecWholeCellPoints.push_back(tagWholeCellPoints);
 
             tagWholeCellPoints.fPrevPoints[0] = tagWholeCellPoints.fCellPoints[1];
@@ -887,6 +899,8 @@ HRESULT CLevel_GamePlay::Picking_Points()
     }
 
     return S_OK;
+
+
 }
 
 _float CLevel_GamePlay::Compute_Cell_Distance(const XMFLOAT3& _NewPickingPoint, const XMFLOAT3& _PrevPickedPoint)
@@ -1115,14 +1129,68 @@ HRESULT CLevel_GamePlay::Delete_Cell()
 
 HRESULT CLevel_GamePlay::Save_Navi()
 {
+    wstring fileName; OpenFileDialoge(L"NavigationData.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Create NavigationData File!");
+        return E_FAIL;
+    }
+
+    DWORD dwByte = 0;
+
+    WriteFile(hFile, &m_iNumCellCount, sizeof(_uint), &dwByte, nullptr);
+
+    for (auto& pCellPoints : m_vecWholeCellPoints)
+    {
+        WriteFile(hFile, pCellPoints.fCellPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+    }
+    MSG_BOX("Success Save");
+    CloseHandle(hFile);
+
     return S_OK;
+
 }
 
 HRESULT CLevel_GamePlay::Load_Navi()
 {
-
-
+    wstring fileName; OpenFileDialoge(L"Select Navigation Data", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+    {
+        MSG_BOX("No file selected!");
+        return E_FAIL;
+    } HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Open NavigationData File!");
+        return E_FAIL;
+    } DWORD dwByte = 0;
+    _uint iLoadedCellCount = 0;
+    ReadFile(hFile, &iLoadedCellCount, sizeof(_uint), &dwByte, nullptr);
+    for (_uint i = 0; i < iLoadedCellCount; ++i)
+    {
+        CELL_POINTS cellPoints; ReadFile(hFile, cellPoints.fCellPoints, sizeof(_float3) * 3, &dwByte, nullptr
+        );
+        _bool bIsDuplicate = false;
+        for (const auto& existingCell : m_vecWholeCellPoints)
+        {
+            if (memcmp(existingCell.fCellPoints, cellPoints.fCellPoints, sizeof(_float3) * 3) == 0)
+            {
+                bIsDuplicate = true; break;
+            }
+        }
+        if (!bIsDuplicate)
+        {
+            m_pNavigation->Create_Cell(cellPoints.fCellPoints); m_vecWholeCellPoints.push_back(cellPoints); m_iNumCellCount++;
+        }
+    }
+    CloseHandle(hFile);
+    MSG_BOX("Navigation Data Loaded Successfully!");
     return S_OK;
+
 }
 
 CLevel_GamePlay* CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

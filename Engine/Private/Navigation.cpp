@@ -32,40 +32,46 @@ CNavigation::CNavigation(const CNavigation& Prototype)
 
 HRESULT CNavigation::Initialize_Prototype(const _tchar* pNavigationDataFile)
 {
-    _ulong  dwByte = {};
-    HANDLE  hFile = CreateFile(pNavigationDataFile, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    _ulong      dwByte = {};
+    HANDLE hFile = CreateFile(pNavigationDataFile, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
-    while (true)
+    _uint iCellCountNum = {};
+    ReadFile(hFile, &iCellCountNum, sizeof(_uint), &dwByte, nullptr);
+
+    //while (true)
+    for (_uint i = 0; i < iCellCountNum; ++i)
     {
-        _float3  vPoints[CCell::POINT_END] = {};
+        _float3         vPoints[CCell::POINT_END] = {};
 
         ReadFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
 
-        if (dwByte == 0)
+        // 루프 탈출문 조건
+        if (0 == dwByte)
             break;
 
-        CCell* pCell = CCell::Create(m_pDevice, m_pContext, vPoints, m_Cells.size());
-
+        // size 로 줘서 처음에 하나 들어가면 용량 1개, 하나 또 들어가면 2개.~~ 
+        CCell* pCell = CCell::Create(m_pDevice, m_pContext, vPoints, (_uint)(m_Cells.size()));
+        //CCell* pCell = CCell::Create(m_pDevice, m_pContext, vPoints, iCellCountNum);
         if (nullptr == pCell)
             return E_FAIL;
 
         m_Cells.push_back(pCell);
     }
-
     CloseHandle(hFile);
-    
+
     XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
     XMStoreFloat4x4(&m_WorldMatrixInverse, XMMatrixIdentity());
-
 
 #ifdef _DEBUG
     m_pShader = CShader::Create(m_pDevice, m_pContext, TEXT("../../EngineSDK/Hlsl/Shader_Cell.hlsl"), VTXPOS::Elements, VTXPOS::iNumElements);
     if (nullptr == m_pShader)
         return E_FAIL;
-#endif // _DEBUG
+#endif
 
+    // 이제 이걸 호출해줘야 최종적으로 현재 셀 4개 를 뛰놀수 있게 되었음. 
     if (FAILED(SetUp_Neighbors()))
         return E_FAIL;
+
 
     return S_OK;
 }

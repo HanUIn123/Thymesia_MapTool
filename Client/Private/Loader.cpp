@@ -546,9 +546,9 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Brick_Floor/brickFloor.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House_01"),
+	/*if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House_01"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/House_01/House_01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
-		return E_FAIL;
+		return E_FAIL;*/
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"),
 		CNonMoveObject::Create(m_pDevice, m_pContext))))
