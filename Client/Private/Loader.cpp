@@ -516,34 +516,38 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_fence_14"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_fence_14/SM_fence_14.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_fence_14/SM_fence_14.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_fence_16"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_fence_16/SM_fence_16.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_fence_16/SM_fence_16.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_fence_13"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_fence_13/SM_fence_13.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_fence_13/SM_fence_13.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_rock_03"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_rock_03/SM_rock_03.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_rock_03/SM_rock_03.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_curb_02"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_curb_02/SM_curb_02.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_curb_02/SM_curb_02.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_P_CemeteryStairs01"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/P_CemeteryStairs01/P_CemeteryStairs01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/P_CemeteryStairs01/P_CemeteryStairs01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Brick_Floor"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Brick_Floor/brickFloor.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Brick_Floor/brickFloor.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House_01"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/House_01/House_01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"),
