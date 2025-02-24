@@ -202,6 +202,8 @@ private:
 			"SM_curb_02",
 			"P_CemeteryStairs01",
 			"Brick_Floor", 
+		"Grass0",
+		"P_Archive_Chair01",
 	};
 private:
 	CCamera_Free*							m_pCamera = { nullptr };

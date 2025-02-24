@@ -14,10 +14,10 @@ HRESULT CFrustum::Initialize()
 	m_vOriginal_Points[2] = _float4(1.f, -1.f, 0.f, 1.f);
 	m_vOriginal_Points[3] = _float4(-1.f, -1.f, 0.f, 1.f);
 
-	m_vOriginal_Points[4] = _float4(-1.f, 1.f, 1.f, 1.f);
-	m_vOriginal_Points[5] = _float4(1.f, 1.f, 1.f, 1.f);
-	m_vOriginal_Points[6] = _float4(1.f, -1.f, 1.f, 1.f);
-	m_vOriginal_Points[7] = _float4(-1.f, -1.f, 1.f, 1.f);
+	m_vOriginal_Points[4] = _float4(-1.f, 1.f, 0.999f, 1.f);
+	m_vOriginal_Points[5] = _float4(1.f, 1.f, 0.999f, 1.f);
+	m_vOriginal_Points[6] = _float4(1.f, -1.f, 0.999f, 1.f);
+	m_vOriginal_Points[7] = _float4(-1.f, -1.f, 0.999f, 1.f);
 
 	return S_OK;
 }

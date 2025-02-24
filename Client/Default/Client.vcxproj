@@ -185,6 +185,7 @@
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Level_Logo.h" />
     <ClInclude Include="..\public\Loader.h" />
+    <ClInclude Include="..\Public\LODNonMoveObject.h" />
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\Public\NonMoveObject.h" />
     <ClInclude Include="..\Public\Object.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
     <ClCompile Include="..\private\Loader.cpp" />
+    <ClCompile Include="..\Private\LODNonMoveObject.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\Private\NonMoveObject.cpp" />
     <ClCompile Include="..\Private\Object.cpp" />

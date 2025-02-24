@@ -58,6 +58,9 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs02.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Brick_Floor.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Grass0.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Archive_Chair01.png"), IMG_NONANIM_MODEL, 1);
+    //P_Archive_Chair01
 
 }
 
@@ -146,9 +149,12 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
     ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
 
-    if (ImGui::Button("UnPicking_Create"))
+    if (ImGui::Button("Delete_ObjectIndex"))
     {
         m_iNonAnimModelIndex = -1;
+
+        m_pPrevObject = nullptr;
+        m_pCurrentObjectTransformCom = nullptr;
     }
 
     if (ImGui::Button("Create_Object"))
@@ -592,7 +598,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
     static int iCurrentItem = 0;
     ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-    for (_uint i = 0; i < 48; ++i)
+    for (_uint i = 0; i < 50; ++i)
     {
         _uint  iTextureIndex = iCurrentItem * 3 + i;
 
@@ -602,8 +608,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
             {
                 m_iNonAnimModelIndex = iTextureIndex;
 
-                Safe_Release(m_pPrevObject);
-                m_pPrevObjectTrasnformCom = nullptr;
+                m_pGameInstance->Add_DeadObject(TEXT("Layer_Object"), m_pPrevObject);
 
                 CObject::OBJECT_DESC ObjectDesc = {};
                 ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
