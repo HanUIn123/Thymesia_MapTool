@@ -70,11 +70,22 @@ HRESULT CTerrain::Render()
 	return S_OK;
 }
 
+void CTerrain::Set_TerrainPickPos(_float3 _fPickPos, _float _fRange)
+{
+	m_fPickPos = _fPickPos;
+	m_fRange = _fRange;
+}
+
 HRESULT CTerrain::Ready_Components()
 {
 	/* Com_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		return E_FAIL;
+
+	// Prototype_Component_Texture__MouseRange
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture__MouseRange"),
+		TEXT("Com_MouseTexture"), reinterpret_cast<CComponent**>(&m_pMouseTextureCom))))
 		return E_FAIL;
 
 	/* Com_Shader */
@@ -107,6 +118,14 @@ HRESULT CTerrain::Bind_ShaderResources()
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
 		return E_FAIL;
 
+	if (FAILED(m_pMouseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MouseTexture", 0)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_BrushRange", &m_fRange, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_PickedPoints", &m_fPickPos, sizeof(_float3))))
+		return E_FAIL;
 
 
 	return S_OK;
@@ -146,4 +165,5 @@ void CTerrain::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pTextureCom);
+	Safe_Release(m_pMouseTextureCom);
 }

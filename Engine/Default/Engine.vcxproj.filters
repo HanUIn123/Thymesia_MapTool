@@ -214,6 +214,9 @@
     <Filter Include="01.Utility\04.Components\Calculator">
       <UniqueIdentifier>{e965d684-7de1-4f67-839b-51de22a3aff0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Components\VIBuffer\VIBuffer_Instancing">
+      <UniqueIdentifier>{704c470d-1b9a-42b0-a5d9-b929015b9ce7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -423,6 +426,9 @@
     <ClInclude Include="..\Public\Calculator.h">
       <Filter>01.Utility\04.Components\Calculator</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Instancing.h">
+      <Filter>01.Utility\04.Components\VIBuffer\VIBuffer_Instancing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -616,6 +622,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Calculator.cpp">
       <Filter>01.Utility\04.Components\Calculator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Instancing.cpp">
+      <Filter>01.Utility\04.Components\VIBuffer\VIBuffer_Instancing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

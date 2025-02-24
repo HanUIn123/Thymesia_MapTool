@@ -15,9 +15,13 @@
 #pragma region 환경요소 
 #include "Sky.h"
 #include "Terrain.h"
-
 #include "NonMoveObject.h"
 #pragma endregion 
+
+#pragma region 인스턴싱요소
+#include "GroundObject.h"
+#pragma endregion
+
 
 
 
@@ -150,6 +154,10 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile%d.dds"), 2))))
 		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture__MouseRange"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/MouseRange.png"), 1))))
+		return E_FAIL;
 	
 	lstrcpyW(m_szLoadingText, TEXT("터레인 컴포넌트 생성"));
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain")
@@ -186,15 +194,20 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 
 #pragma endregion 
 
-
-
-
 #pragma region 카메라 
 	/* For.Prototype_GameObject_Camera_Free */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Camera_Free"),
 		CCamera_Free::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 #pragma endregion 
+
+
+#pragma region 인스턴스 버퍼 
+	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"),
+	//	CVIBuffer_Instancing::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
+#pragma endregion
+
 
 #pragma region 셰이더
 
@@ -207,6 +220,11 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	/* For.Prototype_Component_Shader_VtxMesh */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VtxMesh"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Shader_VtxMesh */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VtxInstanceMesh"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxInstanceMesh.hlsl"), VTX_MODEL_INSTANCE::Elements, VTX_MODEL_INSTANCE::iNumElements))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_Shader_VtxMeshNoDefferd */
@@ -545,6 +563,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Brick_Floor"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Brick_Floor/brickFloor.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
+<<<<<<< HEAD
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Grass0"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Grass0/Grass0.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
@@ -556,15 +575,33 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 
 	//P_Archive_Chair01.png
 
+=======
+	
+>>>>>>> origin/main
 	/*if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House_01"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/House_01/House_01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
 		return E_FAIL;*/
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Grass0"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/Grass0/Grass0.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"),
 		CNonMoveObject::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 #pragma endregion
+
+
+#pragma region GroundObjects
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"),
+		CGroundObject::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+#pragma endregion
+
+
+
+
 
 #pragma region 테스트용 사다리
 	lstrcpyW(m_szLoadingText, TEXT("사다리 모델을 생성한다."));

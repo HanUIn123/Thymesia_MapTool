@@ -24,15 +24,21 @@ public:
 	const _float4x4* Get_BoneMatrix(const _char* pBoneName) const;
 	const _float4x4* Get_RootMotionMatrix(const _char* pBoneName) const;
 
+	ID3D11ShaderResourceView* CModel::Get_InstanceBufferSRV()
+	{
+		return m_pInstanceBufferSRV;
+	}
 
 	vector<class CMesh*> Get_Meshes() const {
 		return m_Meshes;
 	}
 
 public:
-	virtual HRESULT Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool bBinary);
+	virtual HRESULT Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool _bIsInstancingModel,  _bool bBinary);
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual HRESULT Render(_uint iMeshIndex);	
+
+	virtual HRESULT Render_Instance(_uint _iNumInstanceNumber);
 
 public:
 	void SetUp_Animation(_uint iAnimIndex, _bool isLoop);
@@ -44,6 +50,7 @@ public:
 	_uint   Get_Current_Animation_Index() { return m_iCurrentAnimIndex; }
 
 
+	HRESULT	Create_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData);
 
 private:
 	/* 가져온 정보를 저장한다. */
@@ -99,7 +106,6 @@ public:
 	_bool       Get_LerpFinished()	    { return m_bLerpFinished; }
 	/* 루트 모션 용 추가*/
 	_bool		GetAniFinish()	 { return m_bFinished; }
-	
 
 /* 바이너리화 관련 */
 private:
@@ -110,7 +116,10 @@ private:
 	HRESULT		Save_Model(const _char* pModelFilePath);
 	HRESULT     Load_Model(_fmatrix PreTransformMatrix);
 
-//
+private:
+	ID3D11Buffer*				m_pInstanceBuffer = { nullptr };
+	ID3D11ShaderResourceView*	m_pInstanceBufferSRV = { nullptr };
+	_uint						m_iNumInstances = {};
 
 private:
 	HRESULT Ready_Meshes(_fmatrix PreTransformMatrix);	
@@ -119,7 +128,7 @@ private:
 	HRESULT Ready_Animations();
 
 public:
-	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, MODEL eModelType, _fmatrix  PreTransformMatrix = XMMatrixIdentity(), _bool bBinary = false);
+	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, MODEL eModelType, _fmatrix  PreTransformMatrix = XMMatrixIdentity(), _bool _bInstancingModel = false ,_bool bBinary = false);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 

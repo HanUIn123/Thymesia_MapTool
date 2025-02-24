@@ -76,8 +76,16 @@
     <Filter Include="02.GameObject\Object\NonMoveObject">
       <UniqueIdentifier>{84f1cac3-d83e-4db1-ba9e-61792b4f3b27}</UniqueIdentifier>
     </Filter>
+<<<<<<< HEAD
     <Filter Include="02.GameObject\Object\LODNonMoveObject">
       <UniqueIdentifier>{5a0ba585-1e8c-492d-833e-12a628c5804f}</UniqueIdentifier>
+=======
+    <Filter Include="02.GameObject\EnvironmentObject">
+      <UniqueIdentifier>{ae1cc0ef-da3c-4d66-a3a8-77c046a2566c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\EnvironmentObject\GroundObject">
+      <UniqueIdentifier>{df4aefff-fdb6-4be2-b8d7-a15f2705f213}</UniqueIdentifier>
+>>>>>>> origin/main
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -171,8 +179,16 @@
     <ClInclude Include="..\Public\NonMoveObject.h">
       <Filter>02.GameObject\Object\NonMoveObject</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\Public\LODNonMoveObject.h">
       <Filter>02.GameObject\Object\LODNonMoveObject</Filter>
+=======
+    <ClInclude Include="..\Public\EnvironmentObject.h">
+      <Filter>02.GameObject\EnvironmentObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GroundObject.h">
+      <Filter>02.GameObject\EnvironmentObject\GroundObject</Filter>
+>>>>>>> origin/main
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -254,8 +270,16 @@
     <ClCompile Include="..\Private\NonMoveObject.cpp">
       <Filter>02.GameObject\Object\NonMoveObject</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\Private\LODNonMoveObject.cpp">
       <Filter>02.GameObject\Object\LODNonMoveObject</Filter>
+=======
+    <ClCompile Include="..\Private\EnvironmentObject.cpp">
+      <Filter>02.GameObject\EnvironmentObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GroundObject.cpp">
+      <Filter>02.GameObject\EnvironmentObject\GroundObject</Filter>
+>>>>>>> origin/main
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,6 +332,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTexAge.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstanceMesh.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

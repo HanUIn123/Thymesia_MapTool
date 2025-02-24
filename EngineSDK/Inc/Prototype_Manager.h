@@ -11,6 +11,9 @@
 #include "VIBuffer_Cell.h"
 #include "VIBuffer_Rect_Instancing.h"
 #include "VIBuffer_Point_Instancing.h"
+
+#include "VIBuffer_Instancing.h"
+
 #include "SwordTrail_Buffer.h"	
 
 #include "Navigation.h"

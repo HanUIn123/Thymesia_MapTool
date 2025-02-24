@@ -62,6 +62,11 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Archive_Chair01.png"), IMG_NONANIM_MODEL, 1);
     //P_Archive_Chair01
 
+    //=============================================================================================================================
+
+    // IMG_GROUND_MODEL
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/GroundObjects/Grass0.png"), IMG_GROUND_MODEL, 1);
+
 }
 
 HRESULT CLevel_GamePlay::Initialize()
@@ -77,6 +82,7 @@ HRESULT CLevel_GamePlay::Initialize()
 
     m_pCamera = static_cast<CCamera_Free*>(m_pGameInstance->Get_GameObject(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_GAMEPLAY, TEXT("Layer_Camera")));
     m_pTerrain = static_cast<CTerrain*>(m_pGameInstance->Get_GameObject(TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, TEXT("Layer_BackGround")));
+    m_pTerrainBuffer = static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain")));
 
     m_pNavigation = static_cast<CNavigation*>(m_pTerrain->Find_Component(TEXT("Com_Navigation")));
 
@@ -98,6 +104,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNonAnimObjectMenuSelected = true;
         m_bAnimObjectMenuSelected = false;
         m_bNaviMenuSelected = false;
+        m_bGrondMenuSelected = false;
         m_iNonAnimModelIndex = -1;
     }
     if (ImGui::RadioButton("ANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_ANIMMODEL))
@@ -105,20 +112,30 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNonAnimObjectMenuSelected = false;
         m_bNaviMenuSelected = false;
         m_bAnimObjectMenuSelected = true;
+        m_bGrondMenuSelected = false;
     }
     if (ImGui::RadioButton("NAVIGATION_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_NAVI))
     {
         m_bNaviMenuSelected = true;
         m_bNonAnimObjectMenuSelected = false;
         m_bAnimObjectMenuSelected = false;
+        m_bGrondMenuSelected = false;
     }
-    if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)  
+    if (ImGui::RadioButton("GROUND_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_GROUND))
+    {
+        m_bGrondMenuSelected = true;
+        m_bNaviMenuSelected = false;
+        m_bNonAnimObjectMenuSelected = false;
+        m_bAnimObjectMenuSelected = false;
+    }
+
+    if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)
     {
         m_bConnectingMode = true;
     }
     else
     {
-        m_bConnectingMode = false; 
+        m_bConnectingMode = false;
     }
 
 
@@ -233,7 +250,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
                     }
                 }
             }
-        }  
+        }
     }
     else if (m_bAnimObjectMenuSelected)
     {
@@ -244,6 +261,25 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         if (m_pGameInstance->isMouseEnter(DIM_LB))
         {
             Picking_Points();
+        }
+    }
+    else if (m_bGrondMenuSelected)
+    {
+        Show_MouseRange(MENU_TYPE::MT_GROUND, fTimeDelta);
+
+        if (m_pGameInstance->isMouseEnter(DIM_LB))
+        {
+            if (m_bGrondMenuSelected)
+            {
+                if (m_bIsTerrainPickingMode)
+                {
+                    if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_GROUND)))
+                    {
+                        Add_GroundObjects();
+                    }
+                }
+            }
+        
         }
     }
 
@@ -291,10 +327,10 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
             {
                 if ((*pObject) == m_pCurrentObject)
                 {
-                   pObject = m_Objects.erase(pObject);
+                    pObject = m_Objects.erase(pObject);
                 }
                 else
-                   pObject++;
+                    pObject++;
             }
             m_pCurrentObject = nullptr;
         }
@@ -342,7 +378,23 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     if (m_bNonAnimObjectMenuSelected)
         Setting_NonAnimObjectList();
 
+    if (m_bGrondMenuSelected)
+        Setting_GroundObjectList();
+
     ImGui::End();
+
+
+    // 마우스 범위 표시용 imgui window
+    ImGui::Begin("Device Settings", NULL, ImGuiWindowFlags_MenuBar);
+    ImGui::SliderFloat("Mouse Range", &(m_fInstallRange), 1.0f, 20.0f);
+    ImGui::SliderFloat("Object Spacing", &m_fSpacingValue, 1.0f, 10.0f);
+    ImGui::End();
+
+
+
+
+
+
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -558,6 +610,9 @@ HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageF
             case IMG_NONANIM_MODEL:
                 m_vecNonAnimModelSRVs.push_back(pSRV);
                 break;
+            case IMG_GROUND_MODEL:
+                m_vecGroundModelSRVs.push_back(pSRV);
+                break;
             }
         }
     }
@@ -613,7 +668,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
                 CObject::OBJECT_DESC ObjectDesc = {};
                 ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
                 ObjectDesc.fFrustumRadius = m_fFrustumRadius;
-                ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f};
+                ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
                 ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
                 ObjectDesc.ObjectName = m_strObjectNames[m_iNonAnimModelIndex];
 
@@ -668,6 +723,92 @@ void CLevel_GamePlay::Active_PreviewModelImage()
             }
         }
     }
+}
+
+void CLevel_GamePlay::Add_GroundObjects()
+{
+    //if (m_iNonAnimModelIndex == -1)
+    //    return;
+
+    CEnvironmentObject::ENVIRONMENT_OBJECT_DESC EnvironmentDesc = {};
+    EnvironmentDesc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
+    EnvironmentDesc.fFrustumRadius = m_fFrustumRadius;
+    EnvironmentDesc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
+    EnvironmentDesc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
+    EnvironmentDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
+    EnvironmentDesc.fSpace = m_fSpacingValue;
+    
+    D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
+    m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
+    m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
+
+    for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
+    {
+        for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
+        {
+            _float worldX = m_fPickPos.x + j;
+            _float worldZ = m_fPickPos.z + i;
+            _uint iIndex = static_cast<_uint>(worldZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(worldX);
+
+            if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
+                continue;
+
+            XMFLOAT3 terrainPos = m_pVertices[iIndex].vPosition;
+            EnvironmentDesc.vecPosition.push_back(terrainPos);  
+        }
+    }
+    m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
+
+    CEnvironmentObject* pObject = reinterpret_cast<CEnvironmentObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"), LEVEL_GAMEPLAY, TEXT("Layer_GroundObject"), &EnvironmentDesc));
+
+    if (pObject != nullptr)
+        m_EnvironmentObjects.push_back(pObject);
+}
+
+void CLevel_GamePlay::Setting_GroundObjectList()
+{
+    if (ImGui::CollapsingHeader("Ground Model List"))
+        return;
+
+    const char* szItems[] = { "Ground Model List" };
+
+    static int iCurrentItem = 0;
+    ImGui::Combo("##5", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
+
+    for (_uint i = 0; i < 1; ++i)
+    {
+        _uint  iTextureIndex = iCurrentItem * 3 + i;
+
+        if (iTextureIndex < m_vecGroundModelSRVs.size())
+        {
+            if (ImGui::ImageButton(("GroundModel" + to_string(iTextureIndex)).c_str(), (ImTextureID)m_vecGroundModelSRVs[iTextureIndex], ImVec2(50.0f, 50.0f)))
+            {
+                m_iGroundModelIndex = iTextureIndex;
+
+                //m_pGameInstance->Add_DeadObject(TEXT("Layer_GroundObject"), m_pPrevObject);
+
+                CObject::OBJECT_DESC ObjectDesc = {};
+                ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+                ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+                ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+                ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+                ObjectDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
+
+                //m_pPrevObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &ObjectDesc));
+                //
+                //if (nullptr != m_pPrevObject)
+                //{
+                //    m_pPrevObjectTrasnformCom = m_pPrevObject->Get_Transfrom();
+                //}
+            }
+
+            if ((i + 1) % 4 != 0)
+            {
+                ImGui::SameLine();
+            }
+        }
+    }
+
 }
 
 HRESULT CLevel_GamePlay::Save_Objects()
@@ -1198,6 +1339,18 @@ HRESULT CLevel_GamePlay::Load_Navi()
 
 }
 
+HRESULT CLevel_GamePlay::Show_MouseRange(MENU_TYPE _eMenuType, _float _fTimeDelta)
+{
+    m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+
+    m_pTerrain->Set_TerrainPickPos(m_fPickPos, m_fInstallRange);
+    
+
+    return S_OK;
+}
+
+
+
 CLevel_GamePlay* CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CLevel_GamePlay* pInstance = new CLevel_GamePlay(pDevice, pContext);
@@ -1223,4 +1376,8 @@ void CLevel_GamePlay::Free()
     for (auto& pSRV : m_vecNonAnimModelSRVs)
         Safe_Release(pSRV);
     m_vecNonAnimModelSRVs.clear();
+
+    for (auto& pSRV : m_vecGroundModelSRVs)
+        Safe_Release(pSRV);
+    m_vecGroundModelSRVs.clear();
 }

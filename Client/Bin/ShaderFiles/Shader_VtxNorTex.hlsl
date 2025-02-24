@@ -3,6 +3,12 @@
 float4x4		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 Texture2D       g_DiffuseTexture;
+Texture2D		g_MouseTexture;
+
+
+float3			g_PickedPoints;
+float			g_BrushRange;
+
 
 struct VS_IN
 {
@@ -57,26 +63,20 @@ PS_OUT PS_MAIN(PS_IN In)
 	PS_OUT		Out = (PS_OUT)0;
 
 	vector		vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord * 30.f);	 	
-
-	//vector		vShade = max(dot(normalize(g_vLightDir) * -1.f, 
-	//	normalize(In.vNormal)), 0.f) + (g_vLightAmbient * g_vMtrlAmbient);
-	//
-	//vector		vReflect = reflect(normalize(g_vLightDir), normalize(In.vNormal));
-	//vector		vLook = In.vWorldPos - g_vCamPosition;
-	//
-	///* 0 ~ 1 */
-	//float		fSpecular = pow(max(dot(normalize(vReflect) * -1.f,
-	//	normalize(vLook)), 0.f), 50.f);	
-
-	//Out.vColor = (g_vLightDiffuse * vMtrlDiffuse) * saturate(vShade) 
-	//	+ fSpecular * (g_vLightSpecular * g_vMtrlSpecular);
+    vector		vMouseDiffuse = g_MouseTexture.Sample(LinearSampler, In.vTexcoord * 30.0f);
 	
-    Out.vDiffuse = vMtrlDiffuse;		
-
-	/* 0 ~ 1 */   /* -1 ~ 1 */
-	/* -1 -> 0, 1 -> 1 */
+    float fDistance = distance(In.vWorldPos.xyz, g_PickedPoints);
+	
+	if(fDistance < g_BrushRange)
+    {
+        vMouseDiffuse = vector(1.0f, 0.0f, 0.0f, 1.0f);
+        Out.vDiffuse = vMouseDiffuse;
+    }
+	else
+    {
+		Out.vDiffuse = vMtrlDiffuse;		
+    }
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);		
-
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
 	
 

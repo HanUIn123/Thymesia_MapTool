@@ -172,6 +172,8 @@
     <ClInclude Include="..\Public\Boss_Varg.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
+    <ClInclude Include="..\Public\EnvironmentObject.h" />
+    <ClInclude Include="..\Public\GroundObject.h" />
     <ClInclude Include="..\Public\Imgui\imconfig.h" />
     <ClInclude Include="..\Public\Imgui\imgui.h" />
     <ClInclude Include="..\Public\Imgui\imgui_impl_dx11.h" />
@@ -204,6 +206,8 @@
     <ClCompile Include="..\Private\Boss_Magician.cpp" />
     <ClCompile Include="..\Private\Boss_Varg.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
+    <ClCompile Include="..\Private\EnvironmentObject.cpp" />
+    <ClCompile Include="..\Private\GroundObject.cpp" />
     <ClCompile Include="..\Private\Ladder.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
@@ -242,6 +246,7 @@
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMeshNoDefferd.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstanceMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxMeshNoDefferd.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxMesh.hlsl" />

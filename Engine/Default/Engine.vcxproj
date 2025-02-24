@@ -229,6 +229,7 @@ call UpdateLib.bat</Command>
     <ClInclude Include="..\public\VIBuffer_Cell.h" />
     <ClInclude Include="..\public\VIBuffer_Cube.h" />
     <ClInclude Include="..\public\VIBuffer_Effect_Rect_Instancing.h" />
+    <ClInclude Include="..\Public\VIBuffer_Instancing.h" />
     <ClInclude Include="..\public\VIBuffer_Mesh_Instancing.h" />
     <ClInclude Include="..\public\VIBuffer_Particle_Instancing.h" />
     <ClInclude Include="..\public\VIBuffer_Point_Instancing.h" />
@@ -294,6 +295,7 @@ call UpdateLib.bat</Command>
     <ClCompile Include="..\private\VIBuffer_Cell.cpp" />
     <ClCompile Include="..\private\VIBuffer_Cube.cpp" />
     <ClCompile Include="..\private\VIBuffer_Effect_Rect_Instancing.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Instancing.cpp" />
     <ClCompile Include="..\private\VIBuffer_Mesh_Instancing.cpp" />
     <ClCompile Include="..\private\VIBuffer_Particle_Instancing.cpp" />
     <ClCompile Include="..\private\VIBuffer_Point_Instancing.cpp" />
