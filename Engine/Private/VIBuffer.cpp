@@ -73,7 +73,7 @@ HRESULT CVIBuffer::Render_NumIndices(_uint _NumIndices)
 	if (nullptr == m_pContext)
 		return E_FAIL;
 
-	m_pContext->DrawIndexed(_NumIndices, 0, 0);	 
+	//m_pContext->DrawIndexedInstanced(_NumIndices, 0, 0);
 
 	return S_OK;
 }

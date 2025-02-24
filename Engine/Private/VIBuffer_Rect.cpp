@@ -7,7 +7,7 @@ CVIBuffer_Rect::CVIBuffer_Rect(ID3D11Device * pDevice, ID3D11DeviceContext * pCo
 }
 
 CVIBuffer_Rect::CVIBuffer_Rect(const CVIBuffer_Rect & Prototype)
-	: CVIBuffer{ Prototype }
+	: CVIBuffer( Prototype )
 {
 
 }

@@ -76,6 +76,12 @@
     <Filter Include="02.GameObject\Object\NonMoveObject">
       <UniqueIdentifier>{84f1cac3-d83e-4db1-ba9e-61792b4f3b27}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\EnvironmentObject">
+      <UniqueIdentifier>{ae1cc0ef-da3c-4d66-a3a8-77c046a2566c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\EnvironmentObject\GroundObject">
+      <UniqueIdentifier>{df4aefff-fdb6-4be2-b8d7-a15f2705f213}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -168,6 +174,12 @@
     <ClInclude Include="..\Public\NonMoveObject.h">
       <Filter>02.GameObject\Object\NonMoveObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\EnvironmentObject.h">
+      <Filter>02.GameObject\EnvironmentObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GroundObject.h">
+      <Filter>02.GameObject\EnvironmentObject\GroundObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -248,6 +260,12 @@
     <ClCompile Include="..\Private\NonMoveObject.cpp">
       <Filter>02.GameObject\Object\NonMoveObject</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\EnvironmentObject.cpp">
+      <Filter>02.GameObject\EnvironmentObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GroundObject.cpp">
+      <Filter>02.GameObject\EnvironmentObject\GroundObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -299,6 +317,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTexAge.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxInstanceMesh.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

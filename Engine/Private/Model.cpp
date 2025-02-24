@@ -81,7 +81,7 @@ const _float4x4* CModel::Get_RootMotionMatrix(const _char* pBoneName) const
 	return (*iter)->Get_CombinedRootMotionTransformationPtr();	
 }
 
-HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool bBinary)
+HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool _bIsInstancingModel,  _bool bBinary)
 {
 	_uint			iFlag = {};
 
@@ -102,6 +102,7 @@ HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePa
 		if (FAILED(Load_Model(PreTransformMatrix)))	
 			return E_FAIL;	
 	
+
 
 	/* 이것만으로 모든 로드작업은 끝난거다. */
 	
@@ -159,6 +160,19 @@ HRESULT CModel::Render(_uint iMeshIndex)
 {
 	m_Meshes[iMeshIndex]->Bind_InputAssembler();
 	m_Meshes[iMeshIndex]->Render();
+
+	return S_OK;
+}
+
+HRESULT CModel::Render_Instance(_uint _iNumInstanceNumber)
+{
+	if (!m_pInstanceBuffer)
+		return E_FAIL;
+
+	for (UINT i = 0; i < m_iNumMeshes; i++)
+	{
+		m_Meshes[i]->Render_Instance(m_pInstanceBuffer, _iNumInstanceNumber);
+	}
 
 	return S_OK;
 }
@@ -256,7 +270,35 @@ HRESULT CModel::Bind_BoneMatrices(CShader* pShader, _uint iMeshIndex, const _cha
 	return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_Bones);	
 }
 
+HRESULT CModel::Create_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData)
+{
+	if (m_pInstanceBuffer)
+	{
+		m_pInstanceBuffer->Release();
+		m_pInstanceBuffer = nullptr;
+	}
 
+	m_iNumInstances = _iNumInstances;
+
+
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC; 
+	bufferDesc.ByteWidth = sizeof(VTX_MODEL_INSTANCE) * _iNumInstances;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;  
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = sizeof(VTX_MODEL_INSTANCE);
+
+	
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = _TagInstanceData;
+
+	HRESULT hr = m_pDevice->CreateBuffer(&bufferDesc, &initData, &m_pInstanceBuffer);
+	if (FAILED(hr))
+		return E_FAIL;
+
+	return S_OK;
+}
 
 HRESULT CModel::Save_Model(const _char* pModelFilePath)
 {
@@ -507,11 +549,11 @@ HRESULT CModel::Ready_Animations()
 	return S_OK;
 }
 
-CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _char * pModelFilePath, MODEL eModelType, _fmatrix PreTransformMatrix, _bool bBinary)
+CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _char * pModelFilePath, MODEL eModelType, _fmatrix PreTransformMatrix, _bool _bIsInstancingModel, _bool bBinary)
 {
 	CModel*	pInstance = new CModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(eModelType,pModelFilePath,PreTransformMatrix, bBinary)))
+	if (FAILED(pInstance->Initialize_Prototype(eModelType,pModelFilePath,PreTransformMatrix,  _bIsInstancingModel, bBinary)))
 	{
 		MSG_BOX("Failed To Created : CModel");
 		Safe_Release(pInstance);
@@ -555,5 +597,8 @@ void CModel::Free()
 	m_Bones.clear();		
 	m_Materials.clear();	
 	m_Meshes.clear();	
+
+	Safe_Release(m_pInstanceBuffer);
+
 
 }
