@@ -27,6 +27,22 @@ HRESULT CMesh::Initialize_Prototype(CModel::MODEL eModelType, CModel* pModel, co
 	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;	
 	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #pragma region VERTEX_BUFFER
 	HRESULT hr = CModel::MODEL_NONANIM == eModelType ? Ready_VertexBuffer_ForNonAnim(pAIMesh, PreTransformMatrix) : Ready_VertexBuffer_ForAnim(pModel, pAIMesh,PreTransformMatrix);	
 	if (FAILED(hr))
@@ -79,6 +95,29 @@ HRESULT CMesh::Initialize_Prototype(CModel::MODEL eModelType, CModel* pModel, co
 
 HRESULT CMesh::Initialize(void * pArg)
 {
+	return S_OK;
+}
+
+HRESULT CMesh::Render_Instance(ID3D11Buffer* pInstanceBuffer, _uint _iNumInstance)
+{
+	ID3D11Buffer* pVertexBuffer[2] =
+	{
+		m_pVB,
+		pInstanceBuffer
+	};
+
+	_uint iVertexStrides[2] = 
+	{
+		sizeof(VTXMESH), 
+		sizeof(VTX_MODEL_INSTANCE) 
+	};
+	_uint iOffsets[2] = { 0, 0 };
+
+	m_pContext->IASetVertexBuffers(0, 2, pVertexBuffer, iVertexStrides, iOffsets);
+	m_pContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
+
+	m_pContext->DrawIndexedInstanced(m_iNumIndices, _iNumInstance, 0, 0, 0);
+
 	return S_OK;
 }
 
@@ -555,5 +594,6 @@ void CMesh::Free()
 		Safe_Delete_Array(m_pPos);
 		Safe_Delete_Array(m_iIndices);
 	}
+
 
 }

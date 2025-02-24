@@ -161,6 +161,15 @@ namespace Engine
 		const static D3D11_INPUT_ELEMENT_DESC		Elements[iNumElements];	
 	};	
 
+
+	struct ENGINE_DLL VTX_MODEL_INSTANCE
+	{
+		XMFLOAT4 InstanceMatrix[4];
+
+		const static unsigned int					iNumElements = 8;  
+		const static D3D11_INPUT_ELEMENT_DESC		Elements[iNumElements];
+	};
+
 }
 
 

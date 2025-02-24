@@ -2,6 +2,8 @@
 
 #include "VIBuffer.h"
 #include "Model.h"
+#include "VIBuffer_Instancing.h"
+
 
 BEGIN(Engine)
 
@@ -37,6 +39,9 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:
+	HRESULT			Render_Instance(ID3D11Buffer* pInstanceBuffer, _uint _iNumInstance);
+
+public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pContstantName, const vector<class CBone*>& Bones);
 
 
@@ -67,6 +72,11 @@ private:
 	_float3*			  m_pPos = {};
 	_uint*			      m_iIndices = {};
 	_uint				  m_iVtxFaces = {};
+
+private:
+	//cvibuffer_
+
+	CVIBuffer_Instancing* m_pVIBufferInstancing;
 
 private:
 	/*structed Buffer 관련 코드*/
