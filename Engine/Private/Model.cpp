@@ -81,7 +81,7 @@ const _float4x4* CModel::Get_RootMotionMatrix(const _char* pBoneName) const
 	return (*iter)->Get_CombinedRootMotionTransformationPtr();	
 }
 
-HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool _bIsInstancingModel,  _bool bBinary)
+HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix,  _bool bBinary)
 {
 	_uint			iFlag = {};
 
@@ -549,11 +549,11 @@ HRESULT CModel::Ready_Animations()
 	return S_OK;
 }
 
-CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _char * pModelFilePath, MODEL eModelType, _fmatrix PreTransformMatrix, _bool _bIsInstancingModel, _bool bBinary)
+CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _char * pModelFilePath, MODEL eModelType, _fmatrix PreTransformMatrix, _bool bBinary)
 {
 	CModel*	pInstance = new CModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(eModelType,pModelFilePath,PreTransformMatrix,  _bIsInstancingModel, bBinary)))
+	if (FAILED(pInstance->Initialize_Prototype(eModelType,pModelFilePath,PreTransformMatrix, bBinary)))
 	{
 		MSG_BOX("Failed To Created : CModel");
 		Safe_Release(pInstance);
