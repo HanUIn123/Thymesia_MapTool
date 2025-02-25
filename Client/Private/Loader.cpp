@@ -564,10 +564,6 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Brick_Floor/brickFloor.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Grass0"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Grass0/Grass0.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
-		return E_FAIL;
-
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_P_Archive_Chair01"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/P_Archive_Chair01/P_Archive_Chair01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
@@ -580,6 +576,17 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 
 
 #pragma region GroundObjects
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Grass0"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/Grass0/Grass0.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Tree0"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/Tree0/Tree0.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		return E_FAIL;
+
+
+
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"),
 		CGroundObject::Create(m_pDevice, m_pContext))))
 		return E_FAIL;

@@ -142,6 +142,7 @@ private:
 
     _int								m_iNonAnimModelIndex = {};
     _int								m_iGroundModelIndex = {};
+    _int                                m_iRandGroundModelIndex = {};
 
     _float3								m_fWholePickPos = {};
 
@@ -221,24 +222,25 @@ private:
 
     const char* m_strGroundObjectNamess[100] =
     {
-        "Grass0"
+        "Grass0",
+        "Tree0"
     };
 
 private:
-    CCamera_Free* m_pCamera = { nullptr };
-    CTerrain* m_pTerrain = { nullptr };
-    CVIBuffer_Terrain* m_pTerrainBuffer = { nullptr };
-    CNavigation* m_pNavigation = { nullptr };
+    CCamera_Free*                           m_pCamera = { nullptr };
+    CTerrain*                               m_pTerrain = { nullptr };
+    CVIBuffer_Terrain*                      m_pTerrainBuffer = { nullptr };
+    CNavigation*                            m_pNavigation = { nullptr };
 
-    CTransform* m_pCurrentObjectTransformCom = { nullptr };
-    CObject* m_pCurrentObject = { nullptr };
+    CTransform*                             m_pCurrentObjectTransformCom = { nullptr };
+    CObject*                                m_pCurrentObject = { nullptr };
 
-    CTransform* m_pPrevObjectTrasnformCom = { nullptr };
-    CObject* m_pPrevObject = { nullptr };
+    CTransform*                             m_pPrevObjectTrasnformCom = { nullptr };
+    CObject*                                m_pPrevObject = { nullptr };
 
 
-    CEnvironmentObject* m_pCurrentEnvironmentObject = { nullptr };
-    CTransform* m_pCurrentEnvironmentObjectTransformCom = { nullptr };
+    CEnvironmentObject*                     m_pCurrentEnvironmentObject = { nullptr };
+    CTransform*                             m_pCurrentEnvironmentObjectTransformCom = { nullptr };
 
     _float3									m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
 
@@ -248,9 +250,10 @@ private:
 private:
     _float              m_fInstallRange = {1.0f};
     _float              m_fSpacingValue = {1.0f};
+    _float              m_fInterval = {};
     _float              m_fRadius = { 1.0f };
     VTXNORTEX*          m_pVertices = { nullptr };
-
+    vector<_float3>     m_vecGroundObjectPos;
 
 public:
     static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -34,7 +34,7 @@ public:
 	}
 
 public:
-	virtual HRESULT Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool _bIsInstancingModel,  _bool bBinary);
+	virtual HRESULT Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool bBinary);
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual HRESULT Render(_uint iMeshIndex);	
 
@@ -128,7 +128,7 @@ private:
 	HRESULT Ready_Animations();
 
 public:
-	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, MODEL eModelType, _fmatrix  PreTransformMatrix = XMMatrixIdentity(), _bool _bInstancingModel = false ,_bool bBinary = false);
+	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, MODEL eModelType, _fmatrix  PreTransformMatrix = XMMatrixIdentity(), _bool bBinary = false);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 

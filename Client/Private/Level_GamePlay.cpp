@@ -66,6 +66,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
     // IMG_GROUND_MODEL
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/GroundObjects/Grass0.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/GroundObjects/Tree0.png"), IMG_GROUND_MODEL, 1);
 
 }
 
@@ -386,7 +387,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     // 마우스 범위 표시용 imgui window
     ImGui::Begin("Device Settings", NULL, ImGuiWindowFlags_MenuBar);
-    ImGui::SliderFloat("Mouse Range", &(m_fInstallRange), 1.0f, 20.0f);
+    ImGui::SliderFloat("Mouse Range", &(m_fInstallRange), 0.0f, 20.0f);
     ImGui::SliderFloat("Object Spacing", &m_fSpacingValue, 1.0f, 10.0f);
     ImGui::End();
 
@@ -728,16 +729,29 @@ void CLevel_GamePlay::Active_PreviewModelImage()
 void CLevel_GamePlay::Add_GroundObjects()
 {
     //if (m_iNonAnimModelIndex == -1)
-    //    return;
+     //    return;
+
+
+    //static _bool bIsSet = false;
+    //if (!bIsSet)
+    //{
+    //    srand(static_cast<_uint>(time(nullptr)));
+    //    bIsSet = true;
+    //}
 
     CEnvironmentObject::ENVIRONMENT_OBJECT_DESC EnvironmentDesc = {};
     EnvironmentDesc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
     EnvironmentDesc.fFrustumRadius = m_fFrustumRadius;
+
+
     EnvironmentDesc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
     EnvironmentDesc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
     EnvironmentDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
+    //EnvironmentDesc.ObjectName = m_strGroundObjectNamess[m_iRandGroundModelIndex];
     EnvironmentDesc.fSpace = m_fSpacingValue;
     
+
+
     D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
     m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
     m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
@@ -754,7 +768,8 @@ void CLevel_GamePlay::Add_GroundObjects()
                 continue;
 
             XMFLOAT3 terrainPos = m_pVertices[iIndex].vPosition;
-            EnvironmentDesc.vecPosition.push_back(terrainPos);  
+            m_vecGroundObjectPos.push_back(terrainPos);
+            EnvironmentDesc.vecPosition.push_back(terrainPos);
         }
     }
     m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
@@ -775,9 +790,10 @@ void CLevel_GamePlay::Setting_GroundObjectList()
     static int iCurrentItem = 0;
     ImGui::Combo("##5", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-    for (_uint i = 0; i < 1; ++i)
+    for (_uint i = 0; i < 2; ++i)
     {
         _uint  iTextureIndex = iCurrentItem * 3 + i;
+        m_iRandGroundModelIndex = rand() % (iTextureIndex + 1);
 
         if (iTextureIndex < m_vecGroundModelSRVs.size())
         {
@@ -785,21 +801,12 @@ void CLevel_GamePlay::Setting_GroundObjectList()
             {
                 m_iGroundModelIndex = iTextureIndex;
 
-                //m_pGameInstance->Add_DeadObject(TEXT("Layer_GroundObject"), m_pPrevObject);
-
                 CObject::OBJECT_DESC ObjectDesc = {};
                 ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
                 ObjectDesc.fFrustumRadius = m_fFrustumRadius;
                 ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
                 ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
                 ObjectDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
-
-                //m_pPrevObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &ObjectDesc));
-                //
-                //if (nullptr != m_pPrevObject)
-                //{
-                //    m_pPrevObjectTrasnformCom = m_pPrevObject->Get_Transfrom();
-                //}
             }
 
             if ((i + 1) % 4 != 0)
@@ -828,9 +835,13 @@ HRESULT CLevel_GamePlay::Save_Objects()
 
 
     DWORD dwByte = 0;
+    DWORD dwByte2 = 0;
 
     _uint iObjectCount = static_cast<_uint>(m_Objects.size());
     WriteFile(hFile, &iObjectCount, sizeof(_uint), &dwByte, nullptr);
+
+    _uint iEnvironmentObjectCount = static_cast<_uint>(m_EnvironmentObjects.size());
+    WriteFile(hFile, &iEnvironmentObjectCount, sizeof(_uint), &dwByte2, nullptr);
 
     for (auto& pObject : m_Objects)
     {
@@ -843,6 +854,29 @@ HRESULT CLevel_GamePlay::Save_Objects()
             WriteFile(hFile, &Info.fRotation, sizeof(_float3), &dwByte, nullptr);
             WriteFile(hFile, &Info.fScale, sizeof(_float3), &dwByte, nullptr);
             WriteFile(hFile, &Info.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
+        }
+    }
+
+    _uint iGroundPosVectorSize = static_cast<_uint>(m_vecGroundObjectPos.size());
+    WriteFile(hFile, &iGroundPosVectorSize, sizeof(_uint), &dwByte2, nullptr);
+
+    for (auto& pos : m_vecGroundObjectPos)
+    {
+        WriteFile(hFile, &pos, sizeof(_float3), &dwByte2, nullptr);
+    }
+
+    for (auto& pEnvironmentObject : m_EnvironmentObjects)
+    {
+        if (nullptr != pEnvironmentObject)
+        {
+            CEnvironmentObject::EN_OBJECT_INFO EnvironmentInfo = pEnvironmentObject->Get_EnvironmentObjectInfo();
+            CEnvironmentObject::ENVIRONMENT_OBJECT_DESC EnvironmentDesc = {};
+
+            WriteFile(hFile, EnvironmentInfo.szName, MAX_PATH, &dwByte2, nullptr);
+            //WriteFile(hFile, &EnvironmentInfo.fPosition, sizeof(_float4), &dwByte2, nullptr);
+            WriteFile(hFile, &EnvironmentInfo.fRotation, sizeof(_float3), &dwByte2, nullptr);
+            WriteFile(hFile, &EnvironmentInfo.fScale, sizeof(_float3), &dwByte2, nullptr);
+            WriteFile(hFile, &EnvironmentInfo.fFrustumRadius, sizeof(_float), &dwByte2, nullptr);
         }
     }
 
@@ -873,11 +907,21 @@ HRESULT CLevel_GamePlay::Load_Objects()
     }
     m_Objects.clear();
 
+    for (auto& pEnvironmentObject : m_EnvironmentObjects)
+    {
+        m_pGameInstance->Add_DeadObject(L"Layer_GroundObject", pEnvironmentObject);
+    }
+    m_EnvironmentObjects.clear();
+    m_vecGroundObjectPos.clear();
+
     DWORD dwByte = 0;
+    DWORD dwByte2 = 0;
 
     _uint iSize = 0;
+    _uint iSize2 = 0;
 
     ReadFile(hFile, &iSize, sizeof(_uint), &dwByte, nullptr);
+    ReadFile(hFile, &iSize2, sizeof(_uint), &dwByte2, nullptr);
 
     for (size_t i = 0; i < iSize; i++)
     {
@@ -897,6 +941,36 @@ HRESULT CLevel_GamePlay::Load_Objects()
 
         if (pObject != nullptr)
             m_Objects.push_back(pObject);
+    }
+
+    CEnvironmentObject::ENVIRONMENT_OBJECT_DESC Desc = {};
+    _uint iGroundPosVectorSize = 0;
+    ReadFile(hFile, &iGroundPosVectorSize, sizeof(_uint), &dwByte2, nullptr);
+
+    for (size_t i = 0; i < iGroundPosVectorSize; i++)
+    {
+        _float3 fGroundObjectPos;
+        ReadFile(hFile, &fGroundObjectPos, sizeof(_float3), &dwByte2, nullptr);
+        m_vecGroundObjectPos.push_back(fGroundObjectPos);
+        Desc.vecPosition.push_back(fGroundObjectPos);
+    }
+
+    for (size_t i = 0; i < iSize2; i++)
+    {
+        _char szLoadName[MAX_PATH] = {};
+
+        ReadFile(hFile, szLoadName, MAX_PATH, &dwByte2, nullptr);
+        //ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte2, nullptr);
+        ReadFile(hFile, &Desc.fRotation, sizeof(_float3), &dwByte2, nullptr);
+        ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte2, nullptr);
+        ReadFile(hFile, &Desc.fFrustumRadius, sizeof(_float), &dwByte2, nullptr);
+
+        Desc.ObjectName = szLoadName;
+
+        CEnvironmentObject* pEnvironment = reinterpret_cast<CEnvironmentObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"), LEVEL_GAMEPLAY, TEXT("Layer_GroundObject"), &Desc));
+
+        if (pEnvironment != nullptr)
+            m_EnvironmentObjects.push_back(pEnvironment);
     }
 
     CloseHandle(hFile);
