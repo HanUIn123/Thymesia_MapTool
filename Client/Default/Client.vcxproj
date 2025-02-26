@@ -193,6 +193,7 @@
     <ClInclude Include="..\Public\Object.h" />
     <ClInclude Include="..\public\Player.h" />
     <ClInclude Include="..\public\Sky.h" />
+    <ClInclude Include="..\Public\TempManager.h" />
     <ClInclude Include="..\public\Terrain.h" />
     <ClInclude Include="..\public\Weapon.h" />
     <ClInclude Include="Client.h" />
@@ -219,6 +220,7 @@
     <ClCompile Include="..\Private\Object.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
     <ClCompile Include="..\private\Sky.cpp" />
+    <ClCompile Include="..\Private\TempManager.cpp" />
     <ClCompile Include="..\private\Terrain.cpp" />
     <ClCompile Include="..\private\Weapon.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui.cpp" />

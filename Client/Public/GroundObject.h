@@ -34,16 +34,6 @@ private:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Bind_ShaderResources() override;
 
-private:
-	//vector<VTX_MODEL_INSTANCE> m_vecInstanceData;
-	//_uint m_iNumInstance = {};
-	//INSTANCE_INFO g_Instances[2] =
-	//{
-	//	{XMMatrixTranspose(XMMatrixIdentity())},
-	//	{XMMatrixTranspose(XMMatrixTranslation(2.0f, 0.0f, 0.0f))}
-	//};
-
-
 public:
 	static CGroundObject* Create(ID3D11Device* _pDevice, ID3D11DeviceContext* _pContext);
 	virtual CGameObject* Clone(void* _pArg) override;

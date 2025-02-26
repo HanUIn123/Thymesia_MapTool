@@ -6,6 +6,7 @@
 
 #include "../Public/MainApp.h"
 #include "GameInstance.h"
+#include "TempManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -71,6 +72,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	_float		fTimerAcc = {};
 
+    CTempManager::GetInstance()->Temp_Initialize(pGameInstance);
+
 	// 기본 메시지 루프입니다.
 	while (true)
 	{
@@ -109,6 +112,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return FALSE;
 	}
 
+    CTempManager::GetInstance()->DestroyInstance();
 
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();

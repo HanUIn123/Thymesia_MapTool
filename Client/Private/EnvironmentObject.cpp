@@ -84,6 +84,15 @@ void CEnvironmentObject::Set_FrustumRadius(_float _fFrustumRadius)
 	m_fFrustumRadius = _fFrustumRadius;
 }
 
+
+void CEnvironmentObject::Update_InstanceBuffer()
+{
+	if (m_pModelCom && !m_vecInstanceData.empty())
+	{
+		m_pModelCom->Create_InstanceBuffer(m_vecInstanceData.size(), m_vecInstanceData.data());
+	}
+}
+
 HRESULT CEnvironmentObject::Ready_Components()
 {
 	/* Com_Shader */
@@ -96,6 +105,15 @@ HRESULT CEnvironmentObject::Ready_Components()
 		TEXT("Com_Calculator"), reinterpret_cast<CComponent**>(&m_pCalculatorCom))))
 		return E_FAIL;
 
+	CBounding_Sphere::BOUNDING_SPHERE_DESC SphereDesc{};
+
+	SphereDesc.fRadius = 1.f;
+	SphereDesc.vCenter = _float3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_SPHERE"),
+		TEXT("Com_Colldier"), reinterpret_cast<CComponent**>(&m_pColliderCom), &SphereDesc)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -106,4 +124,5 @@ void CEnvironmentObject::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pCalculatorCom);
+	Safe_Release(m_pColliderCom);
 }

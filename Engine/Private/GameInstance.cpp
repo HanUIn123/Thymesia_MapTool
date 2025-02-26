@@ -174,6 +174,14 @@ HRESULT CGameInstance::Clear_DepthStencil_View()
 {
 	return m_pGraphic_Device->Clear_DepthStencil_View();	
 }
+ID3D11Device* CGameInstance::Get_Device()
+{
+	return m_pGraphic_Device->Get_GraphicDevice();
+}
+ID3D11DeviceContext* CGameInstance::Get_Context()
+{
+	return m_pGraphic_Device->Get_DeviceContext();
+}
 _float CGameInstance::Get_TimeDelta(const _wstring & strTimerTag)
 {
 	return m_pTimer_Manager->Get_TimeDelta(strTimerTag);
