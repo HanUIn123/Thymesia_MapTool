@@ -42,6 +42,10 @@ public:
 
 	HRESULT Clear_DepthStencil_View();	
 
+public:
+	ID3D11Device* Get_Device();
+	ID3D11DeviceContext* Get_Context();
+
 #pragma region TIMER_MANAGER
 public: /* For.Timer_Manager */
 	_float			Get_TimeDelta(const _wstring& strTimerTag);

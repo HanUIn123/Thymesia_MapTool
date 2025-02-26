@@ -78,12 +78,15 @@
     </Filter>
     <Filter Include="02.GameObject\Object\LODNonMoveObject">
       <UniqueIdentifier>{5a0ba585-1e8c-492d-833e-12a628c5804f}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="02.GameObject\EnvironmentObject">
       <UniqueIdentifier>{ae1cc0ef-da3c-4d66-a3a8-77c046a2566c}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\EnvironmentObject\GroundObject">
       <UniqueIdentifier>{df4aefff-fdb6-4be2-b8d7-a15f2705f213}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="990.TempManager">
+      <UniqueIdentifier>{c426b426-a284-453b-887b-e8332921b10a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -179,12 +182,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\LODNonMoveObject.h">
       <Filter>02.GameObject\Object\LODNonMoveObject</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\Public\EnvironmentObject.h">
       <Filter>02.GameObject\EnvironmentObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\GroundObject.h">
       <Filter>02.GameObject\EnvironmentObject\GroundObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TempManager.h">
+      <Filter>990.TempManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -268,12 +274,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\LODNonMoveObject.cpp">
       <Filter>02.GameObject\Object\LODNonMoveObject</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="..\Private\EnvironmentObject.cpp">
       <Filter>02.GameObject\EnvironmentObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\GroundObject.cpp">
       <Filter>02.GameObject\EnvironmentObject\GroundObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TempManager.cpp">
+      <Filter>990.TempManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

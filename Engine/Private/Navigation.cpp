@@ -12,15 +12,15 @@ _float4x4 CNavigation::m_WorldMatrixInverse = {}; // 그리고 또한 월드 매트릭스가
 // Staic 변수로 만들어줘서 하나의 메모리 주소만 생성되게 해서 공유할 수 있도록 함. 
 
 CNavigation::CNavigation(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CComponent(pDevice,pContext)
+    :CComponent(pDevice, pContext)
 {
 }
 
 CNavigation::CNavigation(const CNavigation& Prototype)
     :CComponent(Prototype)
-    ,m_Cells(Prototype.m_Cells)
+    , m_Cells(Prototype.m_Cells)
 #ifdef _DEBUG
-    ,m_pShader(Prototype.m_pShader)
+    , m_pShader(Prototype.m_pShader)
 #endif // _DEBUG
 {
 #ifdef _DEBUG
@@ -35,28 +35,38 @@ HRESULT CNavigation::Initialize_Prototype(const _tchar* pNavigationDataFile)
     _ulong      dwByte = {};
     HANDLE hFile = CreateFile(pNavigationDataFile, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
+    _uint iTotalFloorNum = {};
+    ReadFile(hFile, &iTotalFloorNum, sizeof(_uint), &dwByte, nullptr);
+
+
     _uint iCellCountNum = {};
     ReadFile(hFile, &iCellCountNum, sizeof(_uint), &dwByte, nullptr);
 
     //while (true)
-    for (_uint i = 0; i < iCellCountNum; ++i)
+    //map<_uint>
+    for (_uint t = 0; t < iTotalFloorNum; ++t)
     {
-        _float3         vPoints[CCell::POINT_END] = {};
+        for (_uint i = 0; i < iCellCountNum; ++i)
+        {
+            //_float3         vPoints[CCell::POINT_END] = {};
+            _float3         vPoints[CCell::POINT_END] = {};
 
-        ReadFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+            ReadFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
 
-        // 루프 탈출문 조건
-        if (0 == dwByte)
-            break;
+            // 루프 탈출문 조건
+            if (0 == dwByte)
+                break;
 
-        // size 로 줘서 처음에 하나 들어가면 용량 1개, 하나 또 들어가면 2개.~~ 
-        CCell* pCell = CCell::Create(m_pDevice, m_pContext, vPoints, (_uint)(m_Cells.size()));
-        //CCell* pCell = CCell::Create(m_pDevice, m_pContext, vPoints, iCellCountNum);
-        if (nullptr == pCell)
-            return E_FAIL;
+            // size 로 줘서 처음에 하나 들어가면 용량 1개, 하나 또 들어가면 2개.~~ 
+            CCell* pCell = CCell::Create(m_pDevice, m_pContext, vPoints, (_uint)(m_Cells.size()));
+            //CCell* pCell = CCell::Create(m_pDevice, m_pContext, vPoints, iCellCountNum);
+            if (nullptr == pCell)
+                return E_FAIL;
 
-        m_Cells.push_back(pCell);
+            m_Cells.push_back(pCell);
+        }
     }
+
     CloseHandle(hFile);
 
     XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
@@ -99,7 +109,7 @@ HRESULT CNavigation::Initialize(void* pArg)
     {
         NAVIGATION_DESC* pDesc = static_cast<NAVIGATION_DESC*>(pArg);
 
-        m_iCurrentCellIndex    = pDesc->iCurrentCellIndex; 
+        m_iCurrentCellIndex = pDesc->iCurrentCellIndex;
     }
 
     return S_OK;
@@ -117,6 +127,41 @@ void CNavigation::Set_CurrentNaviIndex(_vector _vWorldPos)
             return;
         }
     }
+}
+
+_uint CNavigation::Find_Closest_Cell(/*_uint _iFloorNum, */_vector _vWorldPos)
+{
+    _float fMinsDistance = FLT_MAX;
+    _uint iClosestCellIndex = 0;
+    _float fPosX = XMVectorGetX(_vWorldPos);
+    _float fPosY = XMVectorGetY(_vWorldPos);
+    _float fPosZ = XMVectorGetZ(_vWorldPos);
+
+
+    for (_uint i = 0; i < m_Cells.size(); ++i)
+    {
+        XMFLOAT3 vCellCenter = m_Cells[i]->Get_Center();
+        _float fDistance = sqrt(
+            powf(fPosX - vCellCenter.x, 2) +
+            powf(fPosY - vCellCenter.y, 2) +
+            powf(fPosZ - vCellCenter.z, 2)
+        );
+
+        if (fDistance < fMinsDistance)
+        {
+            fMinsDistance = fDistance;
+            iClosestCellIndex = i;
+        }
+    }
+
+    return iClosestCellIndex;
+}
+
+void CNavigation::Set_NaviFloor(_uint _iFloorNumber)
+{
+    m_iFloorNumber = _iFloorNumber;
+
+    m_iCurrentCellIndex = 0;
 }
 
 _bool CNavigation::isMove(_fvector vWorldPos)
@@ -166,8 +211,8 @@ _float CNavigation::Compute_Height(_fvector vWorldPos)
 
     vPosition = XMVectorSetY(vPosition, m_Cells[m_iCurrentCellIndex]->Compute_Height(vPosition));
 
-    vPosition = XMVector3TransformCoord(vPosition, XMLoadFloat4x4(&m_WorldMatrix));  
-    
+    vPosition = XMVector3TransformCoord(vPosition, XMLoadFloat4x4(&m_WorldMatrix));
+
     return XMVectorGetY(vPosition);
 }
 
@@ -238,17 +283,17 @@ HRESULT CNavigation::Render()
 
 
     _float4  vColor = -1 == m_iCurrentCellIndex ? _float4(0.f, 1.f, 0.f, 1.f) : _float4(1.f, 0.f, 0.f, 1.f);
-    
-    if(FAILED(m_pShader->Bind_RawValue("g_vColor",&vColor, sizeof(_float4))))
+
+    if (FAILED(m_pShader->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
         return E_FAIL;
 
-    if( -1 == m_iCurrentCellIndex)
+    if (-1 == m_iCurrentCellIndex)
     {
         m_pShader->Begin(0);
         for (auto& pCell : m_Cells)
             pCell->Render();
     }
-    
+
     else
     {
         _float4x4 WorldMatrix = m_WorldMatrix;
@@ -259,8 +304,8 @@ HRESULT CNavigation::Render()
             return E_FAIL;
 
         m_pShader->Begin(0);
-        
-        m_Cells[m_iCurrentCellIndex]->Render(); 
+
+        m_Cells[m_iCurrentCellIndex]->Render();
     }
 
     return S_OK;
@@ -285,7 +330,7 @@ HRESULT CNavigation::SetUp_Neighbors()
         }
     }
 
-    return S_OK;    
+    return S_OK;
 }
 
 CNavigation* CNavigation::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pNavigationDataFile)
@@ -346,12 +391,12 @@ HRESULT CNavigation::Delete_Cell(const _float3 _vPoints[3])
 
 CComponent* CNavigation::Clone(void* pArg)
 {
-    CNavigation* pInstance = new CNavigation(*this);    
+    CNavigation* pInstance = new CNavigation(*this);
 
-    if (FAILED(pInstance->Initialize(pArg)))    
+    if (FAILED(pInstance->Initialize(pArg)))
     {
         MSG_BOX("Failed To Cloned : CNavigation");
-        Safe_Release(pInstance);    
+        Safe_Release(pInstance);
     }
 
     return pInstance;
