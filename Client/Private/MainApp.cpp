@@ -109,6 +109,8 @@ HRESULT CMainApp::Render()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
+	CTempManager::GetInstance()->Temp_Render();
+
 	m_pGameInstance->Render_End();
 
 

@@ -9,6 +9,7 @@ class CModel;
 class CShader;
 class CCalculator;
 class CMesh;
+class CCollider;
 END
 
 BEGIN(Client)
@@ -65,11 +66,13 @@ public:
     void            Set_FrustumSphere(_bool _bSphere) {
         m_bFrustumSphere = _bSphere;
     }
+	virtual void Update_InstanceBuffer();
 
 protected:
     CShader* m_pShaderCom = { nullptr };
     CModel* m_pModelCom = { nullptr };
     CCalculator* m_pCalculatorCom = { nullptr };
+    CCollider* m_pColliderCom = { nullptr };
 protected:
     vector<CMesh*> m_vecMeshes;
 
@@ -78,16 +81,15 @@ protected:
     _float3		   m_fScale = { 0.f, 0.f, 0.f };
     _char		   m_EnvironmentMeshName[MAX_PATH] = {};
     _bool		   m_bFrustumSphere = { true };
+    
 
 
 protected:
     vector<VTX_MODEL_INSTANCE> m_vecInstanceData;
     _uint m_iNumInstance = {};
-    //INSTANCE_INFO g_Instances[2] =
-    //{
-    //    {XMMatrixTranspose(XMMatrixIdentity())},
-    //    {XMMatrixTranspose(XMMatrixTranslation(2.0f, 0.0f, 0.0f))}
-    //};
+    
+public:
+    vector<VTX_MODEL_INSTANCE> Get_ModelInstanceVector() { return m_vecInstanceData; }
 
 protected:
     virtual HRESULT Ready_Components();

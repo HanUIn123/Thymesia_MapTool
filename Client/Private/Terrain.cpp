@@ -60,6 +60,8 @@ HRESULT CTerrain::Render()
 
 	m_pVIBufferCom->Bind_InputAssembler();
 
+	CTempManager::GetInstance()->SwitchFrameMode();
+
 	m_pVIBufferCom->Render();
 
 #ifdef _DEBUG				

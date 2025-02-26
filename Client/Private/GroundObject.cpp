@@ -30,14 +30,11 @@ HRESULT CGroundObject::Initialize(void* _pArg)
     //pDesc->fPosition
     //_float fRadius = pDesc->fRange;
     //_float fSpacing = pDesc->fSpace;
-
     //m_iNumInstance = static_cast<_uint>(XM_PI * fRadius * fRadius);
     if (pDesc->vecPosition.empty())
         return E_FAIL;
 
     m_iNumInstance = static_cast<_uint>(pDesc->vecPosition.size());
-
-
 
     //m_iNumInstance = 10;
     m_vecInstanceData.clear();
@@ -56,7 +53,7 @@ HRESULT CGroundObject::Initialize(void* _pArg)
 
         XMMATRIX matScale = XMMatrixScaling(0.01f, 0.01f, 0.01f);
         XMMATRIX matTranslation = XMMatrixTranslation(randX, 0.0f, randZ);
-        XMMATRIX matWorld = matScale * matTranslation;*/
+        XMMATRIX matWorld = matScale * matTranslSation;*/
         //XMMATRIX matScale = XMLoadFloat4x4(pDesc->fScaling);
 
 
@@ -91,6 +88,8 @@ HRESULT CGroundObject::Initialize(void* _pArg)
     if (m_vecInstanceData.empty())
         return E_FAIL;
 
+    // tool 에서 던져준, 몇 개의 모델을 출력해줄건지.  
+    //if (FAILED(m_pModelCom[i]->Create_InstanceBuffer(m_iNumInstance, m_vecInstanceData.data())))
     if (FAILED(m_pModelCom->Create_InstanceBuffer(m_iNumInstance, m_vecInstanceData.data())))
     {
         return E_FAIL;
@@ -112,6 +111,9 @@ void CGroundObject::Update(_float _fTimeDelta)
     matWorld.r[0] = XMVector3Normalize(matWorld.r[0]) * m_fFrustumRadius;
     matWorld.r[1] = XMVector3Normalize(matWorld.r[1]) * m_fFrustumRadius;
     matWorld.r[2] = XMVector3Normalize(matWorld.r[2]) * m_fFrustumRadius;
+
+
+    m_pColliderCom->Update(matWorld);
 #endif
 }
 
@@ -127,6 +129,7 @@ HRESULT CGroundObject::Render()
         return E_FAIL;
 
     _uint			iNumMeshes = m_pModelCom->Get_NumMeshes();
+    //_uint			iNumMeshes = m_pModelCom[2]->Get_NumMeshes();
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
@@ -141,6 +144,12 @@ HRESULT CGroundObject::Render()
 
         m_pModelCom->Render_Instance(m_iNumInstance);
     }
+
+    if (m_bFrustumSphere)
+    {
+        m_pColliderCom->Render();
+    }
+
 
     return S_OK;
 }

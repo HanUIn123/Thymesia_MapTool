@@ -84,8 +84,8 @@ private:
     void								Active_PreviewModelImage();
 
     void								Add_GroundObjects();
+    void                                Delete_GroundObjects();
     void								Setting_GroundObjectList();
-
 
 
     HRESULT								Save_Objects();
@@ -102,30 +102,38 @@ private:
     _float                              Compute_Cell_Distance(const XMFLOAT3& _NewPickingPoint, const XMFLOAT3& _PrevPickedPoint);
     _bool                               Is_CWTriangle(const XMVECTOR& _NearestCellPoint1, const XMVECTOR& _NearestCellPoint2, const XMVECTOR& _PickedNewPoint);
     pair<XMFLOAT3, XMFLOAT3>            Compute_NearPoints(const vector<CELL_POINTS>& _vecTagCells, const XMFLOAT3& _newPoints);
-    XMFLOAT3                            Pick_Closest_Cube(const XMFLOAT3& clickPos);
-    void                                Create_Line_Between_Cubes(const XMFLOAT3& point1, const XMFLOAT3& point2);
+    XMFLOAT3                            Pick_Closest_Cube(const XMFLOAT3& clickPos, _uint _iFloorNumber);
+    void                                Create_Line_Between_Cubes(const XMFLOAT3& point1, const XMFLOAT3& point2, _uint _iFloorNumber = 0);
     XMFLOAT3                            Compute_Closest_Point(const vector<XMFLOAT3>& vAllpoints, const XMFLOAT3& point1, const XMFLOAT3& point2);
     _bool                               Is_Point_InTriangle(const XMVECTOR& _Point, const XMVECTOR& _VertexPoint0, const XMVECTOR& _VertexPoint1, const XMVECTOR& _VertexPoint2);
-    HRESULT                             Delete_Cell_Mode();
-    HRESULT                             Delete_Cell();
+    _uint                               Determine_FloorNumber(_float3 _fPickPos);
+    HRESULT                             Delete_Cell_Mode(_uint _iFloorNumber);
+    HRESULT                             Delete_Cell(_uint _iFloorNumber);
 
     HRESULT								Save_Navi();
-    HRESULT								Load_Navi();
+    HRESULT								Load_Navi(_uint _iFloorNumber);
 
 private:
     HRESULT                             Show_MouseRange(MENU_TYPE _eMenuType, _float _fTimeDelta);
 
 
 private:
-    vector<_float3>                     m_vecPickedPoints;
-    vector<XMFLOAT3>                    m_vecSelectedCubes;
+    //vector<_float3>                     m_vecPickedPoints;
+    //vector<XMFLOAT3>                    m_vecSelectedCubes;
     _uint                               m_iNumCellCount = {};
-    CELL_POINTS                         tagWholeCellPoints = {};
-    vector<CELL_POINTS>                 m_vecWholeCellPoints;
+    //CELL_POINTS                         tagWholeCellPoints = {};
+    //vector<CELL_POINTS>                 m_vecWholeCellPoints;
     _bool                               m_bFirstPick = { true };
     _bool                               m_bConnectingMode = false;
     _bool                               m_bDeleteMode = { false };
+    _bool                               m_bFinishPickingNavi_InCurrentFloor = { false };
+    _uint                               m_iFloorNumber = {};
 
+
+    map<_uint, vector<XMFLOAT3>>        m_mapSelectedCube;
+    map<_uint, CELL_POINTS>             m_mapTagWholeCellPoints;
+    map<_uint, vector<_float3>>         m_mapFloorPickedPoints;
+    map<_uint, vector<CELL_POINTS>>     m_mapWholeCellPoints;
 
 
 
@@ -150,74 +158,74 @@ private:
 private:
     // 오브젝트 생성할 위치
 
-    _int    m_iObjectArray = { 0 };
+    _int                                m_iObjectArray = { 0 };
+    _float                              m_fObjectPos[3] = { 1.f, 1.f ,1.f };
+    _float                              m_fMeshScale[3] = { 0.01f, 0.01f, 0.01f };
+    _float                              m_fObjectRotation[3] = { 0.f, 0.f, 0.f };
+    _float	                            m_fFrustumRadius = { 1.f };
 
-    _float  m_fObjectPos[3] = { 1.f, 1.f ,1.f };
-    _float  m_fMeshScale[3] = { 0.01f, 0.01f, 0.01f };
-    _float  m_fObjectRotation[3] = { 0.f, 0.f, 0.f };
-    _float	m_fFrustumRadius = { 1.f };
+    list<CObject*>                      m_Objects;
+    list<CEnvironmentObject*>           m_EnvironmentObjects;
 
-    list<CObject*> m_Objects;
-    list<CEnvironmentObject*> m_EnvironmentObjects;
+    _float3                             m_fMeshPickPos = { 0.f, 0.f, 0.f };
+    _float                              m_fPosMax[2] = { -100.f, 100.f };
+    _float                              m_fScaleMax[2] = { -1.f, 1.f };
+    _float                              m_fRotationMax[2] = { -180.f, 180.f };
+    _float	                            m_fRadiusMax = { 100.f };
 
-    _float3  m_fMeshPickPos = { 0.f, 0.f, 0.f };
-
-    _float   m_fPosMax[2] = { -100.f, 100.f };
-    _float   m_fScaleMax[2] = { -1.f, 1.f };
-    _float   m_fRotationMax[2] = { -180.f, 180.f };
-    _float	 m_fRadiusMax = { 100.f };
-    const char* m_strObjectNames[256] =
+    const char*                         m_strObjectNames[256] =
     {
         "HORSE_P_WoodenFrame02_05",
-          "P_Rag03",
-          "SM_Wall_Shelf",
-          "SM_WoodFence03",
-          "SM_WoodFence04",
-          "SM_WoodStairs03",
-          "P_BossAtriumCircle01",
-          "P_BossCemetery_02_02",
-          "P_BossCemetery_04",
-          "P_BossCemetery_05",
-          "P_BossCemetery_06",
-          "P_BossInteriorArches02",
-          "P_ChurchWindowGrilles01",
-          "P_LongStairs01",
-          "SM_Plains_CastleArch_Ruin_01",
-          "SM_Trim_01a",
-          "SM_Wall_8x8_Broken_01c",
-          "SM_Wall_8x8_Broken_01d",
-          "SM_Wall_8x8_Broken_01e",
-          "Railing_base01",
-          "Railing_pillar01_2",
-          "Railing01_3",
-          "SM_Brick_stone_stairs_1_a",
-          "SM_Gate_17d",
-          "SM_ground_Road_Middle_250x250cm_1_a",
-          "T_P_BossRoomVines01",
-          "P_BossArtriumCircleRailing_Down02"
-          ,"P_BossArtriumCircleRailing_Down03"
-          ,"P_BossArtriumCircleRailing_Down04"
-          ,"P_BossAtriumCircleRailing_Top01"
-          ,"P_BossAtriumCircleRailing_Up01"
-          ,"P_BossAtriumCircleRailing_Up02"
-          ,"P_BossAtriumCircleRailing_Up04"
-          ,"P_BossAtriumCircleRailing_Up03"
-          ,"Railing03_1",
-          "P_Fortress_BossDoor_Left01",
-          "P_Fortress_BossDoor_Right01",
-          "SM_Debris_01a",
-          "SM_Debris_02a",
-          "SM_Scafold_01b",
-          "SM_Scafold_01c",
-            "SM_fence_14",
-            "SM_fence_16",
-            "SM_fence_13",
-            "SM_rock_03",
-            "SM_curb_02",
-            "P_CemeteryStairs01",
-            "Brick_Floor",
-            "Grass0",
+        "P_Rag03",
+        "SM_Wall_Shelf",
+        "SM_WoodFence03",
+        "SM_WoodFence04",
+        "SM_WoodStairs03",
+        "P_BossAtriumCircle01",
+        "P_BossCemetery_02_02",
+        "P_BossCemetery_04",
+        "P_BossCemetery_05",
+        "P_BossCemetery_06",
+        "P_BossInteriorArches02",
+        "P_ChurchWindowGrilles01",
+        "P_LongStairs01",
+        "SM_Plains_CastleArch_Ruin_01",
+        "SM_Trim_01a",
+        "SM_Wall_8x8_Broken_01c",
+        "SM_Wall_8x8_Broken_01d",
+        "SM_Wall_8x8_Broken_01e",
+        "Railing_base01",
+        "Railing_pillar01_2",
+        "Railing01_3",
+        "SM_Brick_stone_stairs_1_a",
+        "SM_Gate_17d",
+        "SM_ground_Road_Middle_250x250cm_1_a",
+        "T_P_BossRoomVines01",
+        "P_BossArtriumCircleRailing_Down02",
+        "P_BossArtriumCircleRailing_Down03",
+        "P_BossArtriumCircleRailing_Down04",
+        "P_BossAtriumCircleRailing_Top01",
+        "P_BossAtriumCircleRailing_Up01",
+        "P_BossAtriumCircleRailing_Up02",
+        "P_BossAtriumCircleRailing_Up04",
+        "P_BossAtriumCircleRailing_Up03",
+        "Railing03_1",
+        "P_Fortress_BossDoor_Left01",
+        "P_Fortress_BossDoor_Right01",
+        "SM_Debris_01a",
+        "SM_Debris_02a",
+        "SM_Scafold_01b",
+        "SM_Scafold_01c",
+        "SM_fence_14",
+        "SM_fence_16",
+        "SM_fence_13",
+        "SM_rock_03",
+        "SM_curb_02",
+        "P_CemeteryStairs01",
+        "Brick_Floor",
+        "Grass0",
         "P_Archive_Chair01",
+        "Ladder"
     };
 
     const char* m_strGroundObjectNamess[100] =
@@ -246,18 +254,20 @@ private:
 
     _bool									m_bFrustumSphere = { false };
 
-
 private:
-    _float              m_fInstallRange = {1.0f};
-    _float              m_fSpacingValue = {1.0f};
-    _float              m_fInterval = {};
-    _float              m_fRadius = { 1.0f };
-    VTXNORTEX*          m_pVertices = { nullptr };
-    vector<_float3>     m_vecGroundObjectPos;
+    _float                                  m_fInstallRange = {1.0f};
+    _float                                  m_fSpacingValue = {1.0f};
+    _float                                  m_fInterval = {};
+    _float                                  m_fRadius = { 1.0f };
+    VTXNORTEX*                              m_pVertices = { nullptr };
+    vector<_float3>                         m_vecGroundObjectPos;
+
+    vector<_uint>                           m_iSelectedIndexNumber;
+    _uint                                   m_iInstancingModelType;
 
 public:
-    static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    virtual void Free() override;
+    static CLevel_GamePlay*                 Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    virtual void                            Free() override;
 };
 
 END
