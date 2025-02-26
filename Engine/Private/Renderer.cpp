@@ -227,8 +227,8 @@ HRESULT CRenderer::Render()
 
 
 #ifdef _DEBUG
-	//if (FAILED(Render_Debug()))	
-	//	return E_FAIL;	
+	if (FAILED(Render_Debug()))	
+		return E_FAIL;	
 #endif
 
 	return S_OK;

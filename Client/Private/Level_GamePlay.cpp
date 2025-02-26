@@ -172,7 +172,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_iNonAnimModelIndex = -1;
 
         m_pPrevObject = nullptr;
-        m_pCurrentObjectTransformCom = nullptr;
+        m_pPrevObjectTrasnformCom = nullptr;
     }
 
     if (ImGui::Button("Create_Object"))
@@ -840,9 +840,6 @@ HRESULT CLevel_GamePlay::Save_Objects()
     _uint iObjectCount = static_cast<_uint>(m_Objects.size());
     WriteFile(hFile, &iObjectCount, sizeof(_uint), &dwByte, nullptr);
 
-    _uint iEnvironmentObjectCount = static_cast<_uint>(m_EnvironmentObjects.size());
-    WriteFile(hFile, &iEnvironmentObjectCount, sizeof(_uint), &dwByte2, nullptr);
-
     for (auto& pObject : m_Objects)
     {
         if (nullptr != pObject)
@@ -856,6 +853,10 @@ HRESULT CLevel_GamePlay::Save_Objects()
             WriteFile(hFile, &Info.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
         }
     }
+
+
+    _uint iEnvironmentObjectCount = static_cast<_uint>(m_EnvironmentObjects.size());
+    WriteFile(hFile, &iEnvironmentObjectCount, sizeof(_uint), &dwByte2, nullptr);
 
     _uint iGroundPosVectorSize = static_cast<_uint>(m_vecGroundObjectPos.size());
     WriteFile(hFile, &iGroundPosVectorSize, sizeof(_uint), &dwByte2, nullptr);
@@ -920,8 +921,9 @@ HRESULT CLevel_GamePlay::Load_Objects()
     _uint iSize = 0;
     _uint iSize2 = 0;
 
+    // 일반 오브젝트
     ReadFile(hFile, &iSize, sizeof(_uint), &dwByte, nullptr);
-    ReadFile(hFile, &iSize2, sizeof(_uint), &dwByte2, nullptr);
+   // ReadFile(hFile, &iSize2, sizeof(_uint), &dwByte2, nullptr);
 
     for (size_t i = 0; i < iSize; i++)
     {
@@ -942,7 +944,9 @@ HRESULT CLevel_GamePlay::Load_Objects()
         if (pObject != nullptr)
             m_Objects.push_back(pObject);
     }
-
+    
+    //인스턴싱 오브젝트
+    ReadFile(hFile, &iSize2, sizeof(_uint), &dwByte2, nullptr);
     CEnvironmentObject::ENVIRONMENT_OBJECT_DESC Desc = {};
     _uint iGroundPosVectorSize = 0;
     ReadFile(hFile, &iGroundPosVectorSize, sizeof(_uint), &dwByte2, nullptr);
@@ -972,7 +976,7 @@ HRESULT CLevel_GamePlay::Load_Objects()
         if (pEnvironment != nullptr)
             m_EnvironmentObjects.push_back(pEnvironment);
     }
-
+    
     CloseHandle(hFile);
 
 }
