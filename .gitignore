@@ -233,7 +233,7 @@ _pkginfo.txt
 
 # Others
 ClientBin/
-Bin/Resources/Models/GroundObjects/House0
+Client/Bin/Resources/Models/GroundObjects/House0
 ~$*
 *~
 *.dbmdl
