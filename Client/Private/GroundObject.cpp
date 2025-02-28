@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 
 CGroundObject::CGroundObject(ID3D11Device* _pDevice, ID3D11DeviceContext* _pContext)
-    :CEnvironmentObject{_pDevice, _pContext}
+    :CEnvironmentObject{ _pDevice, _pContext }
 {
 }
 
@@ -27,52 +27,36 @@ HRESULT CGroundObject::Initialize(void* _pArg)
 
     GROUND_OBJECCT_DESC* pDesc = static_cast<GROUND_OBJECCT_DESC*>(_pArg);
 
-    //pDesc->fPosition
-    //_float fRadius = pDesc->fRange;
-    //_float fSpacing = pDesc->fSpace;
-    //m_iNumInstance = static_cast<_uint>(XM_PI * fRadius * fRadius);
-    if (pDesc->vecPosition.empty())
+    if (pDesc->vecInstancePosition.empty())
         return E_FAIL;
 
-    m_iNumInstance = static_cast<_uint>(pDesc->vecPosition.size());
+    m_vecInstancePosition = pDesc->vecInstancePosition;
+    m_vecInstanceScale = pDesc->vecInstanceScale;
+    m_vecInstanceRotation = pDesc->vecInstanceRotation;
 
-    //m_iNumInstance = 10;
+    m_iNumInstance = static_cast<_uint>(pDesc->vecInstancePosition.size());
     m_vecInstanceData.clear();
     m_vecInstanceData.reserve(m_iNumInstance);
-
-
-    //_float fMinRange = 1.0f;
-    //_float fMaxRange = 10.0f;
 
     for (UINT i = 0; i < m_iNumInstance; ++i)
     {
         VTX_MODEL_INSTANCE instance;
 
-       /* _float randX = fMinRange + static_cast<_float>(rand()) / (static_cast<_float>(RAND_MAX / (fMaxRange - fMinRange)));
-        _float randZ = fMinRange + static_cast<_float>(rand()) / (static_cast<_float>(RAND_MAX / (fMaxRange - fMinRange)));
-
-        XMMATRIX matScale = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-        XMMATRIX matTranslation = XMMatrixTranslation(randX, 0.0f, randZ);
-        XMMATRIX matWorld = matScale * matTranslSation;*/
-        //XMMATRIX matScale = XMLoadFloat4x4(pDesc->fScaling);
-
-
-        XMFLOAT3 fTerrainPos = pDesc->vecPosition[i];
-
+        XMFLOAT3 fTerrainPos = pDesc->vecInstancePosition[i];
 
         XMMATRIX matScale = XMMatrixScaling(
-            XMVectorGetX(XMLoadFloat3(&pDesc->fScaling)), 
-            XMVectorGetY(XMLoadFloat3(&pDesc->fScaling)),
-            XMVectorGetZ(XMLoadFloat3(&pDesc->fScaling))
-            );
-     /*   XMMATRIX matPosition = XMMatrixTranslation(
-            XMVectorGetX(XMLoadFloat4(&pDesc->fPosition)),
-            XMVectorGetY(XMLoadFloat4(&pDesc->fPosition)),
-            XMVectorGetZ(XMLoadFloat4(&pDesc->fPosition))
-        );*/
+            XMVectorGetX(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
+            XMVectorGetY(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
+            XMVectorGetZ(XMLoadFloat3(&pDesc->vecInstanceScale[i]))
+        );
+
+        XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
+        XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
+        XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
+        XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
 
         XMMATRIX matPosition = XMMatrixTranslation(fTerrainPos.x, fTerrainPos.y, fTerrainPos.z);
-        XMMATRIX matWorld = matScale * matPosition;
+        XMMATRIX matWorld = matScale * matRotation * matPosition;
 
         XMFLOAT4X4 tempMatrix;
         XMStoreFloat4x4(&tempMatrix, matWorld);
@@ -88,8 +72,6 @@ HRESULT CGroundObject::Initialize(void* _pArg)
     if (m_vecInstanceData.empty())
         return E_FAIL;
 
-    // tool 에서 던져준, 몇 개의 모델을 출력해줄건지.  
-    //if (FAILED(m_pModelCom[i]->Create_InstanceBuffer(m_iNumInstance, m_vecInstanceData.data())))
     if (FAILED(m_pModelCom->Create_InstanceBuffer(m_iNumInstance, m_vecInstanceData.data())))
     {
         return E_FAIL;
@@ -119,8 +101,8 @@ void CGroundObject::Update(_float _fTimeDelta)
 
 void CGroundObject::Late_Update(_float _fTimeDelta)
 {
-    if (m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_fFrustumRadius))
-        m_pGameInstance->Add_RenderGroup(CRenderer::RG_NONBLEND, this);
+    //if (m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_fFrustumRadius))
+    m_pGameInstance->Add_RenderGroup(CRenderer::RG_NONBLEND, this);
 }
 
 HRESULT CGroundObject::Render()
@@ -129,7 +111,6 @@ HRESULT CGroundObject::Render()
         return E_FAIL;
 
     _uint			iNumMeshes = m_pModelCom->Get_NumMeshes();
-    //_uint			iNumMeshes = m_pModelCom[2]->Get_NumMeshes();
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
@@ -140,9 +121,7 @@ HRESULT CGroundObject::Render()
             return E_FAIL;
 
         m_pShaderCom->Begin(0);
-        //m_pModelCom->Render(i);
-
-        m_pModelCom->Render_Instance(m_iNumInstance);
+        m_pModelCom->Render_Instance(i, m_iNumInstance);
     }
 
     if (m_bFrustumSphere)
@@ -152,6 +131,39 @@ HRESULT CGroundObject::Render()
 
 
     return S_OK;
+}
+
+void CGroundObject::Update_InstanceBuffer(_uint _iInstanceIndex, const XMFLOAT3& _vPosition, const XMFLOAT3& _vScale, const XMFLOAT3& _vRotation)
+{
+    if (_iInstanceIndex >= m_iNumInstance)
+        return;
+
+    m_vecInstancePosition[_iInstanceIndex] = _vPosition;
+    m_vecInstanceScale[_iInstanceIndex] = _vScale;
+    m_vecInstanceRotation[_iInstanceIndex] = _vRotation;
+
+    for (_uint i = 0; i < m_iNumInstance; ++i)
+    {
+        XMMATRIX matPosition = XMMatrixTranslation(m_vecInstancePosition[i].x, m_vecInstancePosition[i].y, m_vecInstancePosition[i].z);
+        XMMATRIX matScale = XMMatrixScaling(m_vecInstanceScale[i].x, m_vecInstanceScale[i].y, m_vecInstanceScale[i].z);
+        XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
+        XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
+        XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
+        XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
+
+        XMMATRIX matWorld = matScale * matRotation * matPosition;
+
+        XMFLOAT4X4 tempMatrix;
+        XMStoreFloat4x4(&tempMatrix, matWorld);
+
+        m_vecInstanceData[i].InstanceMatrix[0] = XMFLOAT4(tempMatrix._11, tempMatrix._12, tempMatrix._13, tempMatrix._14);
+        m_vecInstanceData[i].InstanceMatrix[1] = XMFLOAT4(tempMatrix._21, tempMatrix._22, tempMatrix._23, tempMatrix._24);
+        m_vecInstanceData[i].InstanceMatrix[2] = XMFLOAT4(tempMatrix._31, tempMatrix._32, tempMatrix._33, tempMatrix._34);
+        m_vecInstanceData[i].InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
+    }
+
+    m_pModelCom->Update_InstanceBuffer(m_iNumInstance, m_vecInstanceData.data());
+
 }
 
 HRESULT CGroundObject::Ready_Components()
@@ -181,9 +193,6 @@ HRESULT CGroundObject::Bind_ShaderResources()
         return E_FAIL;
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_Transform_Float4x4(CPipeLine::D3DTS_PROJ))))
         return E_FAIL;
-
-    //if (FAILED(m_pShaderCom->Bind_SRV("g_InstanceMatrix", m_pModelCom->Get_InstanceBuffer())))
-    //    return E_FAIL;
 
     return S_OK;
 }
