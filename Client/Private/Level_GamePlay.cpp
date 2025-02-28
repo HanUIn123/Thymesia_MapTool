@@ -69,7 +69,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     // IMG_GROUND_MODEL
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/GroundObjects/Grass0.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/GroundObjects/Tree0.png"), IMG_GROUND_MODEL, 1);
-
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/GroundObjects/House0.png"), IMG_GROUND_MODEL, 1);
 }
 
 HRESULT CLevel_GamePlay::Initialize()
@@ -229,19 +229,10 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
                             m_fObjectPos[2] = fPos.z;
 
-                            cout << m_fMeshPickPos.x << " ";
-
-                            cout << m_fMeshPickPos.y << " ";
-
-                            cout << m_fMeshPickPos.z << " ";
-
-                            cout << "\n";
-
                             m_pCurrentObject = vMesh.front().pObject;
                             m_pCurrentObjectTransformCom = m_pCurrentObject->Get_Transfrom();
 
                             Add_NonAnimObjects();
-
                         }
                     }
                     else if (m_bIsTerrainPickingMode)
@@ -404,6 +395,9 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     if (m_bGrondMenuSelected)
         Setting_GroundObjectList();
+
+    Update_InstanceObjects();
+    Update_InstanceMove();
 
     ImGui::End();
 }
@@ -588,7 +582,6 @@ HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageF
 
         for (_uint i = 0; i < _iTextureNumber; ++i)
         {
-            //ID3D11Texture2D* pTexture2D = { nullptr };
             ID3D11ShaderResourceView* pSRV = { nullptr };
 
             _tchar                      szTextureFilePath[MAX_PATH] = TEXT("");
@@ -763,25 +756,36 @@ void CLevel_GamePlay::Add_GroundObjects()
                 continue;
 
             XMFLOAT3 terrainPos = m_pVertices[iIndex].vPosition;
-            m_vecGroundObjectPos.push_back(terrainPos);
-            EnvironmentDesc.vecPosition.push_back(terrainPos);
+            EnvironmentDesc.vecInstancePosition.push_back(terrainPos);
+            m_vecInstancedGroundObjectPos.push_back(terrainPos);
+
+            EnvironmentDesc.vecInstanceScale.push_back(EnvironmentDesc.fScaling);
+            m_vecInstancedGroundObjectScale.push_back(EnvironmentDesc.fScaling);
+
+            EnvironmentDesc.vecInstanceRotation.push_back(EnvironmentDesc.fRotation);
+            m_vecInstancedGroundObjectRotation.push_back(EnvironmentDesc.fRotation);
+
+            m_iInstancingModelSize++;
         }
     }
     m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
 
     CEnvironmentObject* pObject = reinterpret_cast<CEnvironmentObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"), LEVEL_GAMEPLAY, TEXT("Layer_GroundObject"), &EnvironmentDesc));
-
     if (pObject != nullptr)
+    {
         m_EnvironmentObjects.push_back(pObject);
+    }
 }
 
 void CLevel_GamePlay::Delete_GroundObjects()
 {
-    for (auto& pEnviornment : m_EnvironmentObjects)
-    {
-        vector<VTX_MODEL_INSTANCE> vecInstanceData = pEnviornment->Get_ModelInstanceVector();
+    vector<CEnvironmentObject*> vecObjectsToRemove;
 
-        for (auto iter = vecInstanceData.begin(); iter != vecInstanceData.end();)
+    for (auto& pEnvironment : m_EnvironmentObjects)
+    {
+        vector<VTX_MODEL_INSTANCE>& vecInstanceData = pEnvironment->Get_ModelInstanceVector();
+
+        for (auto iter = vecInstanceData.rbegin(); iter != vecInstanceData.rend();)
         {
             if (
                 (*iter).InstanceMatrix[3].x == m_fPickPos.x &&
@@ -789,16 +793,29 @@ void CLevel_GamePlay::Delete_GroundObjects()
                 (*iter).InstanceMatrix[3].z == m_fPickPos.z
                 )
             {
-                iter = vecInstanceData.erase(iter);
-                m_pGameInstance->Add_DeadObject(L"Layer_GroundObject", pEnviornment);
-                break;
+                iter = decltype(iter)(vecInstanceData.erase((iter + 1).base()));
+
+                m_pGameInstance->Add_DeadObject(L"Layer_GroundObject", pEnvironment);
             }
             else
             {
                 ++iter;
             }
         }
-        vecInstanceData.clear();
+
+        if (vecInstanceData.empty())
+        {
+            vecObjectsToRemove.push_back(pEnvironment);
+        }
+    }
+
+    for (auto& pObj : vecObjectsToRemove)
+    {
+        auto it = find(m_EnvironmentObjects.begin(), m_EnvironmentObjects.end(), pObj);
+        if (it != m_EnvironmentObjects.end())
+        {
+            m_EnvironmentObjects.erase(it);
+        }
     }
 }
 
@@ -812,7 +829,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
     static int iCurrentItem = 0;
     ImGui::Combo("##5", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-    for (_uint i = 0; i < 2; ++i)
+    for (_uint i = 0; i < 3; ++i)
     {
         _uint  iTextureIndex = iCurrentItem * 3 + i;
         m_iRandGroundModelIndex = rand() % (iTextureIndex + 1);
@@ -839,6 +856,159 @@ void CLevel_GamePlay::Setting_GroundObjectList()
     }
 }
 
+void CLevel_GamePlay::Update_InstanceObjects()
+{
+    ImGui::Begin("Instanced Ground Objects", NULL, ImGuiWindowFlags_MenuBar);
+    {
+        if (m_EnvironmentObjects.size() < 0)
+            return;
+
+        for (auto& pEnvironmentObject : m_EnvironmentObjects)
+        {
+            vector<VTX_MODEL_INSTANCE>& vecInstanceData = pEnvironmentObject->Get_ModelInstanceVector();
+            CGroundObject* pGroundObject = dynamic_cast<CGroundObject*>(pEnvironmentObject);
+
+            for (_uint i = 0; i < vecInstanceData.size(); ++i)
+            {
+                char label[32];
+                sprintf_s(label, "Instance %d##%p", i, pGroundObject);
+
+                if (ImGui::Selectable(label, m_pSelectedInstancedObject == pGroundObject && m_iSelectedInstanceIndex == i))
+                {
+                    m_pSelectedInstancedObject = pGroundObject;
+                    m_iSelectedInstanceIndex = i;
+                    m_bDraggingInstanceModel = true;
+                }
+
+                if (m_pSelectedInstancedObject == pGroundObject && m_iSelectedInstanceIndex == i)
+                {
+                    ImGui::Separator();
+                    ImGui::Text("Selected Instance: %d", m_iSelectedInstanceIndex);
+
+                    _bool bInstanceTransformInfoUpdated = false;
+
+                    if (ImGui::DragFloat3(("Position##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], 0.1f))
+                        bInstanceTransformInfoUpdated = true;
+                    if (ImGui::DragFloat3(("Scale##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], 0.1f, 0.1f, 10.0f))
+                        bInstanceTransformInfoUpdated = true;
+                    if (ImGui::DragFloat3(("Rotation##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], 0.1f, -3.14f, 3.14f))
+                        bInstanceTransformInfoUpdated = true;
+
+                    if (bInstanceTransformInfoUpdated)
+                    {
+                        m_pSelectedInstancedObject->Update_InstanceBuffer
+                        (
+                            m_iSelectedInstanceIndex,
+                            m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
+                            m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
+                            m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    ImGui::End();
+}
+
+void CLevel_GamePlay::Update_InstanceMove()
+{
+    if (!m_pSelectedInstancedObject || m_iSelectedInstanceIndex < 0)
+        return;
+
+    _float3 vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+
+    if (m_bDraggingInstanceModel)
+    {
+        m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex] = vMousePos;
+
+        m_pSelectedInstancedObject->Update_InstanceBuffer(
+            m_iSelectedInstanceIndex,
+            m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
+            m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
+            m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
+        );
+        if (m_pGameInstance->Get_DIKeyState(DIK_E) & 0x80)
+            m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex].y += 0.07f;
+        else if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)
+            m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex].y -= 0.07f;
+
+        //if (m_pGameInstance->isMouseEnter(DIM_LB))
+        if (m_pGameInstance->Get_DIKeyState(DIK_T) & 0x80)
+        {
+            m_bDraggingInstanceModel = false;
+            m_pSelectedInstancedObject->Update_InstanceBuffer
+            (
+                m_iSelectedInstanceIndex,
+                m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
+                m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
+                m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
+            );
+
+            m_pSelectedInstancedObject = nullptr;
+            m_iSelectedInstanceIndex = -1;
+        }
+    }
+}
+
+XMFLOAT3 CLevel_GamePlay::Compute_ClosestInstanceModelPoint(const XMFLOAT3& _fClickPos)
+{
+    const float PICK_RADIUS = 1.0f;
+    _float fMinDistance = FLT_MAX;
+    XMFLOAT3 vSelectedCordinate = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
+
+    for (auto& fInstanceModelPos : m_vecInstancedGroundObjectPos)
+    {
+        XMFLOAT3 vCordinate = fInstanceModelPos;
+        _float fDistance = Compute_Cell_Distance(_fClickPos, vCordinate);
+
+        if (fDistance < PICK_RADIUS && fDistance < fMinDistance)
+        {
+            fMinDistance = fDistance;
+            vSelectedCordinate = vCordinate;
+        }
+    }
+    return vSelectedCordinate;
+}
+
+void CLevel_GamePlay::Pick_InstanceModel()
+{
+    if (m_pGameInstance->isMouseEnter(DIM_LB))
+    {
+        _float3 vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+
+        float fMinDistance = FLT_MAX;
+        CGroundObject* pClosestObject = nullptr;
+        int iClosestIndex = -1;
+
+        for (auto& pEnvironmentObject : m_EnvironmentObjects)
+        {
+            vector<VTX_MODEL_INSTANCE>& vecInstanceData = pEnvironmentObject->Get_ModelInstanceVector();
+
+            for (size_t i = 0; i < vecInstanceData.size(); i++)
+            {
+                XMFLOAT3 vInstancePos = m_vecInstancedGroundObjectPos[i];
+                float fDistance = Compute_Cell_Distance(vMousePos, vInstancePos);
+
+                if (fDistance < fMinDistance)
+                {
+                    fMinDistance = fDistance;
+                    pClosestObject = dynamic_cast<CGroundObject*>(pEnvironmentObject);
+                    iClosestIndex = i;
+                }
+            }
+        }
+
+        if (pClosestObject && iClosestIndex != -1)
+        {
+            m_pSelectedInstancedObject = pClosestObject;
+            m_iSelectedInstanceIndex = iClosestIndex;
+            m_bDraggingInstanceModel = true;
+        }
+    }
+}
+
 HRESULT CLevel_GamePlay::Save_Objects()
 {
     wstring fileName;
@@ -857,6 +1027,7 @@ HRESULT CLevel_GamePlay::Save_Objects()
     DWORD dwByte = 0;
     DWORD dwByte2 = 0;
 
+    // 일반 오브젝트
     _uint iObjectCount = static_cast<_uint>(m_Objects.size());
     WriteFile(hFile, &iObjectCount, sizeof(_uint), &dwByte, nullptr);
 
@@ -874,17 +1045,39 @@ HRESULT CLevel_GamePlay::Save_Objects()
         }
     }
 
-
+    // 인스턴싱용 오브젝트
     _uint iEnvironmentObjectCount = static_cast<_uint>(m_EnvironmentObjects.size());
     WriteFile(hFile, &iEnvironmentObjectCount, sizeof(_uint), &dwByte2, nullptr);
 
-    _uint iGroundPosVectorSize = static_cast<_uint>(m_vecGroundObjectPos.size());
-    WriteFile(hFile, &iGroundPosVectorSize, sizeof(_uint), &dwByte2, nullptr);
+    for (_uint i = 0; i < m_EnvironmentObjects.size(); ++i)
+    {
+        vector<VTX_MODEL_INSTANCE>& vecInstanceData = m_EnvironmentObjects[i]->Get_ModelInstanceVector();
+        _uint iInstanceCount = static_cast<_uint>(vecInstanceData.size());
+        WriteFile(hFile, &iInstanceCount, sizeof(_uint), &dwByte2, nullptr);
 
-    for (auto& pos : m_vecGroundObjectPos)
+        for (size_t i = 0; i < iInstanceCount; i++)
+        {
+            WriteFile(hFile, &vecInstanceData[i].InstanceMatrix, sizeof(XMFLOAT4X4), &dwByte2, nullptr);
+        }
+    }
+
+    WriteFile(hFile, &m_iInstancingModelSize, sizeof(_uint), &dwByte2, nullptr);
+
+    for (auto& pos : m_vecInstancedGroundObjectPos)
     {
         WriteFile(hFile, &pos, sizeof(_float3), &dwByte2, nullptr);
     }
+
+    for (auto& scale : m_vecInstancedGroundObjectScale)
+    {
+        WriteFile(hFile, &scale, sizeof(_float3), &dwByte2, nullptr);
+    }
+
+    for (auto& rotation : m_vecInstancedGroundObjectRotation)
+    {
+        WriteFile(hFile, &rotation, sizeof(_float3), &dwByte2, nullptr);
+    }
+
 
     for (auto& pEnvironmentObject : m_EnvironmentObjects)
     {
@@ -894,14 +1087,10 @@ HRESULT CLevel_GamePlay::Save_Objects()
             CEnvironmentObject::ENVIRONMENT_OBJECT_DESC EnvironmentDesc = {};
 
             WriteFile(hFile, EnvironmentInfo.szName, MAX_PATH, &dwByte2, nullptr);
-            //WriteFile(hFile, &EnvironmentInfo.fPosition, sizeof(_float4), &dwByte2, nullptr);
-            WriteFile(hFile, &EnvironmentInfo.fRotation, sizeof(_float3), &dwByte2, nullptr);
-            WriteFile(hFile, &EnvironmentInfo.fScale, sizeof(_float3), &dwByte2, nullptr);
-            WriteFile(hFile, &EnvironmentInfo.fFrustumRadius, sizeof(_float), &dwByte2, nullptr);
         }
     }
 
-    MSG_BOX("Save Monster Complete");
+    MSG_BOX("Save ObjectData Complete");
     CloseHandle(hFile);
 
     return S_OK;
@@ -933,7 +1122,9 @@ HRESULT CLevel_GamePlay::Load_Objects()
         m_pGameInstance->Add_DeadObject(L"Layer_GroundObject", pEnvironmentObject);
     }
     m_EnvironmentObjects.clear();
-    m_vecGroundObjectPos.clear();
+    m_vecInstancedGroundObjectPos.clear();
+    m_vecInstancedGroundObjectScale.clear();
+    m_vecInstancedGroundObjectRotation.clear();
 
     DWORD dwByte = 0;
     DWORD dwByte2 = 0;
@@ -943,7 +1134,6 @@ HRESULT CLevel_GamePlay::Load_Objects()
 
     // 일반 오브젝트
     ReadFile(hFile, &iSize, sizeof(_uint), &dwByte, nullptr);
-   // ReadFile(hFile, &iSize2, sizeof(_uint), &dwByte2, nullptr);
 
     for (size_t i = 0; i < iSize; i++)
     {
@@ -964,19 +1154,56 @@ HRESULT CLevel_GamePlay::Load_Objects()
         if (pObject != nullptr)
             m_Objects.push_back(pObject);
     }
-    
-    //인스턴싱 오브젝트
+
+
+    // 인스턴싱용 오브젝트
     ReadFile(hFile, &iSize2, sizeof(_uint), &dwByte2, nullptr);
     CEnvironmentObject::ENVIRONMENT_OBJECT_DESC Desc = {};
-    _uint iGroundPosVectorSize = 0;
-    ReadFile(hFile, &iGroundPosVectorSize, sizeof(_uint), &dwByte2, nullptr);
 
-    for (size_t i = 0; i < iGroundPosVectorSize; i++)
+    for (_uint i = 0; i < iSize2; ++i)
+    {
+        _uint iVecInstanceDataSize = 0;
+        ReadFile(hFile, &iVecInstanceDataSize, sizeof(_uint), &dwByte2, nullptr);
+
+        vector<VTX_MODEL_INSTANCE> vecInstanceData = {};
+        vecInstanceData.resize(iVecInstanceDataSize);
+
+        for (_uint i = 0; i < iVecInstanceDataSize; ++i)
+        {
+            ReadFile(hFile, &vecInstanceData[i].InstanceMatrix, sizeof(XMFLOAT4X4), &dwByte2, nullptr);
+        }
+    }
+
+    _uint iInstancedGroundObjectNumSize = 0;
+    ReadFile(hFile, &iInstancedGroundObjectNumSize, sizeof(_uint), &dwByte2, nullptr);
+    m_iInstancingModelSize = iInstancedGroundObjectNumSize;
+    m_vecInstancedGroundObjectPos.resize(iInstancedGroundObjectNumSize);
+    m_vecInstancedGroundObjectScale.resize(iInstancedGroundObjectNumSize);
+    m_vecInstancedGroundObjectRotation.resize(iInstancedGroundObjectNumSize);
+
+
+    for (size_t i = 0; i < m_vecInstancedGroundObjectPos.size(); i++)
     {
         _float3 fGroundObjectPos;
         ReadFile(hFile, &fGroundObjectPos, sizeof(_float3), &dwByte2, nullptr);
-        m_vecGroundObjectPos.push_back(fGroundObjectPos);
-        Desc.vecPosition.push_back(fGroundObjectPos);
+        m_vecInstancedGroundObjectPos[i] = (fGroundObjectPos);
+        Desc.vecInstancePosition.push_back(fGroundObjectPos);
+    }
+
+    for (size_t i = 0; i < m_vecInstancedGroundObjectScale.size(); i++)
+    {
+        _float3 fGroundObjectScale;
+        ReadFile(hFile, &fGroundObjectScale, sizeof(_float3), &dwByte2, nullptr);
+        m_vecInstancedGroundObjectScale[i] = (fGroundObjectScale);
+        Desc.vecInstanceScale.push_back(fGroundObjectScale);
+    }
+
+    for (size_t i = 0; i < m_vecInstancedGroundObjectRotation.size(); i++)
+    {
+        _float3 fGroundObjectRotation;
+        ReadFile(hFile, &fGroundObjectRotation, sizeof(_float3), &dwByte2, nullptr);
+        m_vecInstancedGroundObjectRotation[i] = (fGroundObjectRotation);
+        Desc.vecInstanceRotation.push_back(fGroundObjectRotation);
     }
 
     for (size_t i = 0; i < iSize2; i++)
@@ -984,11 +1211,6 @@ HRESULT CLevel_GamePlay::Load_Objects()
         _char szLoadName[MAX_PATH] = {};
 
         ReadFile(hFile, szLoadName, MAX_PATH, &dwByte2, nullptr);
-        //ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte2, nullptr);
-        ReadFile(hFile, &Desc.fRotation, sizeof(_float3), &dwByte2, nullptr);
-        ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte2, nullptr);
-        ReadFile(hFile, &Desc.fFrustumRadius, sizeof(_float), &dwByte2, nullptr);
-
         Desc.ObjectName = szLoadName;
 
         CEnvironmentObject* pEnvironment = reinterpret_cast<CEnvironmentObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"), LEVEL_GAMEPLAY, TEXT("Layer_GroundObject"), &Desc));
@@ -996,9 +1218,8 @@ HRESULT CLevel_GamePlay::Load_Objects()
         if (pEnvironment != nullptr)
             m_EnvironmentObjects.push_back(pEnvironment);
     }
-    
-    CloseHandle(hFile);
 
+    CloseHandle(hFile);
 }
 
 void CLevel_GamePlay::OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName)
@@ -1067,7 +1288,7 @@ HRESULT CLevel_GamePlay::Picking_Points()
     if (m_fWholePickPos.y == -0.5f)
         return S_OK;
 
-    m_fWholePickPos.y += 0.1f;
+    m_fWholePickPos.y += 0.2f;
 
     _uint iFloorNumber = Determine_FloorNumber(m_fWholePickPos);
     m_iFloorNumber = iFloorNumber;
@@ -1103,7 +1324,7 @@ HRESULT CLevel_GamePlay::Picking_Points()
 
     m_mapFloorPickedPoints[iFloorNumber].push_back(m_fWholePickPos);
 
-    if (m_mapFloorPickedPoints[iFloorNumber].size() == 3 && m_bFirstPick)
+    if (m_mapFloorPickedPoints[iFloorNumber].size() == 3 && m_bFirstPick && !m_bConnectingMode)
     {
         m_mapTagWholeCellPoints[iFloorNumber].fCellPoints[0] = m_mapFloorPickedPoints[iFloorNumber][0];
         m_mapTagWholeCellPoints[iFloorNumber].fCellPoints[1] = m_mapFloorPickedPoints[iFloorNumber][1];
@@ -1119,7 +1340,7 @@ HRESULT CLevel_GamePlay::Picking_Points()
         m_bFirstPick = false;
         m_mapFloorPickedPoints[iFloorNumber].clear();
     }
-    else if (m_mapFloorPickedPoints[iFloorNumber].size() < 3 && !m_bFirstPick)
+    else if (m_mapFloorPickedPoints[iFloorNumber].size() < 3 && !m_bFirstPick && !m_bConnectingMode)
     {
         auto NearPoints = Compute_NearPoints(m_mapWholeCellPoints[iFloorNumber], m_mapFloorPickedPoints[iFloorNumber][0]);
 
@@ -1192,9 +1413,9 @@ pair<XMFLOAT3, XMFLOAT3> CLevel_GamePlay::Compute_NearPoints(const vector<CELL_P
     return NearestPoints;
 }
 
-XMFLOAT3 CLevel_GamePlay::Pick_Closest_Cube(const XMFLOAT3& clickPos , _uint _iFloorNumber)
+XMFLOAT3 CLevel_GamePlay::Pick_Closest_Cube(const XMFLOAT3& clickPos, _uint _iFloorNumber)
 {
-    const float PICK_RADIUS = 2.0f;
+    const float PICK_RADIUS = 1.0f;
 
     _float fMinDistance = FLT_MAX;
     XMFLOAT3 vSelectedCordinate = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
@@ -1306,12 +1527,14 @@ _bool CLevel_GamePlay::Is_Point_InTriangle(const XMVECTOR& _Point, const XMVECTO
 
 _uint CLevel_GamePlay::Determine_FloorNumber(_float3 _fPickPos)
 {
-    if (_fPickPos.y < 9.0f)
+    /*if (_fPickPos.y < 9.0f)
         return 1;
     else if (_fPickPos.y < 18.5f)
         return 2;
     else if (_fPickPos.y > 19.0f)
-        return 3;
+        return 3;*/
+
+    return 1;
 }
 
 HRESULT CLevel_GamePlay::Delete_Cell_Mode(_uint _iFloorNumber)
@@ -1401,7 +1624,7 @@ HRESULT CLevel_GamePlay::Load_Navi(_uint _iFloorNumber)
     {
         MSG_BOX("No file selected!");
         return E_FAIL;
-    } 
+    }
     HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
     if (hFile == INVALID_HANDLE_VALUE)
@@ -1430,7 +1653,8 @@ HRESULT CLevel_GamePlay::Load_Navi(_uint _iFloorNumber)
             {
                 if (memcmp(existingCell.fCellPoints, cellPoints.fCellPoints, sizeof(_float3) * 3) == 0)
                 {
-                    bIsDuplicate = true; break;
+                    bIsDuplicate = true;
+                    break;
                 }
             }
             if (!bIsDuplicate)

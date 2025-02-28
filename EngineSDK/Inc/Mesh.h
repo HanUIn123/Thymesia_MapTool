@@ -10,14 +10,14 @@ BEGIN(Engine)
 class CMesh final : public CVIBuffer
 {
 private:
-	CMesh(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);	
+	CMesh(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CMesh(const CMesh& Prototype);
 	virtual ~CMesh() = default;
 
 public:
 	_uint Get_MaterialIndex() const
 	{
-		return m_iMaterialIndex;	
+		return m_iMaterialIndex;
 	}
 
 
@@ -39,6 +39,7 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:
+	HRESULT			Bind_InputAssembler_Instance(ID3D11Buffer* pInstanceBuffer);
 	HRESULT			Render_Instance(ID3D11Buffer* pInstanceBuffer, _uint _iNumInstance);
 
 public:
@@ -62,15 +63,15 @@ private:
 	vector<_float4x4>  m_OffsetMatrices;
 
 	/* 바이너리화 관련 맴버 변수*/
-	D3D11_BUFFER_DESC	  m_MeshBufferdesc = {};	
-	VTXMESH*			  m_nonAnimpVertices;	
-	VTXANIMMESH*		  m_AnimVertices;	
-	CModel::MODEL         m_ModelType;	
-	_uint*				  pNewIndices;	
+	D3D11_BUFFER_DESC	  m_MeshBufferdesc = {};
+	VTXMESH* m_nonAnimpVertices;
+	VTXANIMMESH* m_AnimVertices;
+	CModel::MODEL         m_ModelType;
+	_uint* pNewIndices;
 
 	//메시 피킹용 변수들
-	_float3*			  m_pPos = {};
-	_uint*			      m_iIndices = {};
+	_float3* m_pPos = {};
+	_uint* m_iIndices = {};
 	_uint				  m_iVtxFaces = {};
 
 private:
@@ -80,20 +81,20 @@ private:
 
 private:
 	/*structed Buffer 관련 코드*/
-	ID3D11Buffer* m_pStrBuffer = { nullptr };	
+	ID3D11Buffer* m_pStrBuffer = { nullptr };
 
 private:
 	HRESULT  Ready_VertexBuffer_ForNonAnim(const aiMesh* pAIMesh, _fmatrix PreTransforMatrix);
 	HRESULT  Ready_VertexBuffer_ForAnim(CModel* pModel, const aiMesh* pAIMesh, _fmatrix PreTransforMatrix);
 
 public:
-	HRESULT Save_Mesh(ostream& os);	
-	HRESULT Load_Mesh(istream& is);	
+	HRESULT Save_Mesh(ostream& os);
+	HRESULT Load_Mesh(istream& is);
 
 
 public:
-	static CMesh* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::MODEL eModelType, CModel* pModel, const aiMesh* pAIMesh,_fmatrix PreTransformMatrix);
-	static CMesh* LoadCreate(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, istream& is);	
+	static CMesh* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::MODEL eModelType, CModel* pModel, const aiMesh* pAIMesh, _fmatrix PreTransformMatrix);
+	static CMesh* LoadCreate(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, istream& is);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

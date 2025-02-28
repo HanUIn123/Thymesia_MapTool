@@ -30,9 +30,12 @@ public:
         _float fRange = {};
         _float fSpace = {};
         //_float fPosition= {};
-        vector<_float3> vecPosition = {};
 
 
+        // 인스턴싱 객체들의 S R T 를 vector 컨테이너에 담아서 관리.
+        vector<_float3> vecInstancePosition = {};
+        vector<_float3> vecInstanceRotation = {};
+        vector<_float3> vecInstanceScale = {};
     };
 
 public:
@@ -66,7 +69,9 @@ public:
     void            Set_FrustumSphere(_bool _bSphere) {
         m_bFrustumSphere = _bSphere;
     }
-	virtual void Update_InstanceBuffer();
+    //virtual void Update_InstanceBuffer();
+public:
+    _uint           Get_InstanceCount() { return  m_iNumInstance; }
 
 protected:
     CShader* m_pShaderCom = { nullptr };
@@ -81,13 +86,18 @@ protected:
     _float3		   m_fScale = { 0.f, 0.f, 0.f };
     _char		   m_EnvironmentMeshName[MAX_PATH] = {};
     _bool		   m_bFrustumSphere = { true };
-    
+
+
+protected:
+    vector<_float3>     m_vecInstancePosition = {};
+    vector<_float3>     m_vecInstanceRotation = {};
+    vector<_float3>     m_vecInstanceScale = {};
 
 
 protected:
     vector<VTX_MODEL_INSTANCE> m_vecInstanceData;
     _uint m_iNumInstance = {};
-    
+
 public:
     vector<VTX_MODEL_INSTANCE> Get_ModelInstanceVector() { return m_vecInstanceData; }
 
