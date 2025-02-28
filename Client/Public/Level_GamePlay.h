@@ -11,7 +11,8 @@
 #include "Navigation.h"
 #include "Cell.h"
 
-#include "EnvironmentObject.h"
+//#include "EnvironmentObject.h"
+#include "GroundObject.h"
 
 
 
@@ -87,6 +88,12 @@ private:
     void                                Delete_GroundObjects();
     void								Setting_GroundObjectList();
 
+    void                                Update_InstanceObjects();
+    void                                Update_InstanceMove();
+    XMFLOAT3                            Compute_ClosestInstanceModelPoint(const XMFLOAT3& _fClickPos);
+    void                                Pick_InstanceModel();
+
+
 
     HRESULT								Save_Objects();
     HRESULT								Load_Objects();
@@ -118,11 +125,7 @@ private:
 
 
 private:
-    //vector<_float3>                     m_vecPickedPoints;
-    //vector<XMFLOAT3>                    m_vecSelectedCubes;
     _uint                               m_iNumCellCount = {};
-    //CELL_POINTS                         tagWholeCellPoints = {};
-    //vector<CELL_POINTS>                 m_vecWholeCellPoints;
     _bool                               m_bFirstPick = { true };
     _bool                               m_bConnectingMode = false;
     _bool                               m_bDeleteMode = { false };
@@ -165,7 +168,7 @@ private:
     _float	                            m_fFrustumRadius = { 1.f };
 
     list<CObject*>                      m_Objects;
-    list<CEnvironmentObject*>           m_EnvironmentObjects;
+    vector<CEnvironmentObject*>         m_EnvironmentObjects;
 
     _float3                             m_fMeshPickPos = { 0.f, 0.f, 0.f };
     _float                              m_fPosMax[2] = { -100.f, 100.f };
@@ -173,7 +176,7 @@ private:
     _float                              m_fRotationMax[2] = { -180.f, 180.f };
     _float	                            m_fRadiusMax = { 100.f };
 
-    const char*                         m_strObjectNames[256] =
+    const char* m_strObjectNames[256] =
     {
         "HORSE_P_WoodenFrame02_05",
         "P_Rag03",
@@ -231,42 +234,47 @@ private:
     const char* m_strGroundObjectNamess[100] =
     {
         "Grass0",
-        "Tree0"
+        "Tree0",
+        "House0"
     };
 
 private:
-    CCamera_Free*                           m_pCamera = { nullptr };
-    CTerrain*                               m_pTerrain = { nullptr };
-    CVIBuffer_Terrain*                      m_pTerrainBuffer = { nullptr };
-    CNavigation*                            m_pNavigation = { nullptr };
+    CCamera_Free* m_pCamera = { nullptr };
+    CTerrain* m_pTerrain = { nullptr };
+    CVIBuffer_Terrain* m_pTerrainBuffer = { nullptr };
+    CNavigation* m_pNavigation = { nullptr };
 
-    CTransform*                             m_pCurrentObjectTransformCom = { nullptr };
-    CObject*                                m_pCurrentObject = { nullptr };
+    CTransform* m_pCurrentObjectTransformCom = { nullptr };
+    CObject* m_pCurrentObject = { nullptr };
 
-    CTransform*                             m_pPrevObjectTrasnformCom = { nullptr };
-    CObject*                                m_pPrevObject = { nullptr };
+    CTransform* m_pPrevObjectTrasnformCom = { nullptr };
+    CObject* m_pPrevObject = { nullptr };
 
 
-    CEnvironmentObject*                     m_pCurrentEnvironmentObject = { nullptr };
-    CTransform*                             m_pCurrentEnvironmentObjectTransformCom = { nullptr };
+    CEnvironmentObject* m_pCurrentEnvironmentObject = { nullptr };
+    CGroundObject* m_pSelectedInstancedObject = { nullptr };
+    CTransform* m_pCurrentEnvironmentObjectTransformCom = { nullptr };
 
     _float3									m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
 
     _bool									m_bFrustumSphere = { false };
 
 private:
-    _float                                  m_fInstallRange = {1.0f};
-    _float                                  m_fSpacingValue = {1.0f};
+    _float                                  m_fInstallRange = { 1.0f };
+    _float                                  m_fSpacingValue = { 1.0f };
     _float                                  m_fInterval = {};
     _float                                  m_fRadius = { 1.0f };
-    VTXNORTEX*                              m_pVertices = { nullptr };
-    vector<_float3>                         m_vecGroundObjectPos;
+    VTXNORTEX* m_pVertices = { nullptr };
+    vector<_float3>                         m_vecInstancedGroundObjectPos;
+    vector<_float3>                         m_vecInstancedGroundObjectScale;
+    vector<_float3>                         m_vecInstancedGroundObjectRotation;
+    _uint                                   m_iInstancingModelSize = {};
+    _bool                                   m_bDraggingInstanceModel = { false };
 
-    vector<_uint>                           m_iSelectedIndexNumber;
-    _uint                                   m_iInstancingModelType;
+    _int                                   m_iSelectedInstanceIndex = -1;
 
 public:
-    static CLevel_GamePlay*                 Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual void                            Free() override;
 };
 

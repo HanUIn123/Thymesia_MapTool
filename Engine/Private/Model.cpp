@@ -5,36 +5,36 @@
 #include "Shader.h"
 #include "Animation.h"
 
-CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
-	: CComponent { pDevice, pContext }
+CModel::CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CComponent{ pDevice, pContext }
 {
 }
 
-CModel::CModel(const CModel & Prototype)
-	:CComponent(Prototype)	
-	,m_iNumMeshes(Prototype.m_iNumMeshes)	
-	,m_Meshes(Prototype.m_Meshes)
-	,m_iNumMaterials(Prototype.m_iNumMaterials)
-	,m_Materials(Prototype.m_Materials)
-	,m_eModelType(Prototype.m_eModelType)
-	,m_iNumAnimations{ Prototype.m_iNumAnimations }
-	,m_Animations{ Prototype.m_Animations }
-	,m_CurrentKeyFrameIndices { Prototype.m_CurrentKeyFrameIndices}
-	,m_PreTransformMatrix{Prototype.m_PreTransformMatrix}
-	,m_fullpath{ Prototype.m_fullpath }
-	,m_bFirst(true)
+CModel::CModel(const CModel& Prototype)
+	:CComponent(Prototype)
+	, m_iNumMeshes(Prototype.m_iNumMeshes)
+	, m_Meshes(Prototype.m_Meshes)
+	, m_iNumMaterials(Prototype.m_iNumMaterials)
+	, m_Materials(Prototype.m_Materials)
+	, m_eModelType(Prototype.m_eModelType)
+	, m_iNumAnimations{ Prototype.m_iNumAnimations }
+	, m_Animations{ Prototype.m_Animations }
+	, m_CurrentKeyFrameIndices{ Prototype.m_CurrentKeyFrameIndices }
+	, m_PreTransformMatrix{ Prototype.m_PreTransformMatrix }
+	, m_fullpath{ Prototype.m_fullpath }
+	, m_bFirst(true)
 
 {
 	for (auto& pAnimation : m_Animations)
 		Safe_AddRef(pAnimation);
 
-	for (auto& pPrototypeBone : Prototype.m_Bones)		
-		m_Bones.push_back(pPrototypeBone->Clone());		
+	for (auto& pPrototypeBone : Prototype.m_Bones)
+		m_Bones.push_back(pPrototypeBone->Clone());
 
-	for (auto& pMaterial : m_Materials)	
+	for (auto& pMaterial : m_Materials)
 		Safe_AddRef(pMaterial);
 
-	for (auto& pMesh : m_Meshes)		
+	for (auto& pMesh : m_Meshes)
 		Safe_AddRef(pMesh);
 
 
@@ -50,7 +50,7 @@ _uint CModel::Get_BoneIndex(const _char* pBoneName) const
 		++iBondeIndex;
 		return false; });
 
-	return iBondeIndex;	
+	return iBondeIndex;
 }
 
 const _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName) const
@@ -78,10 +78,10 @@ const _float4x4* CModel::Get_RootMotionMatrix(const _char* pBoneName) const
 	if (iter == m_Bones.end())
 		return nullptr;
 
-	return (*iter)->Get_CombinedRootMotionTransformationPtr();	
+	return (*iter)->Get_CombinedRootMotionTransformationPtr();
 }
 
-HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix,  _bool bBinary)
+HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool bBinary)
 {
 	_uint			iFlag = {};
 
@@ -97,32 +97,32 @@ HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePa
 	else
 		iFlag |= aiProcess_GenNormals | aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate | aiProcess_GenUVCoords | aiProcess_SortByPType;
-	
-	if(!bBinary)
-		if (FAILED(Load_Model(PreTransformMatrix)))	
-			return E_FAIL;	
-	
+
+	if (!bBinary)
+		if (FAILED(Load_Model(PreTransformMatrix)))
+			return E_FAIL;
+
 
 
 	/* 이것만으로 모든 로드작업은 끝난거다. */
-	
+
 
 	m_eModelType = eModelType;
 
 	XMStoreFloat4x4(&m_PreTransformMatrix, PreTransformMatrix);
 
-	
+
 
 	/* 모델클래스의 주목적 : 모델을 움직이고 그린다. */
 	/* 로드해준 데이터를 베이스로해서 움직이고 그리기위해 내 구조에 맞게 정리하는 작업이 필요하다. */
-	
+
 
 	/* Ready_Bones를 항상 Mesh나 Material보다 위에서 해야함  그래야 뼈에 저장된 행렬정보 기준으로
-	메쉬의 있는 점들을 미리 다 옮겨주니깐.*/	
+	메쉬의 있는 점들을 미리 다 옮겨주니깐.*/
 
 #pragma region 바이너리화 Save용도
 
-	
+
 	if (bBinary)
 	{
 		m_pAIScene = m_Importer.ReadFile(pModelFilePath, iFlag);
@@ -145,13 +145,13 @@ HRESULT CModel::Initialize_Prototype(MODEL eModelType, const _char* pModelFilePa
 		if (FAILED(Save_Model(pModelFilePath)))
 			return E_FAIL;
 	}
-	
+
 #pragma endregion
 
 	return S_OK;
 }
 
-HRESULT CModel::Initialize(void * pArg)
+HRESULT CModel::Initialize(void* pArg)
 {
 	return S_OK;
 }
@@ -164,20 +164,18 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	return S_OK;
 }
 
-HRESULT CModel::Render_Instance(_uint _iNumInstanceNumber)
+HRESULT CModel::Render_Instance(_uint _iMeshIndex, _uint _iNumInstanceNumber)
 {
 	if (!m_pInstanceBuffer)
 		return E_FAIL;
 
-	for (UINT i = 0; i < m_iNumMeshes; i++)
-	{
-		m_Meshes[i]->Render_Instance(m_pInstanceBuffer, _iNumInstanceNumber);
-	}
+	m_Meshes[_iMeshIndex]->Bind_InputAssembler_Instance(m_pInstanceBuffer);
+	m_Meshes[_iMeshIndex]->Render_Instance(m_pInstanceBuffer, _iNumInstanceNumber);
 
 	return S_OK;
 }
 
-void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop)	
+void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop)
 {
 	/*if(m_bFirst)
 	{
@@ -193,7 +191,7 @@ void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop)
 
 	m_iCurrentAnimationIndex = m_iCurrentAnimIndex;
 	/* 다르다면  애니메이션 인덱스를 교체해준다.*/
-	m_pNextAnimation    = m_Animations[iAnimIndex];
+	m_pNextAnimation = m_Animations[iAnimIndex];
 	m_pCurrentAnimation = m_Animations[m_iCurrentAnimationIndex];
 
 	m_iCurrentAnimIndex = iAnimIndex;
@@ -202,7 +200,7 @@ void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop)
 
 	m_isAnimLoop = isLoop;
 
-	
+
 
 }
 
@@ -219,7 +217,7 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 		if (m_pCurrentAnimation->Lerp_NextAnimation(0.1f, m_pNextAnimation, m_Bones, m_CurrentKeyFrameIndices[m_iCurrentAnimationIndex]))
 		{
 			m_pNextAnimation = nullptr;
-			
+
 		}
 		/* 보간이 끝나면 이 조건문을 벗어나야하니깐.*/
 
@@ -265,9 +263,9 @@ HRESULT CModel::Bind_BoneMatrices(CShader* pShader, _uint iMeshIndex, const _cha
 {
 	/* 여기서 부터 다시 */
 	if (iMeshIndex >= m_iNumMeshes)
-		return E_FAIL;	
-	
-	return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_Bones);	
+		return E_FAIL;
+
+	return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_Bones);
 }
 
 HRESULT CModel::Create_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData)
@@ -282,20 +280,38 @@ HRESULT CModel::Create_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INST
 
 
 	D3D11_BUFFER_DESC bufferDesc = {};
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC; 
 	bufferDesc.ByteWidth = sizeof(VTX_MODEL_INSTANCE) * _iNumInstances;
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;  
-	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = sizeof(VTX_MODEL_INSTANCE);
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags = 0;
 
-	
+
 	D3D11_SUBRESOURCE_DATA initData = {};
 	initData.pSysMem = _TagInstanceData;
 
 	HRESULT hr = m_pDevice->CreateBuffer(&bufferDesc, &initData, &m_pInstanceBuffer);
 	if (FAILED(hr))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CModel::Update_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData)
+{
+	if (nullptr == m_pInstanceBuffer)
+		return E_FAIL;
+
+	D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
+	HRESULT hr = m_pContext->Map(m_pInstanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &tagSubResource);
+
+	if (FAILED(hr))
+		return E_FAIL;
+
+	memcpy(tagSubResource.pData, _TagInstanceData, sizeof(VTX_MODEL_INSTANCE) * m_iNumInstances);
+
+	m_pContext->Unmap(m_pInstanceBuffer, 0);
 
 	return S_OK;
 }
@@ -323,45 +339,45 @@ HRESULT CModel::Save_Model(const _char* pModelFilePath)
 	// 최종적인 경로 조합
 	binaryFile += filenamePart;
 
-	ofstream file(binaryFile, ios::out | std::ios::binary);	
+	ofstream file(binaryFile, ios::out | std::ios::binary);
 	//binaryFile = 경로 + 이름, 여기에 똑같은 파일이 있으면 덮어쓰고, 없으면 새로 만든다.
 
-	if(file.is_open())
+	if (file.is_open())
 	{
-		file.write(reinterpret_cast<char*>(&m_PreTransformMatrix), sizeof(_float4x4));	
+		file.write(reinterpret_cast<char*>(&m_PreTransformMatrix), sizeof(_float4x4));
 
 		/* 뼈 저장 */
-		_uint bonesize = static_cast<_uint>(m_Bones.size());	
-		file.write((char*)&bonesize, sizeof(_uint));	
+		_uint bonesize = static_cast<_uint>(m_Bones.size());
+		file.write((char*)&bonesize, sizeof(_uint));
 		for (auto& bone : m_Bones)
 			bone->Save_Bone(file);
 		//
 
 
 		/* 매쉬 저장 */
-		file.write((char*)&m_iNumMeshes, sizeof(_uint));	
-		for (auto& Mesh : m_Meshes)	
-			Mesh->Save_Mesh(file);	
+		file.write((char*)&m_iNumMeshes, sizeof(_uint));
+		for (auto& Mesh : m_Meshes)
+			Mesh->Save_Mesh(file);
 		//
 
 
 		/* Material 저장 */
-		file.write((char*)&m_iNumMaterials, sizeof(_uint));	
+		file.write((char*)&m_iNumMaterials, sizeof(_uint));
 		/*for (auto& Material : m_Materials)
 		{*/
 		for (size_t i = 0; i < m_iNumMaterials; i++)
 		{
 			m_Materials[i]->Save_Material(file, m_pAIScene->mMaterials[i], pModelFilePath);
 		}
-		
+
 
 		/* 애니메이션 및 채널 저장*/
-		file.write((char*)&m_iNumAnimations, sizeof(_uint));	
+		file.write((char*)&m_iNumAnimations, sizeof(_uint));
 
-		_uint AnimSize = static_cast<_uint>(m_Animations.size());	
-		file.write((char*)&AnimSize, sizeof(_uint));	
+		_uint AnimSize = static_cast<_uint>(m_Animations.size());
+		file.write((char*)&AnimSize, sizeof(_uint));
 		for (auto& Anim : m_Animations)
-			Anim->Save_Anim(file);	
+			Anim->Save_Anim(file);
 		//
 
 		file.close();
@@ -479,7 +495,7 @@ HRESULT CModel::Ready_Meshes(_fmatrix PreTransformMatrix)
 
 	for (size_t i = 0; i < m_iNumMeshes; i++)
 	{
-		CMesh*		pMesh = CMesh::Create(m_pDevice, m_pContext, m_eModelType, this, m_pAIScene->mMeshes[i], PreTransformMatrix);
+		CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, m_eModelType, this, m_pAIScene->mMeshes[i], PreTransformMatrix);
 		if (nullptr == pMesh)
 			return E_FAIL;
 
@@ -491,20 +507,20 @@ HRESULT CModel::Ready_Meshes(_fmatrix PreTransformMatrix)
 
 HRESULT CModel::Ready_Materials(const _char* pModelFilePath)
 {
-	/* 해당 모델에 쓰이는 매쉬의 머터리얼 개수 총 계산 후 
+	/* 해당 모델에 쓰이는 매쉬의 머터리얼 개수 총 계산 후
 	   해당 머터리얼을 백터 자료형에 넣고 보관 */
 
-	/* 각각의 material 클래스는 매쉬 1개의 머터리얼을 18개로 분리하여
-	벡터에 저장하는 형태*/
-	m_iNumMaterials = m_pAIScene->mNumMaterials;	
-	
-	for(size_t i =0; i<m_iNumMaterials; i++)
+	   /* 각각의 material 클래스는 매쉬 1개의 머터리얼을 18개로 분리하여
+	   벡터에 저장하는 형태*/
+	m_iNumMaterials = m_pAIScene->mNumMaterials;
+
+	for (size_t i = 0; i < m_iNumMaterials; i++)
 	{
-		CMaterial*  pAIMaterial = CMaterial::Create(m_pDevice, m_pContext, m_pAIScene->mMaterials[i], pModelFilePath);
+		CMaterial* pAIMaterial = CMaterial::Create(m_pDevice, m_pContext, m_pAIScene->mMaterials[i], pModelFilePath);
 		if (nullptr == pAIMaterial)
 			return E_FAIL;
 
-		m_Materials.push_back(pAIMaterial);	
+		m_Materials.push_back(pAIMaterial);
 	}
 
 	return S_OK;
@@ -515,13 +531,13 @@ HRESULT CModel::Ready_Bones(const aiNode* pAINode, _int iParentBoneIndex)
 {
 	CBone* pBone = CBone::Create(pAINode, iParentBoneIndex);
 	if (nullptr == pBone)
-		return E_FAIL; 
+		return E_FAIL;
 
 	m_Bones.push_back(pBone);
 
-	_int  iParent = static_cast<_int>(m_Bones.size()) - 1; 
+	_int  iParent = static_cast<_int>(m_Bones.size()) - 1;
 
-	for (size_t i=0; i < pAINode->mNumChildren; i++)
+	for (size_t i = 0; i < pAINode->mNumChildren; i++)
 	{
 		Ready_Bones(pAINode->mChildren[i], iParent); /* 여기서 iParentBoneIndex는 벡터의 인덱스를 의미 11월19일 수업정리 참고*/
 	}
@@ -536,7 +552,7 @@ HRESULT CModel::Ready_Animations()
 
 	m_CurrentKeyFrameIndices.resize(m_iNumAnimations);
 
-	for(size_t i = 0; i <m_iNumAnimations; i++)
+	for (size_t i = 0; i < m_iNumAnimations; i++)
 	{
 		CAnimation* pAnimation = CAnimation::Create(m_pAIScene->mAnimations[i], this, m_CurrentKeyFrameIndices[i]);
 		if (nullptr == pAnimation)
@@ -549,11 +565,11 @@ HRESULT CModel::Ready_Animations()
 	return S_OK;
 }
 
-CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _char * pModelFilePath, MODEL eModelType, _fmatrix PreTransformMatrix, _bool bBinary)
+CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, MODEL eModelType, _fmatrix PreTransformMatrix, _bool bBinary)
 {
-	CModel*	pInstance = new CModel(pDevice, pContext);
+	CModel* pInstance = new CModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(eModelType,pModelFilePath,PreTransformMatrix, bBinary)))
+	if (FAILED(pInstance->Initialize_Prototype(eModelType, pModelFilePath, PreTransformMatrix, bBinary)))
 	{
 		MSG_BOX("Failed To Created : CModel");
 		Safe_Release(pInstance);
@@ -563,9 +579,9 @@ CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, 
 }
 
 
-CComponent * CModel::Clone(void * pArg)
+CComponent* CModel::Clone(void* pArg)
 {
-	CModel*	pInstance = new CModel(*this);
+	CModel* pInstance = new CModel(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
@@ -593,10 +609,10 @@ void CModel::Free()
 	for (auto& pMesh : m_Meshes)
 		Safe_Release(pMesh);
 
-	m_Animations.clear();		
-	m_Bones.clear();		
-	m_Materials.clear();	
-	m_Meshes.clear();	
+	m_Animations.clear();
+	m_Bones.clear();
+	m_Materials.clear();
+	m_Meshes.clear();
 
 	Safe_Release(m_pInstanceBuffer);
 

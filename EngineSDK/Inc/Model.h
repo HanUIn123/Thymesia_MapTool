@@ -3,19 +3,19 @@
 #include "Component.h"
 
 BEGIN(Engine)
-class CAnimation;	
+class CAnimation;
 
 class ENGINE_DLL CModel final : public CComponent
 {
 public:
-	enum MODEL { MODEL_NONANIM, MODEL_ANIM, MODEL_END };	
+	enum MODEL { MODEL_NONANIM, MODEL_ANIM, MODEL_END };
 private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CModel(const CModel& Prototype);
 	virtual ~CModel() = default;
 
 public:
-	_uint Get_NumMeshes() const 
+	_uint Get_NumMeshes() const
 	{
 		return m_iNumMeshes;
 	}
@@ -36,26 +36,26 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype(MODEL eModelType, const _char* pModelFilePath, _fmatrix PreTransformMatrix, _bool bBinary);
 	virtual HRESULT Initialize(void* pArg) override;
-	virtual HRESULT Render(_uint iMeshIndex);	
+	virtual HRESULT Render(_uint iMeshIndex);
 
-	virtual HRESULT Render_Instance(_uint _iNumInstanceNumber);
+	virtual HRESULT Render_Instance(_uint _iMeshIndex, _uint _iNumInstanceNumber);
 
 public:
 	void SetUp_Animation(_uint iAnimIndex, _bool isLoop);
 	_bool Play_Animation(_float fTimeDelta);
 	HRESULT Bind_Material(class CShader* pShader, _uint iMeshIndex, aiTextureType eType, const _char* pConstantName, _uint iTextureIndex = 0);
-	HRESULT Bind_BoneMatrices(class CShader* pShader, _uint iMeshIndex, const _char* pConstantName);	
-	CAnimation* Get_CurAnimation() { return m_pCurrentAnimation; }	
-	vector<class CAnimation*>& Get_VecAnimation() { return  m_Animations; }	
+	HRESULT Bind_BoneMatrices(class CShader* pShader, _uint iMeshIndex, const _char* pConstantName);
+	CAnimation* Get_CurAnimation() { return m_pCurrentAnimation; }
+	vector<class CAnimation*>& Get_VecAnimation() { return  m_Animations; }
 	_uint   Get_Current_Animation_Index() { return m_iCurrentAnimIndex; }
 
 
 	HRESULT	Create_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData);
-
+	HRESULT Update_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData);
 private:
 	/* 가져온 정보를 저장한다. */
 	//const aiScene*					m_pAIScene = { nullptr };
-	const aiScene*					m_pAIScene = { nullptr };
+	const aiScene* m_pAIScene = { nullptr };
 
 	/* 파일을 뜯어서 읽고 정리해준다. */
 	//Assimp::Importer				m_Importer = {};
@@ -69,7 +69,7 @@ private:
 
 private:
 	_uint							m_iNumMaterials = {};
-	vector<class CMaterial*>        m_Materials; 
+	vector<class CMaterial*>        m_Materials;
 
 private:
 	vector<class CBone*>            m_Bones;
@@ -80,13 +80,13 @@ private:
 	/* 11월 27일 추가*/
 	_uint							m_iPAnimIndex = {};
 	//
-	vector<class CAnimation*>       m_Animations; 
+	vector<class CAnimation*>       m_Animations;
 	_bool							m_isAnimLoop = {};
 
 	/* 쌤꺼 추가 */
 	_float							m_fCurrentTrackPosition = {};
 	vector<vector<_uint>>			m_CurrentKeyFrameIndices; /* 애니메이션을 관리 하는 인덱스 */
-	_float4x4						m_PreTransformMatrix; 
+	_float4x4						m_PreTransformMatrix;
 
 
 	/* 애니메이션 관련*/
@@ -103,26 +103,26 @@ private:
 	_bool       m_bLerpFinished = { false };
 
 public:
-	_bool       Get_LerpFinished()	    { return m_bLerpFinished; }
+	_bool       Get_LerpFinished() { return m_bLerpFinished; }
 	/* 루트 모션 용 추가*/
-	_bool		GetAniFinish()	 { return m_bFinished; }
+	_bool		GetAniFinish() { return m_bFinished; }
 
-/* 바이너리화 관련 */
+	/* 바이너리화 관련 */
 private:
-	string			m_fullpath; 
-	_bool			isFile = false; 
+	string			m_fullpath;
+	_bool			isFile = false;
 
 private:
 	HRESULT		Save_Model(const _char* pModelFilePath);
 	HRESULT     Load_Model(_fmatrix PreTransformMatrix);
 
 private:
-	ID3D11Buffer*				m_pInstanceBuffer = { nullptr };
-	ID3D11ShaderResourceView*	m_pInstanceBufferSRV = { nullptr };
-	_uint						m_iNumInstances = {};
+	ID3D11Buffer*						m_pInstanceBuffer = { nullptr };
+	ID3D11ShaderResourceView*			m_pInstanceBufferSRV = { nullptr };
+	_uint								m_iNumInstances = {};
 
 private:
-	HRESULT Ready_Meshes(_fmatrix PreTransformMatrix);	
+	HRESULT Ready_Meshes(_fmatrix PreTransformMatrix);
 	HRESULT Ready_Materials(const _char* pModelFilePath);
 	HRESULT Ready_Bones(const aiNode* pAIBone, _int iParentBoneIndex = -1);
 	HRESULT Ready_Animations();
