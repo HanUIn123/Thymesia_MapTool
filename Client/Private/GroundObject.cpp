@@ -30,11 +30,25 @@ HRESULT CGroundObject::Initialize(void* _pArg)
     if (pDesc->vecInstancePosition.empty())
         return E_FAIL;
 
-    m_vecInstancePosition = pDesc->vecInstancePosition;
-    m_vecInstanceScale = pDesc->vecInstanceScale;
-    m_vecInstanceRotation = pDesc->vecInstanceRotation;
+    m_bModeSelected = pDesc->isBasicMode;
 
-    m_iNumInstance = static_cast<_uint>(pDesc->vecInstancePosition.size());
+    if (!m_bModeSelected)
+    {
+        m_vecInstancePosition = pDesc->vecInstancePosition;
+        m_vecInstanceScale = pDesc->vecInstanceScale;
+        m_vecInstanceRotation = pDesc->vecInstanceRotation;
+
+        m_iNumInstance = static_cast<_uint>(pDesc->vecInstancePosition.size());
+
+    }
+    else
+    {
+        m_vecInstancePosition = pDesc->vecInstancePosition;
+        m_vecInstanceScale = pDesc->vecInstanceScale;
+        m_vecInstanceRotation = pDesc->vecInstanceRotation;
+        m_iNumInstance = static_cast<_uint>(pDesc->fInstanceCount);
+    }
+    //m_iNumInstance = static_cast<_uint>(pDesc->fInstanceCount);
     m_vecInstanceData.clear();
     m_vecInstanceData.reserve(m_iNumInstance);
 
@@ -42,31 +56,60 @@ HRESULT CGroundObject::Initialize(void* _pArg)
     {
         VTX_MODEL_INSTANCE instance;
 
-        XMFLOAT3 fTerrainPos = pDesc->vecInstancePosition[i];
+        if (!m_bModeSelected)
+        {
+            XMFLOAT3 fTerrainPos = pDesc->vecInstancePosition[i];
+            XMMATRIX matScale = XMMatrixScaling(
+                XMVectorGetX(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
+                XMVectorGetY(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
+                XMVectorGetZ(XMLoadFloat3(&pDesc->vecInstanceScale[i]))
+            );
 
-        XMMATRIX matScale = XMMatrixScaling(
-            XMVectorGetX(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
-            XMVectorGetY(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
-            XMVectorGetZ(XMLoadFloat3(&pDesc->vecInstanceScale[i]))
-        );
+            XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
+            XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
+            XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
+            XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
 
-        XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
-        XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
-        XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
-        XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
+            XMMATRIX matPosition = XMMatrixTranslation(fTerrainPos.x, fTerrainPos.y, fTerrainPos.z);
+            XMMATRIX matWorld = matScale * matRotation * matPosition;
 
-        XMMATRIX matPosition = XMMatrixTranslation(fTerrainPos.x, fTerrainPos.y, fTerrainPos.z);
-        XMMATRIX matWorld = matScale * matRotation * matPosition;
+            XMFLOAT4X4 tempMatrix;
+            XMStoreFloat4x4(&tempMatrix, matWorld);
 
-        XMFLOAT4X4 tempMatrix;
-        XMStoreFloat4x4(&tempMatrix, matWorld);
+            instance.InstanceMatrix[0] = XMFLOAT4(tempMatrix._11, tempMatrix._12, tempMatrix._13, tempMatrix._14);
+            instance.InstanceMatrix[1] = XMFLOAT4(tempMatrix._21, tempMatrix._22, tempMatrix._23, tempMatrix._24);
+            instance.InstanceMatrix[2] = XMFLOAT4(tempMatrix._31, tempMatrix._32, tempMatrix._33, tempMatrix._34);
+            instance.InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
 
-        instance.InstanceMatrix[0] = XMFLOAT4(tempMatrix._11, tempMatrix._12, tempMatrix._13, tempMatrix._14);
-        instance.InstanceMatrix[1] = XMFLOAT4(tempMatrix._21, tempMatrix._22, tempMatrix._23, tempMatrix._24);
-        instance.InstanceMatrix[2] = XMFLOAT4(tempMatrix._31, tempMatrix._32, tempMatrix._33, tempMatrix._34);
-        instance.InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
+            m_vecInstanceData.push_back(instance);
+        }
+        else
+        {
+            XMFLOAT4 fTerrainPos = pDesc->fPosition;
+            XMMATRIX matScale = XMMatrixScaling(
+                XMVectorGetX(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
+                XMVectorGetY(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
+                XMVectorGetZ(XMLoadFloat3(&pDesc->vecInstanceScale[i]))
+            );
 
-        m_vecInstanceData.push_back(instance);
+            XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
+            XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
+            XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
+            XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
+
+            XMMATRIX matPosition = XMMatrixTranslation(fTerrainPos.x, fTerrainPos.y, fTerrainPos.z);
+            XMMATRIX matWorld = matScale * matRotation * matPosition;
+
+            XMFLOAT4X4 tempMatrix;
+            XMStoreFloat4x4(&tempMatrix, matWorld);
+
+            instance.InstanceMatrix[0] = XMFLOAT4(tempMatrix._11, tempMatrix._12, tempMatrix._13, tempMatrix._14);
+            instance.InstanceMatrix[1] = XMFLOAT4(tempMatrix._21, tempMatrix._22, tempMatrix._23, tempMatrix._24);
+            instance.InstanceMatrix[2] = XMFLOAT4(tempMatrix._31, tempMatrix._32, tempMatrix._33, tempMatrix._34);
+            instance.InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
+
+            m_vecInstanceData.push_back(instance);
+        }
     }
 
     if (m_vecInstanceData.empty())

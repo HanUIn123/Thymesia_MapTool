@@ -31,11 +31,16 @@ public:
         _float fSpace = {};
         //_float fPosition= {};
 
+        _float fInstanceCount = {};
+        _bool   isBasicMode = { false };
 
         // 인스턴싱 객체들의 S R T 를 vector 컨테이너에 담아서 관리.
         vector<_float3> vecInstancePosition = {};
         vector<_float3> vecInstanceRotation = {};
         vector<_float3> vecInstanceScale = {};
+    
+
+
     };
 
 public:
@@ -92,7 +97,7 @@ protected:
     vector<_float3>     m_vecInstancePosition = {};
     vector<_float3>     m_vecInstanceRotation = {};
     vector<_float3>     m_vecInstanceScale = {};
-
+    _bool               m_bModeSelected = { false };
 
 protected:
     vector<VTX_MODEL_INSTANCE> m_vecInstanceData;

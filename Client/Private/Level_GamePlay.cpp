@@ -380,7 +380,27 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     }
 
     ImGui::Begin("Device Settings", NULL, ImGuiWindowFlags_MenuBar);
-    ImGui::SliderFloat("Mouse Range", &(m_fInstallRange), 0.0f, 20.0f);
+
+    ImGui::Checkbox("Mode Select", &m_iModeSelected);
+    if (ImGui::Button("Choose Number"))
+    {
+        m_iModeSelected = true;
+        m_fInstallRange = 1.0f;
+    }
+
+    if (m_iModeSelected)
+        ImGui::SliderFloat("##10Choose Number", &m_fInstanceCount, 1.0f, 300.0f);
+
+    if (ImGui::Button("Mouse Range"))
+    {
+        m_iModeSelected = false;
+        m_fInstanceCount = 1.0f;
+    }
+
+    if (!m_iModeSelected)
+        ImGui::SliderFloat("##9Mouse Range", &(m_fInstallRange), 0.0f, 20.0f);
+
+
     ImGui::SliderFloat("Object Spacing", &m_fSpacingValue, 1.0f, 10.0f);
     ImGui::End();
 
@@ -739,23 +759,47 @@ void CLevel_GamePlay::Add_GroundObjects()
     EnvironmentDesc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
     EnvironmentDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
     EnvironmentDesc.fSpace = m_fSpacingValue;
+    EnvironmentDesc.isBasicMode = m_iModeSelected;
 
-    D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
-    m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
-    m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
-
-    for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
+    if (m_iModeSelected == false)
     {
-        for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
+        D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
+        m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
+        m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
+
+        for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
         {
-            _float worldX = m_fPickPos.x + j;
-            _float worldZ = m_fPickPos.z + i;
-            _uint iIndex = static_cast<_uint>(worldZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(worldX);
+            for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
+            {
+                _float worldX = m_fPickPos.x + j;
+                _float worldZ = m_fPickPos.z + i;
+                _uint iIndex = static_cast<_uint>(worldZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(worldX);
 
-            if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
-                continue;
+                if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
+                    continue;
 
-            XMFLOAT3 terrainPos = m_pVertices[iIndex].vPosition;
+                XMFLOAT3 terrainPos = m_pVertices[iIndex].vPosition;
+                EnvironmentDesc.vecInstancePosition.push_back(terrainPos);
+                m_vecInstancedGroundObjectPos.push_back(terrainPos);
+
+                EnvironmentDesc.vecInstanceScale.push_back(EnvironmentDesc.fScaling);
+                m_vecInstancedGroundObjectScale.push_back(EnvironmentDesc.fScaling);
+
+                EnvironmentDesc.vecInstanceRotation.push_back(EnvironmentDesc.fRotation);
+                m_vecInstancedGroundObjectRotation.push_back(EnvironmentDesc.fRotation);
+
+                m_iInstancingModelSize++;
+            }
+        }
+        m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
+    }
+    else
+    {
+        EnvironmentDesc.fInstanceCount = m_fInstanceCount;
+
+        XMFLOAT3 terrainPos = m_fPickPos;
+        for (_uint i = 0; i < m_fInstanceCount; ++i)
+        {
             EnvironmentDesc.vecInstancePosition.push_back(terrainPos);
             m_vecInstancedGroundObjectPos.push_back(terrainPos);
 
@@ -764,11 +808,9 @@ void CLevel_GamePlay::Add_GroundObjects()
 
             EnvironmentDesc.vecInstanceRotation.push_back(EnvironmentDesc.fRotation);
             m_vecInstancedGroundObjectRotation.push_back(EnvironmentDesc.fRotation);
-
-            m_iInstancingModelSize++;
         }
+        m_iInstancingModelSize++;
     }
-    m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
 
     CEnvironmentObject* pObject = reinterpret_cast<CEnvironmentObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"), LEVEL_GAMEPLAY, TEXT("Layer_GroundObject"), &EnvironmentDesc));
     if (pObject != nullptr)

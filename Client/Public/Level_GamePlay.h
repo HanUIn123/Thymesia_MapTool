@@ -259,10 +259,12 @@ private:
 
 private:
     _float                                  m_fInstallRange = { 1.0f };
+    _float                                  m_fInstanceCount = { 1.0f };
     _float                                  m_fSpacingValue = { 1.0f };
     _float                                  m_fInterval = {};
     _float                                  m_fRadius = { 1.0f };
-    VTXNORTEX* m_pVertices = { nullptr };
+    _bool                                   m_iModeSelected = { false };
+    VTXNORTEX*                              m_pVertices = { nullptr };
     vector<_float3>                         m_vecInstancedGroundObjectPos;
     vector<_float3>                         m_vecInstancedGroundObjectScale;
     vector<_float3>                         m_vecInstancedGroundObjectRotation;
