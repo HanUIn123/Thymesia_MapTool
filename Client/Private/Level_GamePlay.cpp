@@ -860,60 +860,59 @@ void CLevel_GamePlay::Update_InstanceObjects()
 {
     ImGui::Begin("Instanced Ground Objects", NULL, ImGuiWindowFlags_MenuBar);
     {
-        if (m_EnvironmentObjects.size() < 0)
-            return;
-
-        for (auto& pEnvironmentObject : m_EnvironmentObjects)
+        if (m_EnvironmentObjects.empty())
         {
+            ImGui::End();
+            return;
+        }
+        for (_uint iGroupIndex = 0; iGroupIndex < m_EnvironmentObjects.size(); ++iGroupIndex)
+        {
+            auto& pEnvironmentObject = m_EnvironmentObjects[iGroupIndex];
             vector<VTX_MODEL_INSTANCE>& vecInstanceData = pEnvironmentObject->Get_ModelInstanceVector();
             CGroundObject* pGroundObject = dynamic_cast<CGroundObject*>(pEnvironmentObject);
 
-            for (_uint i = 0; i < vecInstanceData.size(); ++i)
+            if (ImGui::CollapsingHeader(("InstanceGroup " + to_string(iGroupIndex)).c_str()))
             {
-                char label[32];
-                sprintf_s(label, "Instance %d##%p", i, pGroundObject);
-
-                if (ImGui::Selectable(label, m_pSelectedInstancedObject == pGroundObject && m_iSelectedInstanceIndex == i))
+                for (_uint i = 0; i < vecInstanceData.size(); ++i)
                 {
-                    m_pSelectedInstancedObject = pGroundObject;
-                    m_iSelectedInstanceIndex = i;
-                    m_bDraggingInstanceModel = true;
-                }
+                    char label[32];
+                    sprintf_s(label, "Instance %d##%p", i, pGroundObject);
 
-                if (m_pSelectedInstancedObject == pGroundObject && m_iSelectedInstanceIndex == i)
-                {
-
-                    //ImGui::Text("Selected Instance: %d", m_iSelectedInstanceIndex);
-
-                    _bool bInstanceTransformInfoUpdated = false;
-
-                    if (ImGui::DragFloat3(("Position##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], 0.1f))
-                        bInstanceTransformInfoUpdated = true;
-                    if (ImGui::DragFloat3(("Scale##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], 0.1f, 0.1f, 10.0f))
-                        bInstanceTransformInfoUpdated = true;
-                    if (ImGui::DragFloat3(("Rotation##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], 0.1f, -3.14f, 3.14f))
-                        bInstanceTransformInfoUpdated = true;
-
-                    if (bInstanceTransformInfoUpdated)
+                    if (ImGui::Selectable(label, m_pSelectedInstancedObject == pGroundObject && m_iSelectedInstanceIndex == i))
                     {
-                        m_pSelectedInstancedObject->Update_InstanceBuffer
-                        (
-                            m_iSelectedInstanceIndex,
-                            m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
-                            m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
-                            m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
-                        );
+                        m_pSelectedInstancedObject = pGroundObject;
+                        m_iSelectedInstanceIndex = i;
+                        m_bDraggingInstanceModel = true;
                     }
 
+                    if (m_pSelectedInstancedObject == pGroundObject && m_iSelectedInstanceIndex == i)
+                    {
+                        _bool bInstanceTransformInfoUpdated = false;
+
+                        if (ImGui::DragFloat3(("Position##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], 0.1f))
+                            bInstanceTransformInfoUpdated = true;
+                        if (ImGui::DragFloat3(("Scale##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], 0.1f, 0.1f, 10.0f))
+                            bInstanceTransformInfoUpdated = true;
+                        if (ImGui::DragFloat3(("Rotation##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], 0.1f, -3.14f, 3.14f))
+                            bInstanceTransformInfoUpdated = true;
+
+                        if (bInstanceTransformInfoUpdated)
+                        {
+                            m_pSelectedInstancedObject->Update_InstanceBuffer
+                            (
+                                m_iSelectedInstanceIndex,
+                                m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
+                                m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
+                                m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
+                            );
+                        }
+                    }
                 }
             }
             ImGui::Separator();
         }
     }
-
     ImGui::End();
-
-
 }
 
 void CLevel_GamePlay::Update_InstanceMove()
@@ -1012,7 +1011,7 @@ HRESULT CLevel_GamePlay::Save_Objects()
         }
     }
 
-    // 인스턴스  객체 저장
+     // 인스턴스  객체 저장
     _uint iEnvironmentObjectCount = static_cast<_uint>(m_EnvironmentObjects.size());
     WriteFile(hFile, &iEnvironmentObjectCount, sizeof(_uint), &dwByte2, nullptr);
 
@@ -1128,15 +1127,7 @@ HRESULT CLevel_GamePlay::Load_Objects()
 
             XMStoreFloat3(&vecInstanceScale[k], scale);
 
-            XMFLOAT3 rotation;
-            XMFLOAT4X4 mat;
-            XMStoreFloat4x4(&mat, matWorld);
-
-            rotation.x = XMConvertToDegrees(asin(mat._32));
-            rotation.y = XMConvertToDegrees(asin(mat._31));
-            rotation.z = XMConvertToDegrees(asin(mat._21));
-
-            vecInstanceRotation[k] = rotation;
+            XMStoreFloat3(&vecInstanceRotation[k], rot);
         }
 
         Desc.vecInstancePosition = vecInstancePosition;
