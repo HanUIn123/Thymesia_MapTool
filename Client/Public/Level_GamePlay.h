@@ -91,8 +91,6 @@ private:
     void                                Update_InstanceObjects();
     void                                Update_InstanceMove();
     XMFLOAT3                            Compute_ClosestInstanceModelPoint(const XMFLOAT3& _fClickPos);
-    void                                Pick_InstanceModel();
-
 
 
     HRESULT								Save_Objects();

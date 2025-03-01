@@ -565,7 +565,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ladder"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Ladder/Ladder.fbx", CModel::MODEL_NONANIM, PreTransformMatrix,true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Ladder/Ladder.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"),
@@ -586,7 +586,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House0"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House0/House_51.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House0/House0.fbx", CModel::MODEL_NONANIM, PreTransformMatrix,true))))
 		return E_FAIL;
 
 
