@@ -84,6 +84,11 @@ void CEnvironmentObject::Set_FrustumRadius(_float _fFrustumRadius)
 	m_fFrustumRadius = _fFrustumRadius;
 }
 
+void CEnvironmentObject::Set_ModelInstanceVector(vector<VTX_MODEL_INSTANCE> _vecInstanceData)
+{
+	m_vecInstanceData = _vecInstanceData;
+}
+
 HRESULT CEnvironmentObject::Ready_Components()
 {
 	/* Com_Shader */

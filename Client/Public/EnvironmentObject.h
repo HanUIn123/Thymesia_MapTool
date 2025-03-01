@@ -100,6 +100,7 @@ protected:
 
 public:
     vector<VTX_MODEL_INSTANCE> Get_ModelInstanceVector() { return m_vecInstanceData; }
+    void Set_ModelInstanceVector(vector<VTX_MODEL_INSTANCE> _vecInstanceData);
 
 protected:
     virtual HRESULT Ready_Components();
