@@ -22,9 +22,12 @@ public:
     };
 
 public:
+    enum COLLIDERTYPE { COLL_AABB, COLL_OBB, COLL_SPHERE, COLL_END };
+
+public:
     struct ENVIRONMENT_OBJECT_DESC : public CGameObject::GAMEOBJECT_DESC
     {
-        _float fFrustumRadius = { 0.f };
+        _float fFrustumRadius = { 1.f };
         _float3 fRotation = {};
         string ObjectName = {};
         _float fRange = {};
@@ -38,9 +41,6 @@ public:
         vector<_float3> vecInstancePosition = {};
         vector<_float3> vecInstanceRotation = {};
         vector<_float3> vecInstanceScale = {};
-    
-
-
     };
 
 public:
@@ -82,11 +82,13 @@ protected:
     CShader* m_pShaderCom = { nullptr };
     CModel* m_pModelCom = { nullptr };
     CCalculator* m_pCalculatorCom = { nullptr };
-    CCollider* m_pColliderCom = { nullptr };
+    //CCollider* m_pColliderCom[COLL_END] = {nullptr};
+    vector<CCollider*>      m_vecColliderCom;
 protected:
     vector<CMesh*> m_vecMeshes;
 
-    _float		   m_fFrustumRadius = { 0.f };
+    _float		   m_fFrustumRadius = { 1.f };
+    _float          m_fAABBExtents = { 1.0f };
     _float3		   m_fRotation = { 0.f, 0.f, 0.f };
     _float3		   m_fScale = { 0.f, 0.f, 0.f };
     _char		   m_EnvironmentMeshName[MAX_PATH] = {};
@@ -98,6 +100,7 @@ protected:
     vector<_float3>     m_vecInstanceRotation = {};
     vector<_float3>     m_vecInstanceScale = {};
     _bool               m_bModeSelected = { false };
+
 
 protected:
     vector<VTX_MODEL_INSTANCE> m_vecInstanceData;

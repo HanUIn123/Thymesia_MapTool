@@ -17,8 +17,46 @@ HRESULT CEnvironmentObject::Initialize(void* _pArg)
 
 	m_fFrustumRadius = pDesc->fFrustumRadius;
 
+
 	if (FAILED(__super::Initialize(_pArg)))
 		return E_FAIL;
+
+	/*
+	vector<_float3>     m_vecInstancePosition = {};
+	vector<_float3>     m_vecInstanceRotation = {};
+	vector<_float3>     m_vecInstanceScale = {};
+	*/
+	for (auto& iter : m_vecInstancePosition)
+	{
+		/*iter.x = pDesc->fPosition.x;
+		iter.y = pDesc->fPosition.x;
+		iter.z = pDesc->fPosition.x;*/
+
+		pDesc->fPosition.x = iter.x;
+		pDesc->fPosition.y = iter.y;
+		pDesc->fPosition.z = iter.z;
+	}
+	for (auto& iter : m_vecInstanceRotation)
+	{
+		/*iter.x = pDesc->fRotation.x;
+		iter.y = pDesc->fRotation.x;
+		iter.z = pDesc->fRotation.x;*/
+
+		pDesc->fRotation.x = iter.x;
+		pDesc->fRotation.y = iter.y;
+		pDesc->fRotation.z = iter.z;
+	}
+	for (auto& iter : m_vecInstanceScale)
+	{
+		/*iter.x = pDesc->fScaling.x;
+		iter.y = pDesc->fScaling.y;
+		iter.z = pDesc->fScaling.z;*/
+
+		pDesc->fScaling.x = iter.x;
+		pDesc->fScaling.y = iter.y;
+		pDesc->fScaling.z = iter.z;
+	}
+
 
 	strcpy_s(m_EnvironmentMeshName, pDesc->ObjectName.c_str());
 
@@ -101,14 +139,7 @@ HRESULT CEnvironmentObject::Ready_Components()
 		TEXT("Com_Calculator"), reinterpret_cast<CComponent**>(&m_pCalculatorCom))))
 		return E_FAIL;
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC SphereDesc{};
 
-	SphereDesc.fRadius = 1.f;
-	SphereDesc.vCenter = _float3(0.f, 0.f, 0.f);
-
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_SPHERE"),
-		TEXT("Com_Colldier"), reinterpret_cast<CComponent**>(&m_pColliderCom), &SphereDesc)))
-		return E_FAIL;
 
 	return S_OK;
 }
@@ -120,5 +151,14 @@ void CEnvironmentObject::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pCalculatorCom);
-	Safe_Release(m_pColliderCom);
+
+	//for (auto& pCollider : m_pColliderCom)
+	//	Safe_Release(pCollider);
+
+	for (auto& pCollider : m_vecColliderCom)
+	{
+		Safe_Release(pCollider);
+	}
+	m_vecColliderCom.clear();
+
 }
