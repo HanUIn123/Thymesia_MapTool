@@ -310,7 +310,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         ImGui::SliderFloat3("Rotation", vCurRotationArray, m_fRotationMax[0], m_fRotationMax[1]);
 
         ImGui::InputFloat("Radius_MAx", &m_fRadiusMax);
-        ImGui::SliderFloat("fFrustumRadius", &fFrustumRadius, 0.f, m_fRadiusMax);
+        ImGui::SliderFloat("fFrustumRadius", &fFrustumRadius, 1.f, m_fRadiusMax);
 
         m_pCurrentObjectTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vCurPosArray[0], vCurPosArray[1], vCurPosArray[2], 1.f));
         m_pCurrentObjectTransformCom->Rotation(XMConvertToRadians(vCurRotationArray[0]), XMConvertToRadians(vCurRotationArray[1]), XMConvertToRadians(vCurRotationArray[2]));
@@ -809,6 +809,8 @@ void CLevel_GamePlay::Add_GroundObjects()
             EnvironmentDesc.vecInstanceRotation.push_back(EnvironmentDesc.fRotation);
             m_vecInstancedGroundObjectRotation.push_back(EnvironmentDesc.fRotation);
         }
+
+
         m_iInstancingModelSize++;
     }
 
@@ -1053,7 +1055,7 @@ HRESULT CLevel_GamePlay::Save_Objects()
         }
     }
 
-     // 인스턴스  객체 저장
+    // 인스턴스  객체 저장
     _uint iEnvironmentObjectCount = static_cast<_uint>(m_EnvironmentObjects.size());
     WriteFile(hFile, &iEnvironmentObjectCount, sizeof(_uint), &dwByte2, nullptr);
 

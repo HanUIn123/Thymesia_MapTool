@@ -22,10 +22,10 @@ HRESULT CGroundObject::Initialize_Prototype()
 
 HRESULT CGroundObject::Initialize(void* _pArg)
 {
-    if (FAILED(__super::Initialize(_pArg)))
-        return E_FAIL;
-
     GROUND_OBJECCT_DESC* pDesc = static_cast<GROUND_OBJECCT_DESC*>(_pArg);
+
+    if (FAILED(__super::Initialize(pDesc)))
+        return E_FAIL;
 
     if (pDesc->vecInstancePosition.empty())
         return E_FAIL;
@@ -82,6 +82,20 @@ HRESULT CGroundObject::Initialize(void* _pArg)
             instance.InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
 
             m_vecInstanceData.push_back(instance);
+
+            _vector vScale = XMVector3Normalize(XMLoadFloat3(&m_vecInstanceScale[i]));
+            _float fScaleX = XMVectorGetX(vScale) * 100;
+            _float fScaleY = XMVectorGetY(vScale) * 100;
+            _float fScaleZ = XMVectorGetZ(vScale) * 100;
+
+            CBounding_AABB::BOUNDING_AABB_DESC aabbDesc = {};
+            aabbDesc.vExtents = _float3(fScaleX * 15, fScaleY * 15, fScaleZ * 15);
+            aabbDesc.vCenter = _float3(0.0f, aabbDesc.vExtents.y, 0.0f);
+
+            m_vecColliderCom.resize(m_iNumInstance);
+            wstring strColliderName = L"Com_AABB_Collider" + to_wstring(i);
+            if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), strColliderName.c_str(), reinterpret_cast<CComponent**>(&m_vecColliderCom[i]), &aabbDesc)))
+                return E_FAIL;
         }
         else
         {
@@ -109,6 +123,20 @@ HRESULT CGroundObject::Initialize(void* _pArg)
             instance.InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
 
             m_vecInstanceData.push_back(instance);
+
+            _vector vScale = XMVector3Normalize(XMLoadFloat3(&m_vecInstanceScale[i]));
+            _float fScaleX = XMVectorGetX(vScale) * 100;
+            _float fScaleY = XMVectorGetY(vScale) * 100;
+            _float fScaleZ = XMVectorGetZ(vScale) * 100;
+
+            CBounding_AABB::BOUNDING_AABB_DESC aabbDesc = {};
+            aabbDesc.vExtents = _float3(fScaleX * 15, fScaleY * 15, fScaleZ * 15);
+            aabbDesc.vCenter = _float3(0.0f, aabbDesc.vExtents.y, 0.0f);
+
+            m_vecColliderCom.resize(m_iNumInstance);
+            wstring strColliderName = L"Com_AABB_Collider_Group" + to_wstring(i);
+            if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), strColliderName.c_str(), reinterpret_cast<CComponent**>(&m_vecColliderCom[i]), &aabbDesc)))
+                return E_FAIL;
         }
     }
 
@@ -137,15 +165,46 @@ void CGroundObject::Update(_float _fTimeDelta)
     matWorld.r[1] = XMVector3Normalize(matWorld.r[1]) * m_fFrustumRadius;
     matWorld.r[2] = XMVector3Normalize(matWorld.r[2]) * m_fFrustumRadius;
 
+    for (_uint i = 0; i < m_iNumInstance; ++i)
+    {
+        XMMATRIX matPosition = XMMatrixTranslation(m_vecInstancePosition[i].x, m_vecInstancePosition[i].y, m_vecInstancePosition[i].z);
 
-    m_pColliderCom->Update(matWorld);
+        XMMATRIX matScale = XMMatrixScaling(m_vecInstanceScale[i].x, m_vecInstanceScale[i].y, m_vecInstanceScale[i].z);
+        XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
+        XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
+        XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
+        XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
+
+        matWorld = matScale * matRotation * matPosition;
+
+
+        XMFLOAT4X4 tempMatrix;
+        XMStoreFloat4x4(&tempMatrix, matWorld);
+
+        m_vecInstanceData[i].InstanceMatrix[0] = XMFLOAT4(tempMatrix._11, tempMatrix._12, tempMatrix._13, tempMatrix._14);
+        m_vecInstanceData[i].InstanceMatrix[1] = XMFLOAT4(tempMatrix._21, tempMatrix._22, tempMatrix._23, tempMatrix._24);
+        m_vecInstanceData[i].InstanceMatrix[2] = XMFLOAT4(tempMatrix._31, tempMatrix._32, tempMatrix._33, tempMatrix._34);
+        m_vecInstanceData[i].InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
+
+        m_vecColliderCom[i]->Update(matWorld);
+    }
+
 #endif
 }
 
 void CGroundObject::Late_Update(_float _fTimeDelta)
 {
+    //m_pGameInstance->CheckBegin_IsHide();
+
     //if (m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_fFrustumRadius))
-    m_pGameInstance->Add_RenderGroup(CRenderer::RG_NONBLEND, this);
+    {
+
+        m_pGameInstance->Add_RenderGroup(CRenderer::RG_NONBLEND, this);
+    }
+    //else
+    {
+
+    }
 }
 
 HRESULT CGroundObject::Render()
@@ -167,10 +226,19 @@ HRESULT CGroundObject::Render()
         m_pModelCom->Render_Instance(i, m_iNumInstance);
     }
 
-    if (m_bFrustumSphere)
-    {
-        m_pColliderCom->Render();
-    }
+    //if (m_bFrustumSphere)
+    //{
+    //    m_pColliderCom[COLL_SPHERE]->Render();
+    //}
+    //m_pColliderCom[COLL_AABB]->Render();
+    //m_pGameInstance->CheckBegin_IsHide();
+    //
+    //
+    //m_pGameInstance->CheckEnd_IsHide();
+
+
+    for (auto& pCollider : m_vecColliderCom)
+        pCollider[COLL_AABB].Render();
 
 
     return S_OK;
@@ -223,6 +291,8 @@ HRESULT CGroundObject::Ready_Components()
 
     if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, szComponentName, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
         return E_FAIL;
+
+
 
 
     return S_OK;
