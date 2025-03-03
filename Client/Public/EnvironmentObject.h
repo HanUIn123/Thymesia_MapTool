@@ -28,7 +28,7 @@ public:
     struct ENVIRONMENT_OBJECT_DESC : public CGameObject::GAMEOBJECT_DESC
     {
         _float fFrustumRadius = { 1.f };
-        _float3 fRotation = {};
+        _float4 fRotation = {};
         string ObjectName = {};
         _float fRange = {};
         _float fSpace = {};
@@ -39,8 +39,12 @@ public:
 
         // 인스턴싱 객체들의 S R T 를 vector 컨테이너에 담아서 관리.
         vector<_float3> vecInstancePosition = {};
-        vector<_float3> vecInstanceRotation = {};
+        vector<_float4> vecInstanceRotation = {};
         vector<_float3> vecInstanceScale = {};
+
+        vector<VTX_MODEL_INSTANCE>  vecStructModelInstance;
+        _int                        iBoxSize = {  };
+        vector<_int>                vecBoxSize = {};
     };
 
 public:
@@ -51,6 +55,7 @@ public:
         _float3 fScale;
         _float3 fRotation;
         _float fFrustumRadius;
+        _int iBoxSize;
     };
 
     struct EN_MESH_INFO
@@ -77,7 +82,8 @@ public:
     //virtual void Update_InstanceBuffer();
 public:
     _uint           Get_InstanceCount() { return  m_iNumInstance; }
-
+    virtual void    Set_BoxSize(_uint _iBoxSize) = 0;
+    _uint           Get_BoxSize() { return m_iBoxSize; }
 protected:
     CShader* m_pShaderCom = { nullptr };
     CModel* m_pModelCom = { nullptr };
@@ -88,19 +94,19 @@ protected:
     vector<CMesh*> m_vecMeshes;
 
     _float		   m_fFrustumRadius = { 1.f };
-    _float          m_fAABBExtents = { 1.0f };
+    _float         m_fAABBExtents = { 1.0f };
     _float3		   m_fRotation = { 0.f, 0.f, 0.f };
     _float3		   m_fScale = { 0.f, 0.f, 0.f };
     _char		   m_EnvironmentMeshName[MAX_PATH] = {};
     _bool		   m_bFrustumSphere = { true };
-
+    _int           m_iBoxSize = { 1 };
 
 protected:
     vector<_float3>     m_vecInstancePosition = {};
-    vector<_float3>     m_vecInstanceRotation = {};
+    vector<_float4>     m_vecInstanceRotation = {};
     vector<_float3>     m_vecInstanceScale = {};
     _bool               m_bModeSelected = { false };
-
+    vector<_int>        m_vecBoxSize = {};
 
 protected:
     vector<VTX_MODEL_INSTANCE> m_vecInstanceData;

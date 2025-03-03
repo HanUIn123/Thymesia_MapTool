@@ -390,11 +390,13 @@ private:
     VTXNORTEX* m_pVertices = { nullptr };
     vector<_float3>                         m_vecInstancedGroundObjectPos;
     vector<_float3>                         m_vecInstancedGroundObjectScale;
-    vector<_float3>                         m_vecInstancedGroundObjectRotation;
+    vector<_float4>                         m_vecInstancedGroundObjectRotation;
     _uint                                   m_iInstancingModelSize = {};
     _bool                                   m_bDraggingInstanceModel = { false };
 
     _int                                   m_iSelectedInstanceIndex = -1;
+    vector<_int>                            m_vecBoxSize;
+
 
 public:
     static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
