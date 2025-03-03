@@ -15,7 +15,6 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Rag03.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_Shelf.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodFence03.dds"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodFence04.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodStairs03.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircle01.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossCemetery_02_02.dds"), IMG_NONANIM_MODEL, 1);
@@ -30,11 +29,6 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01c.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01d.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01e.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing_base01.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing_pillar01_2.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing01_3.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Brick_stone_stairs_1_a.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Gate_17d.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_ground_Road_Middle_250x250cm_1_a.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/T_P_BossRoomVines01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossArtriumCircleRailing_Down02.png"), IMG_NONANIM_MODEL, 1);
@@ -45,31 +39,58 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircleRailing_Up02.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircleRailing_Up04.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircleRailing_Up03.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing03_1.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Fortress_BossDoor_Left01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Fortress_BossDoor_Right01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Debris_01a.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Debris_02a.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Scafold_01b.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Scafold_01c.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_14.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_16.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_13.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_rock_03.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_curb_02.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs02.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs03.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Brick_Floor.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Grass0.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Archive_Chair01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Ladder.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_05.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_06.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_08.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_09.png"), IMG_NONANIM_MODEL, 1);
 
     //=============================================================================================================================
 
     // IMG_GROUND_MODEL
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/GroundObjects/Grass0.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/GroundObjects/Tree0.png"), IMG_GROUND_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/GroundObjects/House0.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing_base01.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing_pillar01_2.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing03_1.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Railing01_3.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_BaseWall_01_Corner.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_BaseWall_02_Plain.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Separator.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Barrel_Closed.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodFence03.dds"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodFence04.dds"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Stairs.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Stairs02.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_LogPile_03.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Brick_stone_stairs_1_a.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Gate_17d.png"), IMG_GROUND_MODEL, 1);
+    //Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_%d.png"), IMG_GROUND_MODEL, 6);
+
+
+    /*
+    
+        "SM_BaseWall_01_Corner",
+        "SM_BaseWall_02_Plain",
+        "SM_Separator",
+        "SM_Barrel_Closed",
+        "SM_WoodFence03",
+        "SM_WoodFence04",
+        "SM_Stairs",
+        "SM_Stairs02",
+        "SM_LogPile_03",*/
 }
 
 HRESULT CLevel_GamePlay::Initialize()
@@ -89,7 +110,7 @@ HRESULT CLevel_GamePlay::Initialize()
 
     m_pNavigation = static_cast<CNavigation*>(m_pTerrain->Find_Component(TEXT("Com_Navigation")));
 
-    return S_OK;
+	return S_OK;
 }
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
@@ -670,7 +691,7 @@ void CLevel_GamePlay::Add_AnimObjects()
 void CLevel_GamePlay::Setting_NonAnimObjectList()
 {
     if (ImGui::CollapsingHeader("Model List"))
-        return;
+    return;
 
     const char* szItems[] = { "Model List" };
 
@@ -751,34 +772,87 @@ void CLevel_GamePlay::Active_PreviewModelImage()
 
 void CLevel_GamePlay::Add_GroundObjects()
 {
-    CEnvironmentObject::ENVIRONMENT_OBJECT_DESC EnvironmentDesc = {};
-    EnvironmentDesc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
-    EnvironmentDesc.fFrustumRadius = m_fFrustumRadius;
 
-    EnvironmentDesc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
-    EnvironmentDesc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
-    EnvironmentDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
-    EnvironmentDesc.fSpace = m_fSpacingValue;
-    EnvironmentDesc.isBasicMode = m_iModeSelected;
+    ImGuiIO IO = ImGui::GetIO();
 
-    if (m_iModeSelected == false)
+    if (!IO.WantCaptureMouse)
     {
-        D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
-        m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
-        m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
+        CEnvironmentObject::ENVIRONMENT_OBJECT_DESC EnvironmentDesc = {};
+        EnvironmentDesc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
+        EnvironmentDesc.fFrustumRadius = m_fFrustumRadius;
 
-        for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
+        EnvironmentDesc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
+        EnvironmentDesc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
+
+        switch (m_iGroundObjectListIndex)
         {
-            for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
+        case 0:
+            EnvironmentDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
+            break;
+        case 1:
+            EnvironmentDesc.ObjectName = m_strGorundobjectClothesNames[m_iGroundModelIndex];
+            break;
+        case 2:
+            EnvironmentDesc.ObjectName = m_strGroundObjectGraveStoneNames[m_iGroundModelIndex];
+            break;
+        case 3:
+            EnvironmentDesc.ObjectName = m_strGroundObjectCurbNames[m_iGroundModelIndex];
+            break;
+
+        case 4:
+            EnvironmentDesc.ObjectName = m_strGroundObjectFenceNames[m_iGroundModelIndex];
+            break;
+
+        case 5:
+            EnvironmentDesc.ObjectName = m_strGroundObjectRocknames[m_iGroundModelIndex];
+            break;
+
+        default:
+            return;
+
+        }
+        EnvironmentDesc.fSpace = m_fSpacingValue;
+        EnvironmentDesc.isBasicMode = m_iModeSelected;
+
+        if (m_iModeSelected == false)
+        {
+            D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
+            m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
+            m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
+
+            for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
             {
-                _float worldX = m_fPickPos.x + j;
-                _float worldZ = m_fPickPos.z + i;
-                _uint iIndex = static_cast<_uint>(worldZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(worldX);
+                for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
+                {
+                    _float worldX = m_fPickPos.x + j;
+                    _float worldZ = m_fPickPos.z + i;
+                    _uint iIndex = static_cast<_uint>(worldZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(worldX);
 
-                if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
-                    continue;
+                    if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
+                        continue;
 
-                XMFLOAT3 terrainPos = m_pVertices[iIndex].vPosition;
+                    XMFLOAT3 terrainPos = m_pVertices[iIndex].vPosition;
+                    EnvironmentDesc.vecInstancePosition.push_back(terrainPos);
+                    m_vecInstancedGroundObjectPos.push_back(terrainPos);
+
+                    EnvironmentDesc.vecInstanceScale.push_back(EnvironmentDesc.fScaling);
+                    m_vecInstancedGroundObjectScale.push_back(EnvironmentDesc.fScaling);
+
+                    EnvironmentDesc.vecInstanceRotation.push_back(EnvironmentDesc.fRotation);
+                    m_vecInstancedGroundObjectRotation.push_back(EnvironmentDesc.fRotation);
+
+                    m_iInstancingModelSize++;
+                }
+            }
+            m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
+        }
+        else
+        {
+            EnvironmentDesc.fInstanceCount = m_fInstanceCount;
+
+            XMFLOAT3 terrainPos = m_fPickPos;
+            for (_uint i = 0; i < m_fInstanceCount; ++i)
+            {
                 EnvironmentDesc.vecInstancePosition.push_back(terrainPos);
                 m_vecInstancedGroundObjectPos.push_back(terrainPos);
 
@@ -787,37 +861,17 @@ void CLevel_GamePlay::Add_GroundObjects()
 
                 EnvironmentDesc.vecInstanceRotation.push_back(EnvironmentDesc.fRotation);
                 m_vecInstancedGroundObjectRotation.push_back(EnvironmentDesc.fRotation);
-
-                m_iInstancingModelSize++;
             }
-        }
-        m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
-    }
-    else
-    {
-        EnvironmentDesc.fInstanceCount = m_fInstanceCount;
 
-        XMFLOAT3 terrainPos = m_fPickPos;
-        for (_uint i = 0; i < m_fInstanceCount; ++i)
+
+            m_iInstancingModelSize++;
+        }
+
+        CEnvironmentObject* pObject = reinterpret_cast<CEnvironmentObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"), LEVEL_GAMEPLAY, TEXT("Layer_GroundObject"), &EnvironmentDesc));
+        if (pObject != nullptr)
         {
-            EnvironmentDesc.vecInstancePosition.push_back(terrainPos);
-            m_vecInstancedGroundObjectPos.push_back(terrainPos);
-
-            EnvironmentDesc.vecInstanceScale.push_back(EnvironmentDesc.fScaling);
-            m_vecInstancedGroundObjectScale.push_back(EnvironmentDesc.fScaling);
-
-            EnvironmentDesc.vecInstanceRotation.push_back(EnvironmentDesc.fRotation);
-            m_vecInstancedGroundObjectRotation.push_back(EnvironmentDesc.fRotation);
+            m_EnvironmentObjects.push_back(pObject);
         }
-
-
-        m_iInstancingModelSize++;
-    }
-
-    CEnvironmentObject* pObject = reinterpret_cast<CEnvironmentObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"), LEVEL_GAMEPLAY, TEXT("Layer_GroundObject"), &EnvironmentDesc));
-    if (pObject != nullptr)
-    {
-        m_EnvironmentObjects.push_back(pObject);
     }
 }
 
@@ -866,42 +920,138 @@ void CLevel_GamePlay::Delete_GroundObjects()
 void CLevel_GamePlay::Setting_GroundObjectList()
 {
     if (ImGui::CollapsingHeader("Ground Model List"))
-        return;
-
-    const char* szItems[] = { "Ground Model List" };
-
-    static int iCurrentItem = 0;
-    ImGui::Combo("##5", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
-
-    for (_uint i = 0; i < 3; ++i)
     {
-        _uint  iTextureIndex = iCurrentItem * 3 + i;
-        m_iRandGroundModelIndex = rand() % (iTextureIndex + 1);
+        m_iGroundObjectListIndex = 0;
 
-        if (iTextureIndex < m_vecGroundModelSRVs.size())
+        const char* szItems[] = { "Ground Model List" };
+
+        static int iCurrentItem = 0;
+        ImGui::Combo("##5", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
+
+        for (_uint i = 0; i < 17; ++i)
         {
-            if (ImGui::ImageButton(("GroundModel" + to_string(iTextureIndex)).c_str(), (ImTextureID)m_vecGroundModelSRVs[iTextureIndex], ImVec2(50.0f, 50.0f)))
-            {
-                m_iGroundModelIndex = iTextureIndex;
+            _uint  iTextureIndex = iCurrentItem * 3 + i;
+            m_iRandGroundModelIndex = rand() % (iTextureIndex + 1);
 
-                CObject::OBJECT_DESC ObjectDesc = {};
-                ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
-                ObjectDesc.fFrustumRadius = m_fFrustumRadius;
-                ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-                ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
-                ObjectDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
-            }
-
-            if ((i + 1) % 4 != 0)
+            if (iTextureIndex < m_vecGroundModelSRVs.size())
             {
-                ImGui::SameLine();
+                if (ImGui::ImageButton(("GroundModel" + to_string(iTextureIndex)).c_str(), (ImTextureID)m_vecGroundModelSRVs[iTextureIndex], ImVec2(50.0f, 50.0f)))
+                {
+                    m_iGroundModelIndex = iTextureIndex;
+
+                    CObject::OBJECT_DESC ObjectDesc = {};
+                    ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+                    ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+                    ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+                    ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+                    ObjectDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
+                }
+
+                if ((i + 1) % 4 != 0)
+                {
+                    ImGui::SameLine();
+                }
             }
+        }
+    }
+    else if (ImGui::CollapsingHeader("Clothes Model List"))
+    {
+        m_iGroundObjectListIndex = 1;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGorundobjectClothesNames, IM_ARRAYSIZE(m_strGorundobjectClothesNames)))
+        {
+            m_iGroundModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.ObjectName = m_strGorundobjectClothesNames[m_iGroundModelIndex];
+
+        }
+    }
+    else if (ImGui::CollapsingHeader("Grave_Stone Model List"))
+    {
+        m_iGroundObjectListIndex = 2;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectGraveStoneNames, IM_ARRAYSIZE(m_strGroundObjectGraveStoneNames)))
+        {
+            m_iGroundModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectGraveStoneNames[m_iGroundModelIndex];
+
+        }
+
+    }
+    else if (ImGui::CollapsingHeader("Curb Clothes Model List"))
+    {
+        m_iGroundObjectListIndex = 3;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectCurbNames, IM_ARRAYSIZE(m_strGroundObjectCurbNames)))
+        {
+            m_iGroundModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectCurbNames[m_iGroundModelIndex];
+
+        }
+    }
+    else  if (ImGui::CollapsingHeader("Fence Clothes Model List"))
+    {
+        m_iGroundObjectListIndex = 4;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectFenceNames, IM_ARRAYSIZE(m_strGroundObjectFenceNames)))
+        {
+            m_iGroundModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectFenceNames[m_iGroundModelIndex];
+
+        }
+
+    }
+    else   if (ImGui::CollapsingHeader("Rock Model List"))
+    {
+        m_iGroundObjectListIndex = 5;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectRocknames, IM_ARRAYSIZE(m_strGroundObjectRocknames)))
+        {
+            m_iGroundModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectRocknames[m_iGroundModelIndex];
+
         }
     }
 }
 
 void CLevel_GamePlay::Update_InstanceObjects()
 {
+   
+
     ImGui::Begin("Instanced Ground Objects", NULL, ImGuiWindowFlags_MenuBar);
     {
         if (m_EnvironmentObjects.empty())
@@ -961,7 +1111,7 @@ void CLevel_GamePlay::Update_InstanceObjects()
 
 void CLevel_GamePlay::Update_InstanceMove()
 {
-    if (!m_pSelectedInstancedObject || m_iSelectedInstanceIndex < 0)
+    if (!m_pSelectedInstancedObject || m_iSelectedInstanceIndex < 0 || m_bGrondMenuSelected || m_bDraggingInstanceModel)
         return;
 
     _float3 vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));

@@ -174,14 +174,13 @@ private:
     _float                              m_fRotationMax[2] = { -180.f, 180.f };
     _float	                            m_fRadiusMax = { 100.f };
 
+    _int                                m_iGroundObjectListIndex = { -1 };
+
     const char* m_strObjectNames[256] =
     {
         "HORSE_P_WoodenFrame02_05",
         "P_Rag03",
         "SM_Wall_Shelf",
-        "SM_WoodFence03",
-        "SM_WoodFence04",
-        "SM_WoodStairs03",
         "P_BossAtriumCircle01",
         "P_BossCemetery_02_02",
         "P_BossCemetery_04",
@@ -195,11 +194,6 @@ private:
         "SM_Wall_8x8_Broken_01c",
         "SM_Wall_8x8_Broken_01d",
         "SM_Wall_8x8_Broken_01e",
-        "Railing_base01",
-        "Railing_pillar01_2",
-        "Railing01_3",
-        "SM_Brick_stone_stairs_1_a",
-        "SM_Gate_17d",
         "SM_ground_Road_Middle_250x250cm_1_a",
         "T_P_BossRoomVines01",
         "P_BossArtriumCircleRailing_Down02",
@@ -210,30 +204,157 @@ private:
         "P_BossAtriumCircleRailing_Up02",
         "P_BossAtriumCircleRailing_Up04",
         "P_BossAtriumCircleRailing_Up03",
-        "Railing03_1",
         "P_Fortress_BossDoor_Left01",
         "P_Fortress_BossDoor_Right01",
         "SM_Debris_01a",
         "SM_Debris_02a",
         "SM_Scafold_01b",
         "SM_Scafold_01c",
-        "SM_fence_14",
-        "SM_fence_16",
-        "SM_fence_13",
-        "SM_rock_03",
-        "SM_curb_02",
         "P_CemeteryStairs01",
+        "P_CemeteryStairs02",
+        "P_CemeteryStairs03",
         "Brick_Floor",
-        "Grass0",
         "P_Archive_Chair01",
-        "Ladder"
+        "Ladder",
+        "SM_crypt_01",
+        "SM_crypt_05",
+        "SM_crypt_06",
+        "SM_crypt_08",
+        "SM_crypt_09",
     };
 
     const char* m_strGroundObjectNamess[100] =
     {
         "Grass0",
-        "Tree0",
-        "House0"
+        "Tree0",    
+        "Railing_base01",
+        "Railing_pillar01_2",
+        "Railing01_3",
+        "Railing03_1",
+        "SM_BaseWall_01_Corner",
+        "SM_BaseWall_02_Plain",
+        "SM_Separator",
+        "SM_Barrel_Closed",
+        "SM_WoodFence03",
+        "SM_WoodFence04",
+        "SM_Stairs",
+        "SM_Stairs02",
+        "SM_LogPile_03",
+        "SM_Brick_stone_stairs_1_a",
+        "SM_Gate_17d",
+    };
+
+    const char* m_strGorundobjectClothesNames[9] = {
+
+"P_Cloth01",
+"P_Cloth02",
+"P_Cloth03",
+"P_Cloth04",
+"P_Cloth05",
+"P_Cloth06",
+"P_Cloth07",
+"P_Cloth08",
+    };
+
+    const char* m_strGroundObjectGraveStoneNames[63] =
+    {
+
+"SM_gravestone_01",
+"SM_gravestone_02",
+"SM_gravestone_03",
+"SM_gravestone_04",
+"SM_gravestone_05",
+"SM_gravestone_06",
+"SM_gravestone_07",
+"SM_gravestone_08",
+"SM_gravestone_09",
+"SM_gravestone_10",
+"SM_gravestone_11",
+"SM_gravestone_12",
+"SM_gravestone_13",
+"SM_gravestone_15",
+"SM_gravestone_16",
+"SM_gravestone_17",
+"SM_gravestone_18",
+"SM_gravestone_20",
+"SM_gravestone_21",
+"SM_gravestone_22",
+"SM_gravestone_23",
+"SM_gravestone_25",
+"SM_gravestone_26",
+"SM_gravestone_27",
+"SM_gravestone_28",
+"SM_gravestone_29",
+"SM_gravestone_31",
+"SM_gravestone_32",
+"SM_gravestone_33",
+"SM_gravestone_34",
+"SM_gravestone_35",
+"SM_gravestone_36",
+"SM_gravestone_37",
+"SM_gravestone_38",
+"SM_gravestone_41",
+"SM_gravestone_42",
+"SM_gravestone_44",
+"SM_gravestone_46",
+"SM_gravestone_48",
+"SM_gravestone_50",
+"SM_gravestone_51",
+"SM_gravestone_53",
+"SM_gravestone_54",
+"SM_gravestone_55",
+"SM_gravestone_56",
+"SM_gravestone_60",
+"SM_gravestone_61",
+"SM_gravestone_62",
+"SM_gravestone_63",
+
+    };
+
+    const char* m_strGroundObjectCurbNames[10] =
+    { "SM_curb_01",
+"SM_curb_02",
+"SM_curb_03",
+"SM_curb_05",
+"SM_curb_06"
+"SM_curb_07",
+"SM_curb_08",
+"SM_curb_09"
+    };
+
+
+
+    const char* m_strGroundObjectFenceNames[30] =
+    {
+"SM_fence_01",
+"SM_fence_02",
+"SM_fence_03",
+"SM_fence_04",
+"SM_fence_06",
+"SM_fence_07",
+"SM_fence_08",
+"SM_fence_09",
+"SM_fence_12",
+"SM_fence_13",
+"SM_fence_19",
+"SM_fence_20",
+"SM_fence_21",
+"SM_fence_22",
+"SM_fence_23",
+"SM_fence_24",
+"SM_fence_25",
+"SM_fence_27"
+"SM_fence_31",
+"SM_fence_32",
+"SM_fence_33",
+"SM_fence_34",
+"SM_fence_35",
+    };
+
+    const char* m_strGroundObjectRocknames[3] = {
+"SM_rock_01",
+"SM_rock_02",
+"SM_rock_03",
     };
 
 private:
