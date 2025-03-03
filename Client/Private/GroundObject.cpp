@@ -30,14 +30,16 @@ HRESULT CGroundObject::Initialize(void* _pArg)
     if (pDesc->vecInstancePosition.empty())
         return E_FAIL;
 
+    strcpy_s(m_EnvironmentMeshName, pDesc->ObjectName.c_str());
+
     m_bModeSelected = pDesc->isBasicMode;
+    m_vecBoxSize = pDesc->vecBoxSize;
 
     if (!m_bModeSelected)
     {
         m_vecInstancePosition = pDesc->vecInstancePosition;
         m_vecInstanceScale = pDesc->vecInstanceScale;
         m_vecInstanceRotation = pDesc->vecInstanceRotation;
-
         m_iNumInstance = static_cast<_uint>(pDesc->vecInstancePosition.size());
 
     }
@@ -48,7 +50,7 @@ HRESULT CGroundObject::Initialize(void* _pArg)
         m_vecInstanceRotation = pDesc->vecInstanceRotation;
         m_iNumInstance = static_cast<_uint>(pDesc->fInstanceCount);
     }
-    //m_iNumInstance = static_cast<_uint>(pDesc->fInstanceCount);
+
     m_vecInstanceData.clear();
     m_vecInstanceData.reserve(m_iNumInstance);
 
@@ -58,17 +60,15 @@ HRESULT CGroundObject::Initialize(void* _pArg)
 
         if (!m_bModeSelected)
         {
+            XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[i]);
+            XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
+
             XMFLOAT3 fTerrainPos = pDesc->vecInstancePosition[i];
             XMMATRIX matScale = XMMatrixScaling(
                 XMVectorGetX(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
                 XMVectorGetY(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
                 XMVectorGetZ(XMLoadFloat3(&pDesc->vecInstanceScale[i]))
             );
-
-            XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
-            XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
-            XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
-            XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
 
             XMMATRIX matPosition = XMMatrixTranslation(fTerrainPos.x, fTerrainPos.y, fTerrainPos.z);
             XMMATRIX matWorld = matScale * matRotation * matPosition;
@@ -84,12 +84,12 @@ HRESULT CGroundObject::Initialize(void* _pArg)
             m_vecInstanceData.push_back(instance);
 
             _vector vScale = XMVector3Normalize(XMLoadFloat3(&m_vecInstanceScale[i]));
-            _float fScaleX = XMVectorGetX(vScale) * 100;
-            _float fScaleY = XMVectorGetY(vScale) * 100;
-            _float fScaleZ = XMVectorGetZ(vScale) * 100;
+            _float fScaleX = XMVectorGetX(vScale) * m_vecBoxSize.back();
+            _float fScaleY = XMVectorGetY(vScale) * m_vecBoxSize.back();
+            _float fScaleZ = XMVectorGetZ(vScale) * m_vecBoxSize.back();
 
             CBounding_AABB::BOUNDING_AABB_DESC aabbDesc = {};
-            aabbDesc.vExtents = _float3(fScaleX * 15, fScaleY * 15, fScaleZ * 15);
+            aabbDesc.vExtents = _float3(fScaleX, fScaleY, fScaleZ);
             aabbDesc.vCenter = _float3(0.0f, aabbDesc.vExtents.y, 0.0f);
 
             m_vecColliderCom.resize(m_iNumInstance);
@@ -99,17 +99,16 @@ HRESULT CGroundObject::Initialize(void* _pArg)
         }
         else
         {
+            XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[i]);
+            XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
+
             XMFLOAT4 fTerrainPos = pDesc->fPosition;
+
             XMMATRIX matScale = XMMatrixScaling(
                 XMVectorGetX(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
                 XMVectorGetY(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
                 XMVectorGetZ(XMLoadFloat3(&pDesc->vecInstanceScale[i]))
             );
-
-            XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
-            XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
-            XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
-            XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
 
             XMMATRIX matPosition = XMMatrixTranslation(fTerrainPos.x, fTerrainPos.y, fTerrainPos.z);
             XMMATRIX matWorld = matScale * matRotation * matPosition;
@@ -125,12 +124,12 @@ HRESULT CGroundObject::Initialize(void* _pArg)
             m_vecInstanceData.push_back(instance);
 
             _vector vScale = XMVector3Normalize(XMLoadFloat3(&m_vecInstanceScale[i]));
-            _float fScaleX = XMVectorGetX(vScale) * 100;
-            _float fScaleY = XMVectorGetY(vScale) * 100;
-            _float fScaleZ = XMVectorGetZ(vScale) * 100;
+            _float fScaleX = XMVectorGetX(vScale) * m_vecBoxSize.back();
+            _float fScaleY = XMVectorGetY(vScale) * m_vecBoxSize.back();
+            _float fScaleZ = XMVectorGetZ(vScale) * m_vecBoxSize.back();
 
             CBounding_AABB::BOUNDING_AABB_DESC aabbDesc = {};
-            aabbDesc.vExtents = _float3(fScaleX * 15, fScaleY * 15, fScaleZ * 15);
+            aabbDesc.vExtents = _float3(fScaleX, fScaleY, fScaleZ);
             aabbDesc.vCenter = _float3(0.0f, aabbDesc.vExtents.y, 0.0f);
 
             m_vecColliderCom.resize(m_iNumInstance);
@@ -165,18 +164,18 @@ void CGroundObject::Update(_float _fTimeDelta)
     matWorld.r[1] = XMVector3Normalize(matWorld.r[1]) * m_fFrustumRadius;
     matWorld.r[2] = XMVector3Normalize(matWorld.r[2]) * m_fFrustumRadius;
 
+    if (m_vecBoxSize.size() < m_iNumInstance)
+    {
+        m_vecBoxSize.resize(m_iNumInstance, 1);
+    }
+
     for (_uint i = 0; i < m_iNumInstance; ++i)
     {
+        XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[i]);
+        XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
         XMMATRIX matPosition = XMMatrixTranslation(m_vecInstancePosition[i].x, m_vecInstancePosition[i].y, m_vecInstancePosition[i].z);
-
         XMMATRIX matScale = XMMatrixScaling(m_vecInstanceScale[i].x, m_vecInstanceScale[i].y, m_vecInstanceScale[i].z);
-        XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
-        XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
-        XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
-        XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
-
         matWorld = matScale * matRotation * matPosition;
-
 
         XMFLOAT4X4 tempMatrix;
         XMStoreFloat4x4(&tempMatrix, matWorld);
@@ -185,8 +184,36 @@ void CGroundObject::Update(_float _fTimeDelta)
         m_vecInstanceData[i].InstanceMatrix[1] = XMFLOAT4(tempMatrix._21, tempMatrix._22, tempMatrix._23, tempMatrix._24);
         m_vecInstanceData[i].InstanceMatrix[2] = XMFLOAT4(tempMatrix._31, tempMatrix._32, tempMatrix._33, tempMatrix._34);
         m_vecInstanceData[i].InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
+    }
 
-        m_vecColliderCom[i]->Update(matWorld);
+    // AABB ¹Ú½º.
+    for (_uint j = 0; j < m_iNumInstance; ++j)
+    {
+        XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[j]);
+        XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
+
+        XMMATRIX matPosition = XMMatrixTranslation(
+            m_vecInstancePosition[j].x,
+            m_vecInstancePosition[j].y,
+            m_vecInstancePosition[j].z);
+
+        _float3 vScale = _float3(
+            m_vecInstanceScale[j].x,
+            m_vecInstanceScale[j].y,
+            m_vecInstanceScale[j].z);
+
+        _vector vNorScale = XMVector3Normalize(XMLoadFloat3(&vScale));
+        _float3 fTranslatedScale;
+        XMStoreFloat3(&fTranslatedScale, vNorScale);
+        XMMATRIX matScale = XMMatrixScaling(fTranslatedScale.x, fTranslatedScale.y, fTranslatedScale.z);
+        XMMATRIX matWorld = matScale * matRotation * matPosition;
+        XMFLOAT4X4 tempMatrix;
+        XMStoreFloat4x4(&tempMatrix, matWorld);
+
+        if (m_vecColliderCom[j])
+        {
+            m_vecColliderCom[j]->Update(matWorld);
+        }
     }
 
 #endif
@@ -194,6 +221,9 @@ void CGroundObject::Update(_float _fTimeDelta)
 
 void CGroundObject::Late_Update(_float _fTimeDelta)
 {
+    if (m_vecColliderCom.empty())
+        return;
+
     //m_pGameInstance->CheckBegin_IsHide();
 
     //if (m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_fFrustumRadius))
@@ -244,7 +274,7 @@ HRESULT CGroundObject::Render()
     return S_OK;
 }
 
-void CGroundObject::Update_InstanceBuffer(_uint _iInstanceIndex, const XMFLOAT3& _vPosition, const XMFLOAT3& _vScale, const XMFLOAT3& _vRotation)
+void CGroundObject::Update_InstanceBuffer(_uint _iInstanceIndex, const XMFLOAT3& _vPosition, const XMFLOAT3& _vScale, const XMFLOAT4& _vRotation)
 {
     if (_iInstanceIndex >= m_iNumInstance)
         return;
@@ -255,13 +285,11 @@ void CGroundObject::Update_InstanceBuffer(_uint _iInstanceIndex, const XMFLOAT3&
 
     for (_uint i = 0; i < m_iNumInstance; ++i)
     {
+        XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[i]);
+        XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
+
         XMMATRIX matPosition = XMMatrixTranslation(m_vecInstancePosition[i].x, m_vecInstancePosition[i].y, m_vecInstancePosition[i].z);
         XMMATRIX matScale = XMMatrixScaling(m_vecInstanceScale[i].x, m_vecInstanceScale[i].y, m_vecInstanceScale[i].z);
-        XMMATRIX matRotationX = XMMatrixRotationX(m_vecInstanceRotation[i].x);
-        XMMATRIX matRotationY = XMMatrixRotationY(m_vecInstanceRotation[i].y);
-        XMMATRIX matRotationZ = XMMatrixRotationZ(m_vecInstanceRotation[i].z);
-        XMMATRIX matRotation = matRotationX * matRotationY * matRotationZ;
-
         XMMATRIX matWorld = matScale * matRotation * matPosition;
 
         XMFLOAT4X4 tempMatrix;
@@ -272,9 +300,42 @@ void CGroundObject::Update_InstanceBuffer(_uint _iInstanceIndex, const XMFLOAT3&
         m_vecInstanceData[i].InstanceMatrix[2] = XMFLOAT4(tempMatrix._31, tempMatrix._32, tempMatrix._33, tempMatrix._34);
         m_vecInstanceData[i].InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
     }
-
     m_pModelCom->Update_InstanceBuffer(m_iNumInstance, m_vecInstanceData.data());
+}
 
+void CGroundObject::Set_BoxSize(_uint _iBoxSize)
+{
+    m_iBoxSize = _iBoxSize;
+
+    for (_uint j = 0; j < m_iNumInstance; ++j)
+    {
+        XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[j]);
+        XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
+
+        XMMATRIX matPosition = XMMatrixTranslation(
+            m_vecInstancePosition[j].x,
+            m_vecInstancePosition[j].y,
+            m_vecInstancePosition[j].z
+        );
+
+        _float3 vScale = _float3(
+            m_vecInstanceScale[j].x,
+            m_vecInstanceScale[j].y,
+            m_vecInstanceScale[j].z
+        );
+
+        _vector vNorScale = XMVector3Normalize(XMLoadFloat3(&vScale)) * static_cast<_float>(m_iBoxSize);
+        _float3 fTranslatedScale;
+        XMStoreFloat3(&fTranslatedScale, vNorScale);
+
+        XMMATRIX matScale = XMMatrixScaling(fTranslatedScale.x, fTranslatedScale.y, fTranslatedScale.z);
+        XMMATRIX matWorld = matScale * matRotation * matPosition;
+
+        if (m_vecColliderCom[j])
+        {
+            m_vecColliderCom[j]->Update(matWorld);
+        }
+    }
 }
 
 HRESULT CGroundObject::Ready_Components()
@@ -291,9 +352,6 @@ HRESULT CGroundObject::Ready_Components()
 
     if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, szComponentName, TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
         return E_FAIL;
-
-
-
 
     return S_OK;
 }

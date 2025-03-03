@@ -21,42 +21,24 @@ HRESULT CEnvironmentObject::Initialize(void* _pArg)
 	if (FAILED(__super::Initialize(_pArg)))
 		return E_FAIL;
 
-	/*
-	vector<_float3>     m_vecInstancePosition = {};
-	vector<_float3>     m_vecInstanceRotation = {};
-	vector<_float3>     m_vecInstanceScale = {};
-	*/
 	for (auto& iter : m_vecInstancePosition)
 	{
-		/*iter.x = pDesc->fPosition.x;
-		iter.y = pDesc->fPosition.x;
-		iter.z = pDesc->fPosition.x;*/
-
 		pDesc->fPosition.x = iter.x;
 		pDesc->fPosition.y = iter.y;
 		pDesc->fPosition.z = iter.z;
 	}
 	for (auto& iter : m_vecInstanceRotation)
 	{
-		/*iter.x = pDesc->fRotation.x;
-		iter.y = pDesc->fRotation.x;
-		iter.z = pDesc->fRotation.x;*/
-
 		pDesc->fRotation.x = iter.x;
 		pDesc->fRotation.y = iter.y;
 		pDesc->fRotation.z = iter.z;
 	}
 	for (auto& iter : m_vecInstanceScale)
 	{
-		/*iter.x = pDesc->fScaling.x;
-		iter.y = pDesc->fScaling.y;
-		iter.z = pDesc->fScaling.z;*/
-
 		pDesc->fScaling.x = iter.x;
 		pDesc->fScaling.y = iter.y;
 		pDesc->fScaling.z = iter.z;
 	}
-
 
 	strcpy_s(m_EnvironmentMeshName, pDesc->ObjectName.c_str());
 

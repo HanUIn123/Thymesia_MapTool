@@ -782,7 +782,7 @@ void CLevel_GamePlay::Add_GroundObjects()
         EnvironmentDesc.fFrustumRadius = m_fFrustumRadius;
 
         EnvironmentDesc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
-        EnvironmentDesc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
+        EnvironmentDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.0f };
 
         switch (m_iGroundObjectListIndex)
         {
@@ -813,6 +813,10 @@ void CLevel_GamePlay::Add_GroundObjects()
         }
         EnvironmentDesc.fSpace = m_fSpacingValue;
         EnvironmentDesc.isBasicMode = m_iModeSelected;
+        EnvironmentDesc.vecBoxSize = m_vecBoxSize;
+
+        m_vecBoxSize.push_back(1);
+        EnvironmentDesc.iBoxSize = m_vecBoxSize.back();
 
         if (m_iModeSelected == false)
         {
@@ -824,9 +828,9 @@ void CLevel_GamePlay::Add_GroundObjects()
             {
                 for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
                 {
-                    _float worldX = m_fPickPos.x + j;
-                    _float worldZ = m_fPickPos.z + i;
-                    _uint iIndex = static_cast<_uint>(worldZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(worldX);
+                    _float fWorldX = m_fPickPos.x + j;
+                    _float fWorldZ = m_fPickPos.z + i;
+                    _uint iIndex = static_cast<_uint>(fWorldZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(fWorldX);
 
                     if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
                         continue;
@@ -840,6 +844,9 @@ void CLevel_GamePlay::Add_GroundObjects()
 
                     EnvironmentDesc.vecInstanceRotation.push_back(EnvironmentDesc.fRotation);
                     m_vecInstancedGroundObjectRotation.push_back(EnvironmentDesc.fRotation);
+
+                    EnvironmentDesc.vecBoxSize.push_back(EnvironmentDesc.iBoxSize);
+                    m_vecBoxSize.push_back(EnvironmentDesc.iBoxSize);
 
                     m_iInstancingModelSize++;
                 }
@@ -861,8 +868,10 @@ void CLevel_GamePlay::Add_GroundObjects()
 
                 EnvironmentDesc.vecInstanceRotation.push_back(EnvironmentDesc.fRotation);
                 m_vecInstancedGroundObjectRotation.push_back(EnvironmentDesc.fRotation);
-            }
 
+                EnvironmentDesc.vecBoxSize.push_back(EnvironmentDesc.iBoxSize);
+                m_vecBoxSize.push_back(EnvironmentDesc.iBoxSize);
+            }
 
             m_iInstancingModelSize++;
         }
@@ -1059,6 +1068,12 @@ void CLevel_GamePlay::Update_InstanceObjects()
             ImGui::End();
             return;
         }
+
+        if (m_vecBoxSize.size() != m_EnvironmentObjects.size())
+        {
+            m_vecBoxSize.resize(m_EnvironmentObjects.size(), 1);
+        }
+
         for (_uint iGroupIndex = 0; iGroupIndex < m_EnvironmentObjects.size(); ++iGroupIndex)
         {
             auto& pEnvironmentObject = m_EnvironmentObjects[iGroupIndex];
@@ -1103,6 +1118,13 @@ void CLevel_GamePlay::Update_InstanceObjects()
                     }
                 }
             }
+            char Name[32];
+            sprintf_s(Name, "Box Scale %d", iGroupIndex);
+            if (ImGui::SliderInt(Name, &m_vecBoxSize[iGroupIndex], 1, 80))
+            {
+                m_bDraggingInstanceModel = false;
+                pGroundObject->Set_BoxSize(m_vecBoxSize[iGroupIndex]);
+            }
             ImGui::Separator();
         }
     }
@@ -1120,16 +1142,28 @@ void CLevel_GamePlay::Update_InstanceMove()
     {
         m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex] = vMousePos;
 
+        XMVECTOR vCurrentQuaternion = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
+
+        if (m_pGameInstance->Get_DIKeyState(DIK_E) & 0x80)
+        {
+            XMVECTOR vValueQuaternion = XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), 0.07f);
+            vCurrentQuaternion = XMQuaternionMultiply(vCurrentQuaternion, vValueQuaternion);
+        }
+        else if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)
+        {
+            XMVECTOR vValueQuaternion = XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), -0.07f);
+            vCurrentQuaternion = XMQuaternionMultiply(vCurrentQuaternion, vValueQuaternion);
+        }
+
+        vCurrentQuaternion = XMQuaternionNormalize(vCurrentQuaternion);
+        XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vCurrentQuaternion);
+
         m_pSelectedInstancedObject->Update_InstanceBuffer(
             m_iSelectedInstanceIndex,
             m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
             m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
             m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
         );
-        if (m_pGameInstance->Get_DIKeyState(DIK_E) & 0x80)
-            m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex].y += 0.07f;
-        else if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)
-            m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex].y -= 0.07f;
 
         if (m_pGameInstance->Get_DIKeyState(DIK_T) & 0x80)
         {
@@ -1209,8 +1243,9 @@ HRESULT CLevel_GamePlay::Save_Objects()
     _uint iEnvironmentObjectCount = static_cast<_uint>(m_EnvironmentObjects.size());
     WriteFile(hFile, &iEnvironmentObjectCount, sizeof(_uint), &dwByte2, nullptr);
 
-    for (auto& pEnvironmentObject : m_EnvironmentObjects)
+    for (_uint iGroupIndex = 0; iGroupIndex < m_EnvironmentObjects.size(); ++iGroupIndex)
     {
+        auto& pEnvironmentObject = m_EnvironmentObjects[iGroupIndex];
         CEnvironmentObject::EN_OBJECT_INFO EnvironmentInfo = pEnvironmentObject->Get_EnvironmentObjectInfo();
         WriteFile(hFile, EnvironmentInfo.szName, MAX_PATH, &dwByte2, nullptr);
 
@@ -1221,6 +1256,23 @@ HRESULT CLevel_GamePlay::Save_Objects()
         for (size_t k = 0; k < iInstanceCount; ++k)
         {
             WriteFile(hFile, &vecInstanceData[k].InstanceMatrix, sizeof(XMFLOAT4X4), &dwByte2, nullptr);
+
+            XMFLOAT4X4 matrix;
+            memcpy(&matrix, vecInstanceData[k].InstanceMatrix, sizeof(XMFLOAT4X4));
+
+            XMMATRIX matWorld = XMLoadFloat4x4(&matrix);
+
+            XMVECTOR scale, rotation, translation;
+            XMMatrixDecompose(&scale, &rotation, &translation, matWorld);
+
+            XMFLOAT4 quaternion;
+            XMStoreFloat4(&quaternion, rotation);
+
+            WriteFile(hFile, &quaternion, sizeof(XMFLOAT4), &dwByte2, nullptr);
+            //WriteFile(hFile, &m_vecBoxSize[iGroupIndex], sizeof(_int), &dwByte2, nullptr);
+
+            _int iBoxSize = m_vecBoxSize[iGroupIndex];
+            WriteFile(hFile, &iBoxSize, sizeof(_int), &dwByte2, nullptr);
         }
     }
 
@@ -1287,46 +1339,56 @@ HRESULT CLevel_GamePlay::Load_Objects()
             m_Objects.push_back(pObject);
     }
 
-    ReadFile(hFile, &iSize2, sizeof(_uint), &dwByte, nullptr);
+    ReadFile(hFile, &iSize2, sizeof(_uint), &dwByte2, nullptr);
+    vector<_int> vecBoxSize;
+    _int vectorBoxSize = {};
 
     for (_uint i = 0; i < iSize2; ++i)
     {
         CEnvironmentObject::ENVIRONMENT_OBJECT_DESC Desc = {};
         _char szLoadName[MAX_PATH] = {};
 
-        ReadFile(hFile, szLoadName, MAX_PATH, &dwByte, nullptr);
+        ReadFile(hFile, szLoadName, MAX_PATH, &dwByte2, nullptr);
         Desc.ObjectName = szLoadName;
 
         _uint iInstanceCount = 0;
-        ReadFile(hFile, &iInstanceCount, sizeof(_uint), &dwByte, nullptr);
+        ReadFile(hFile, &iInstanceCount, sizeof(_uint), &dwByte2, nullptr);
 
         vector<VTX_MODEL_INSTANCE> vecInstanceData(iInstanceCount);
         vector<XMFLOAT3> vecInstancePosition(iInstanceCount);
         vector<XMFLOAT3> vecInstanceScale(iInstanceCount);
-        vector<XMFLOAT3> vecInstanceRotation(iInstanceCount);
+        vector<XMFLOAT4> vecInstanceRotation(iInstanceCount);
 
+        vectorBoxSize++;
         for (_uint k = 0; k < iInstanceCount; ++k)
         {
-            ReadFile(hFile, &vecInstanceData[k].InstanceMatrix, sizeof(XMFLOAT4X4), &dwByte, nullptr);
+            ReadFile(hFile, &vecInstanceData[k].InstanceMatrix, sizeof(XMFLOAT4X4), &dwByte2, nullptr);
 
             XMFLOAT4X4 matrix;
             memcpy(&matrix, vecInstanceData[k].InstanceMatrix, sizeof(XMFLOAT4X4));
 
             XMMATRIX matWorld = XMLoadFloat4x4(&matrix);
 
-            XMVECTOR scale, rot, trans;
-            XMMatrixDecompose(&scale, &rot, &trans, matWorld);
+            XMVECTOR scale, rotation, translation;
+            XMMatrixDecompose(&scale, &rotation, &translation, matWorld);
 
-            XMStoreFloat3(&vecInstancePosition[k], trans);
-
+            XMStoreFloat3(&vecInstancePosition[k], translation);
             XMStoreFloat3(&vecInstanceScale[k], scale);
 
-            XMStoreFloat3(&vecInstanceRotation[k], rot);
+            XMFLOAT4 quaternion;
+            ReadFile(hFile, &quaternion, sizeof(XMFLOAT4), &dwByte2, nullptr);
+            rotation = XMLoadFloat4(&quaternion);
+
+            vecInstanceRotation[k] = quaternion;
+
+            vecBoxSize.resize(vectorBoxSize);
+            ReadFile(hFile, &vecBoxSize[i], sizeof(_int), &dwByte2, nullptr);
         }
 
         Desc.vecInstancePosition = vecInstancePosition;
         Desc.vecInstanceScale = vecInstanceScale;
         Desc.vecInstanceRotation = vecInstanceRotation;
+        Desc.vecBoxSize = vecBoxSize;
 
         CEnvironmentObject* pEnvironment = reinterpret_cast<CEnvironmentObject*>(
             m_pGameInstance->Add_GameObject_To_Layer_Take(
@@ -1342,9 +1404,16 @@ HRESULT CLevel_GamePlay::Load_Objects()
             m_vecInstancedGroundObjectPos.insert(m_vecInstancedGroundObjectPos.end(), vecInstancePosition.begin(), vecInstancePosition.end());
             m_vecInstancedGroundObjectScale.insert(m_vecInstancedGroundObjectScale.end(), vecInstanceScale.begin(), vecInstanceScale.end());
             m_vecInstancedGroundObjectRotation.insert(m_vecInstancedGroundObjectRotation.end(), vecInstanceRotation.begin(), vecInstanceRotation.end());
+            //m_vecBoxSize.insert(m_vecBoxSize.end(), vecBoxSize.begin(), vecBoxSize.end());
+            m_vecBoxSize = vecBoxSize;
+
+
+            for (_uint t = 0; t < vecBoxSize.size(); ++t)
+            {
+                dynamic_cast<CGroundObject*>(pEnvironment)->Set_BoxSize(vecBoxSize[t]);
+            }
         }
     }
-
 
     CloseHandle(hFile);
 }
