@@ -1021,7 +1021,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_Fence_04"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Woods/SM_Fence_04.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Woods/SM_Fence_04.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_Wall_Combined_03"),
@@ -1133,75 +1133,75 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_01"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_02"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_02.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_02.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_08"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_08.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_08.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_10"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_10.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_10.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_11"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_11.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_11.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 	
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_14"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_14.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_14.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_15"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_15.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_15.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_16"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_16.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_16.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_19"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_19.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_19.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_20"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_20.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_20.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_28"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_28.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_28.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_35"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_35.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_35.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_36"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_36.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_36.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_38"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_38.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_38.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_39"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_39.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_39.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_40"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_40.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_40.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_41"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_41.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_41.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_42"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_42.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_42.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"),
