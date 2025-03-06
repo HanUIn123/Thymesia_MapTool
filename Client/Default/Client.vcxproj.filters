@@ -194,9 +194,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Client.cpp">
-      <Filter>98.Default</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>98.Default</Filter>
     </ClCompile>
@@ -283,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\TempManager.cpp">
       <Filter>990.TempManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>98.Default</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
