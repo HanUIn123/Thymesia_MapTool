@@ -38,9 +38,9 @@ public:
         _bool   isBasicMode = { false };
 
         // 인스턴싱 객체들의 S R T 를 vector 컨테이너에 담아서 관리.
-        vector<_float3> vecInstancePosition = {};
-        vector<_float4> vecInstanceRotation = {};
-        vector<_float3> vecInstanceScale = {};
+        vector<_float3>             vecInstancePosition = {};
+        vector<_float4>             vecInstanceRotation = {};
+        vector<_float3>             vecInstanceScale = {};
 
         vector<VTX_MODEL_INSTANCE>  vecStructModelInstance;
         _int                        iBoxSize = {  };
@@ -85,9 +85,9 @@ public:
     virtual void    Set_BoxSize(_uint _iBoxSize) = 0;
     _uint           Get_BoxSize() { return m_iBoxSize; }
 protected:
-    CShader* m_pShaderCom = { nullptr };
-    CModel* m_pModelCom = { nullptr };
-    CCalculator* m_pCalculatorCom = { nullptr };
+    CShader*        m_pShaderCom = { nullptr };
+    CModel*         m_pModelCom = { nullptr };
+    CCalculator*    m_pCalculatorCom = { nullptr };
     //CCollider* m_pColliderCom[COLL_END] = {nullptr};
     vector<CCollider*>      m_vecColliderCom;
 protected:
