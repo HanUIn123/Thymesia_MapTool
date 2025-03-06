@@ -83,6 +83,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_LogPile_03.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Brick_stone_stairs_1_a.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Gate_17d.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Fence_04.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_Combined_03.png"), IMG_GROUND_MODEL, 1);
     //Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_%d.png"), IMG_GROUND_MODEL, 6);
 
@@ -1031,7 +1032,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
         static int iCurrentItem = 0;
         ImGui::Combo("##5", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-        for (_uint i = 0; i < 18; ++i)
+        for (_uint i = 0; i < 19; ++i)
         {
             _uint  iTextureIndex = iCurrentItem * 3 + i;
             m_iRandGroundModelIndex = rand() % (iTextureIndex + 1);
