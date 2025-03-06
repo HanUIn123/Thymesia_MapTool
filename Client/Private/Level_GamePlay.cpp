@@ -14,8 +14,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/HORSE_P_WoodenFrame02_05.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Rag03.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_Shelf.dds"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodFence03.dds"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodStairs03.dds"), IMG_NONANIM_MODEL, 1);
+   // Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodStairs03.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircle01.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossCemetery_02_02.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossCemetery_04.dds"), IMG_NONANIM_MODEL, 1);
@@ -56,6 +55,13 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_06.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_08.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_09.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_14.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_16.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_02.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_03.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_08.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_15.png"), IMG_NONANIM_MODEL, 1);
 
     //=============================================================================================================================
 
@@ -77,6 +83,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_LogPile_03.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Brick_stone_stairs_1_a.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Gate_17d.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_Combined_03.png"), IMG_GROUND_MODEL, 1);
     //Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_%d.png"), IMG_GROUND_MODEL, 6);
 
 
@@ -117,6 +124,9 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 {
     //ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered() ? m_bImguiHovered : !m_bImguiHovered;
     static int iMenuTypeNumber = MENU_TYPE::MT_END;
+
+    if (m_pGameInstance->isKeyPressed(DIK_O))
+        m_bGroundObjectMouseState = !m_bGroundObjectMouseState;
 
     ImGui::Begin("Object");
 
@@ -437,7 +447,9 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     if (m_bGrondMenuSelected)
         Setting_GroundObjectList();
 
-    Update_InstanceMove();
+   /* if (m_bGroundObjectMouseState)
+        Update_InstanceMove();*/
+
     Update_InstanceObjects();
 
     ImGui::End();
@@ -676,7 +688,27 @@ void CLevel_GamePlay::Add_NonAnimObjects()
     Desc.fFrustumRadius = m_fFrustumRadius;
     Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
     Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
-    Desc.ObjectName = m_strObjectNames[m_iNonAnimModelIndex];
+
+    switch (m_iNonMoveObjectListIndex)
+    {
+    case 1:
+        Desc.ObjectName = m_strObjectNames[m_iNonAnimModelIndex];
+        break;
+    case 2:
+        Desc.ObjectName = m_strGroundObjectGraveStoneNames[m_iNonAnimModelIndex];
+        break;
+
+    case 3:
+        Desc.ObjectName = m_strObjectUrnNames[m_iNonAnimModelIndex];
+        break;
+    case 4:
+        Desc.ObjectName = m_strGroundObjectDeseasednames[m_iNonAnimModelIndex];
+        break;
+    default :
+        return;
+    }
+
+
     CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
 
     if (pObject != nullptr)
@@ -691,46 +723,108 @@ void CLevel_GamePlay::Add_AnimObjects()
 void CLevel_GamePlay::Setting_NonAnimObjectList()
 {
     if (ImGui::CollapsingHeader("Model List"))
-    return;
-
-    const char* szItems[] = { "Model List" };
-
-    static int iCurrentItem = 0;
-    ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
-
-    for (_uint i = 0; i < 51; ++i)
     {
-        _uint  iTextureIndex = iCurrentItem * 3 + i;
+        m_iNonMoveObjectListIndex = 1;
 
-        if (iTextureIndex < m_vecNonAnimModelSRVs.size())
+        const char* szItems[] = { "Model List" };
+
+        static int iCurrentItem = 0;
+        ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
+
+        for (_uint i = 0; i < 55; ++i)
         {
-            if (ImGui::ImageButton(("NonAnimModel" + to_string(iTextureIndex)).c_str(), (ImTextureID)m_vecNonAnimModelSRVs[iTextureIndex], ImVec2(50.0f, 50.0f)))
+            _uint  iTextureIndex = iCurrentItem * 3 + i;
+
+            if (iTextureIndex < m_vecNonAnimModelSRVs.size())
             {
-                m_iNonAnimModelIndex = iTextureIndex;
+                if (ImGui::ImageButton(("NonAnimModel" + to_string(iTextureIndex)).c_str(), (ImTextureID)m_vecNonAnimModelSRVs[iTextureIndex], ImVec2(50.0f, 50.0f)))
+                {
+                    m_iNonAnimModelIndex = iTextureIndex;
 
-                //m_pGameInstance->Add_DeadObject(TEXT("Layer_Object"), m_pPrevObject);
+                    //m_pGameInstance->Add_DeadObject(TEXT("Layer_Object"), m_pPrevObject);
 
-                CObject::OBJECT_DESC ObjectDesc = {};
-                ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
-                ObjectDesc.fFrustumRadius = m_fFrustumRadius;
-                ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-                ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
-                ObjectDesc.ObjectName = m_strObjectNames[m_iNonAnimModelIndex];
+                    CObject::OBJECT_DESC ObjectDesc = {};
+                    ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+                    ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+                    ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+                    ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+                    ObjectDesc.ObjectName = m_strObjectNames[m_iNonAnimModelIndex];
 
-                //m_pPrevObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &ObjectDesc));
-                //
-                //if (nullptr != m_pPrevObject)
-                //{
-                //    m_pPrevObjectTrasnformCom = m_pPrevObject->Get_Transfrom();
-                //}
-            }
+                    //m_pPrevObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &ObjectDesc));
+                    //
+                    //if (nullptr != m_pPrevObject)
+                    //{
+                    //    m_pPrevObjectTrasnformCom = m_pPrevObject->Get_Transfrom();
+                    //}
+                }
 
-            if ((i + 1) % 4 != 0)
-            {
-                ImGui::SameLine();
+                if ((i + 1) % 4 != 0)
+                {
+                    ImGui::SameLine();
+                }
             }
         }
     }
+    else if (ImGui::CollapsingHeader("Grave_Stone Model List"))
+    {
+        m_iNonMoveObjectListIndex = 2;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectGraveStoneNames, IM_ARRAYSIZE(m_strGroundObjectGraveStoneNames)))
+        {
+            m_iNonAnimModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectGraveStoneNames[m_iNonAnimModelIndex];
+
+        }
+
+    }
+    else if (ImGui::CollapsingHeader("Urn Model List"))
+    {
+        m_iNonMoveObjectListIndex = 3;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strObjectUrnNames, IM_ARRAYSIZE(m_strObjectUrnNames)))
+        {
+            m_iNonAnimModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.ObjectName = m_strObjectUrnNames[m_iNonAnimModelIndex];
+
+        }
+
+    }
+    else if (ImGui::CollapsingHeader("Deseased Model List"))
+    {
+        m_iNonMoveObjectListIndex = 4;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectDeseasednames, IM_ARRAYSIZE(m_strGroundObjectDeseasednames)))
+        {
+            m_iNonAnimModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectDeseasednames[m_iNonAnimModelIndex];
+
+        }
+
+    }
+
+    //m_strGroundObjectDeseasednames
+    //m_strGroundObjectTreenames
 }
 
 void CLevel_GamePlay::Active_PreviewModelImage()
@@ -782,7 +876,7 @@ void CLevel_GamePlay::Add_GroundObjects()
         EnvironmentDesc.fFrustumRadius = m_fFrustumRadius;
 
         EnvironmentDesc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
-        EnvironmentDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.0f };
+        EnvironmentDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.0f };
 
         switch (m_iGroundObjectListIndex)
         {
@@ -793,7 +887,7 @@ void CLevel_GamePlay::Add_GroundObjects()
             EnvironmentDesc.ObjectName = m_strGorundobjectClothesNames[m_iGroundModelIndex];
             break;
         case 2:
-            EnvironmentDesc.ObjectName = m_strGroundObjectGraveStoneNames[m_iGroundModelIndex];
+            EnvironmentDesc.ObjectName = m_strGroundObjectTreenames[m_iGroundModelIndex];
             break;
         case 3:
             EnvironmentDesc.ObjectName = m_strGroundObjectCurbNames[m_iGroundModelIndex];
@@ -937,7 +1031,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
         static int iCurrentItem = 0;
         ImGui::Combo("##5", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-        for (_uint i = 0; i < 17; ++i)
+        for (_uint i = 0; i < 18; ++i)
         {
             _uint  iTextureIndex = iCurrentItem * 3 + i;
             m_iRandGroundModelIndex = rand() % (iTextureIndex + 1);
@@ -948,11 +1042,11 @@ void CLevel_GamePlay::Setting_GroundObjectList()
                 {
                     m_iGroundModelIndex = iTextureIndex;
 
-                    CObject::OBJECT_DESC ObjectDesc = {};
+                    CEnvironmentObject::ENVIRONMENT_OBJECT_DESC ObjectDesc = {};
                     ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
                     ObjectDesc.fFrustumRadius = m_fFrustumRadius;
                     ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-                    ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+                    ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.f };
                     ObjectDesc.ObjectName = m_strGroundObjectNamess[m_iGroundModelIndex];
                 }
 
@@ -972,33 +1066,14 @@ void CLevel_GamePlay::Setting_GroundObjectList()
         {
             m_iGroundModelIndex = iCurrentItem;
 
-            CObject::OBJECT_DESC ObjectDesc = {};
+            CEnvironmentObject::ENVIRONMENT_OBJECT_DESC ObjectDesc = {};
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.f };
             ObjectDesc.ObjectName = m_strGorundobjectClothesNames[m_iGroundModelIndex];
 
         }
-    }
-    else if (ImGui::CollapsingHeader("Grave_Stone Model List"))
-    {
-        m_iGroundObjectListIndex = 2;
-
-        static int iCurrentItem = 0;
-        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectGraveStoneNames, IM_ARRAYSIZE(m_strGroundObjectGraveStoneNames)))
-        {
-            m_iGroundModelIndex = iCurrentItem;
-
-            CObject::OBJECT_DESC ObjectDesc = {};
-            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
-            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
-            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.ObjectName = m_strGroundObjectGraveStoneNames[m_iGroundModelIndex];
-
-        }
-
     }
     else if (ImGui::CollapsingHeader("Curb Clothes Model List"))
     {
@@ -1009,11 +1084,11 @@ void CLevel_GamePlay::Setting_GroundObjectList()
         {
             m_iGroundModelIndex = iCurrentItem;
 
-            CObject::OBJECT_DESC ObjectDesc = {};
+            CEnvironmentObject::ENVIRONMENT_OBJECT_DESC ObjectDesc = {};
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.f };
             ObjectDesc.ObjectName = m_strGroundObjectCurbNames[m_iGroundModelIndex];
 
         }
@@ -1027,11 +1102,11 @@ void CLevel_GamePlay::Setting_GroundObjectList()
         {
             m_iGroundModelIndex = iCurrentItem;
 
-            CObject::OBJECT_DESC ObjectDesc = {};
+            CEnvironmentObject::ENVIRONMENT_OBJECT_DESC ObjectDesc = {};
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.f };
             ObjectDesc.ObjectName = m_strGroundObjectFenceNames[m_iGroundModelIndex];
 
         }
@@ -1046,14 +1121,33 @@ void CLevel_GamePlay::Setting_GroundObjectList()
         {
             m_iGroundModelIndex = iCurrentItem;
 
+            CEnvironmentObject::ENVIRONMENT_OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.f };
+            ObjectDesc.ObjectName = m_strGroundObjectRocknames[m_iGroundModelIndex];
+
+        }
+    }
+    else if (ImGui::CollapsingHeader("Tree Model List"))
+    {
+        m_iGroundObjectListIndex = 2;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectTreenames, IM_ARRAYSIZE(m_strGroundObjectTreenames)))
+        {
+            m_iNonAnimModelIndex = iCurrentItem;
+
             CObject::OBJECT_DESC ObjectDesc = {};
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.ObjectName = m_strGroundObjectRocknames[m_iGroundModelIndex];
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectTreenames[m_iNonAnimModelIndex];
 
         }
+
     }
 }
 
@@ -1098,13 +1192,58 @@ void CLevel_GamePlay::Update_InstanceObjects()
                     {
                         _bool bInstanceTransformInfoUpdated = false;
 
-                        if (ImGui::DragFloat3(("Position##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], 0.1f))
-                            bInstanceTransformInfoUpdated = true;
-                        if (ImGui::DragFloat3(("Scale##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], 0.1f, 0.1f, 10.0f))
-                            bInstanceTransformInfoUpdated = true;
-                        if (ImGui::DragFloat3(("Rotation##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], 0.1f, -3.14f, 3.14f))
-                            bInstanceTransformInfoUpdated = true;
 
+                        if (m_pGameInstance->isKeyEnter(DIK_Z))
+                        {
+                            XMVECTOR vZFlipQuaternion = XMQuaternionRotationAxis(XMVectorSet(0, 0.f, 1.f, 0), XM_PI);
+
+                            // 현재 인스턴스의 회전값을 로드
+                            XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
+
+                            //// Z축 반전 쿼터니언 적용
+                            //XMVECTOR vFlippedRotation = XMQuaternionMultiply(vCurrentRotation, vZFlipQuaternion);
+
+                            //// 결과를 다시 저장
+                            //XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vFlippedRotation);
+
+                        //    m_pSelectedInstancedObject->Update_InstanceBuffer
+                        //    (
+                        //        m_iSelectedInstanceIndex,
+                        //        m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
+                        //        m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
+                        //        m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
+                        //    );
+                        //}
+                        //else if (m_pGameInstance->isKeyEnter(DIK_X))
+                        //{
+                            //XMVECTOR vZFlipQuaternion = XMQuaternionRotationAxis(XMVectorSet(0, 0, 1.f, 0), XM_PI);
+
+                            // 현재 인스턴스의 회전값을 로드
+                          //  XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
+
+                            // Z축 반전 쿼터니언 적용
+                            XMVECTOR vFlippedRotation = XMQuaternionMultiply(vCurrentRotation, vZFlipQuaternion);
+
+                            // 결과를 다시 저장
+                            XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vFlippedRotation);
+
+                            m_pSelectedInstancedObject->Update_InstanceBuffer
+                            (
+                                m_iSelectedInstanceIndex,
+                                m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
+                                m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
+                                m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
+                            );
+                        }
+                        else
+                        {
+                            if (ImGui::DragFloat3(("Position##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], 0.1f))
+                                bInstanceTransformInfoUpdated = true;
+                            if (ImGui::DragFloat3(("Scale##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], 0.1f, 0.1f, 10.0f))
+                                bInstanceTransformInfoUpdated = true;
+                            if (ImGui::DragFloat4(("Rotation##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], 0.1f, -3.14f, 3.14f))
+                                bInstanceTransformInfoUpdated = true;
+                        }
                         if (bInstanceTransformInfoUpdated)
                         {
                             m_pSelectedInstancedObject->Update_InstanceBuffer
@@ -1133,7 +1272,9 @@ void CLevel_GamePlay::Update_InstanceObjects()
 
 void CLevel_GamePlay::Update_InstanceMove()
 {
-    if (!m_pSelectedInstancedObject || m_iSelectedInstanceIndex < 0 || m_bGrondMenuSelected || m_bDraggingInstanceModel)
+    ImGuiIO IO = ImGui::GetIO();
+
+    if (!m_pSelectedInstancedObject || m_iSelectedInstanceIndex < 0 /*|| m_bGrondMenuSelected || m_bDraggingInstanceModel*/)
         return;
 
     _float3 vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
@@ -1156,6 +1297,7 @@ void CLevel_GamePlay::Update_InstanceMove()
         }
 
         vCurrentQuaternion = XMQuaternionNormalize(vCurrentQuaternion);
+
         XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vCurrentQuaternion);
 
         m_pSelectedInstancedObject->Update_InstanceBuffer(
@@ -1180,6 +1322,26 @@ void CLevel_GamePlay::Update_InstanceMove()
             m_iSelectedInstanceIndex = -1;
         }
     }
+}
+
+void CLevel_GamePlay::Update_Instance()
+{
+
+    if (m_iSelectedInstanceIndex < 0)
+        return;
+
+    XMVECTOR vCurrentQuaternion = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
+
+    vCurrentQuaternion = XMQuaternionNormalize(vCurrentQuaternion);
+    XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vCurrentQuaternion);
+
+    m_pSelectedInstancedObject->Update_InstanceBuffer(
+        m_iSelectedInstanceIndex,
+        m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
+        m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
+        m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
+    );
+
 }
 
 XMFLOAT3 CLevel_GamePlay::Compute_ClosestInstanceModelPoint(const XMFLOAT3& _fClickPos)
@@ -1295,11 +1457,11 @@ HRESULT CLevel_GamePlay::Load_Objects()
         return E_FAIL;
     }
 
-    for (auto& pObject : m_Objects)
-    {
-        m_pGameInstance->Add_DeadObject(L"Layer_Object", pObject);
-    }
-    m_Objects.clear();
+    //for (auto& pObject : m_Objects)
+    //{
+    //    m_pGameInstance->Add_DeadObject(L"Layer_Object", pObject);
+    //}
+    //m_Objects.clear();
 
     for (auto& pEnvironmentObject : m_EnvironmentObjects)
     {

@@ -64,6 +64,11 @@ HRESULT CGroundObject::Initialize(void* _pArg)
             XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
 
             XMFLOAT3 fTerrainPos = pDesc->vecInstancePosition[i];
+
+            _float fZ = XMVectorGetZ(XMLoadFloat3(&fTerrainPos)) * -1.f;
+
+            _vector vFlipPos = XMVectorSet(XMVectorGetX(XMLoadFloat3(&fTerrainPos)), XMVectorGetY(XMLoadFloat3(&fTerrainPos)), fZ, 1.f);
+
             XMMATRIX matScale = XMMatrixScaling(
                 XMVectorGetX(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
                 XMVectorGetY(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
@@ -103,6 +108,10 @@ HRESULT CGroundObject::Initialize(void* _pArg)
             XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
 
             XMFLOAT4 fTerrainPos = pDesc->fPosition;
+
+            _float fZ = XMVectorGetZ(XMLoadFloat4(&fTerrainPos)) * -1.f;
+
+            _vector vFlipPos = XMVectorSet(XMVectorGetX(XMLoadFloat4(&fTerrainPos)), XMVectorGetY(XMLoadFloat4(&fTerrainPos)), fZ, 1.f);
 
             XMMATRIX matScale = XMMatrixScaling(
                 XMVectorGetX(XMLoadFloat3(&pDesc->vecInstanceScale[i])),
@@ -157,66 +166,66 @@ void CGroundObject::Priority_Update(_float _fTimeDelta)
 void CGroundObject::Update(_float _fTimeDelta)
 {
 
-#ifdef _DEBUG
-    _matrix matWorld = XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr());
+//#ifdef _DEBUG
+//    _matrix matWorld = XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr());
+//
+//    matWorld.r[0] = XMVector3Normalize(matWorld.r[0]) * m_fFrustumRadius;
+//    matWorld.r[1] = XMVector3Normalize(matWorld.r[1]) * m_fFrustumRadius;
+//    matWorld.r[2] = XMVector3Normalize(matWorld.r[2]) * m_fFrustumRadius;
+//
+//    if (m_vecBoxSize.size() < m_iNumInstance)
+//    {
+//        m_vecBoxSize.resize(m_iNumInstance, 1);
+//    }
+//
+//    for (_uint i = 0; i < m_iNumInstance; ++i)
+//    {
+//        XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[i]);
+//        XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
+//        XMMATRIX matPosition = XMMatrixTranslation(m_vecInstancePosition[i].x, m_vecInstancePosition[i].y, m_vecInstancePosition[i].z);
+//        XMMATRIX matScale = XMMatrixScaling(m_vecInstanceScale[i].x, m_vecInstanceScale[i].y, m_vecInstanceScale[i].z);
+//        matWorld = matScale * matRotation * matPosition;
+//
+//        XMFLOAT4X4 tempMatrix;
+//        XMStoreFloat4x4(&tempMatrix, matWorld);
+//
+//        m_vecInstanceData[i].InstanceMatrix[0] = XMFLOAT4(tempMatrix._11, tempMatrix._12, tempMatrix._13, tempMatrix._14);
+//        m_vecInstanceData[i].InstanceMatrix[1] = XMFLOAT4(tempMatrix._21, tempMatrix._22, tempMatrix._23, tempMatrix._24);
+//        m_vecInstanceData[i].InstanceMatrix[2] = XMFLOAT4(tempMatrix._31, tempMatrix._32, tempMatrix._33, tempMatrix._34);
+//        m_vecInstanceData[i].InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
+//    }
+//
+//    // AABB 박스.
+//    for (_uint j = 0; j < m_iNumInstance; ++j)
+//    {
+//        XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[j]);
+//        XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
+//
+//        XMMATRIX matPosition = XMMatrixTranslation(
+//            m_vecInstancePosition[j].x,
+//            m_vecInstancePosition[j].y,
+//            m_vecInstancePosition[j].z);
+//
+//        _float3 vScale = _float3(
+//            m_vecInstanceScale[j].x,
+//            m_vecInstanceScale[j].y,
+//            m_vecInstanceScale[j].z);
+//
+//        _vector vNorScale = XMVector3Normalize(XMLoadFloat3(&vScale));
+//        _float3 fTranslatedScale;
+//        XMStoreFloat3(&fTranslatedScale, vNorScale);
+//        XMMATRIX matScale = XMMatrixScaling(fTranslatedScale.x, fTranslatedScale.y, fTranslatedScale.z);
+//        XMMATRIX matWorld = matScale * matRotation * matPosition;
+//        XMFLOAT4X4 tempMatrix;
+//        XMStoreFloat4x4(&tempMatrix, matWorld);
+//
+//        if (m_vecColliderCom[j])
+//        {
+//            m_vecColliderCom[j]->Update(matWorld);
+//        }
+//    }
 
-    matWorld.r[0] = XMVector3Normalize(matWorld.r[0]) * m_fFrustumRadius;
-    matWorld.r[1] = XMVector3Normalize(matWorld.r[1]) * m_fFrustumRadius;
-    matWorld.r[2] = XMVector3Normalize(matWorld.r[2]) * m_fFrustumRadius;
-
-    if (m_vecBoxSize.size() < m_iNumInstance)
-    {
-        m_vecBoxSize.resize(m_iNumInstance, 1);
-    }
-
-    for (_uint i = 0; i < m_iNumInstance; ++i)
-    {
-        XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[i]);
-        XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
-        XMMATRIX matPosition = XMMatrixTranslation(m_vecInstancePosition[i].x, m_vecInstancePosition[i].y, m_vecInstancePosition[i].z);
-        XMMATRIX matScale = XMMatrixScaling(m_vecInstanceScale[i].x, m_vecInstanceScale[i].y, m_vecInstanceScale[i].z);
-        matWorld = matScale * matRotation * matPosition;
-
-        XMFLOAT4X4 tempMatrix;
-        XMStoreFloat4x4(&tempMatrix, matWorld);
-
-        m_vecInstanceData[i].InstanceMatrix[0] = XMFLOAT4(tempMatrix._11, tempMatrix._12, tempMatrix._13, tempMatrix._14);
-        m_vecInstanceData[i].InstanceMatrix[1] = XMFLOAT4(tempMatrix._21, tempMatrix._22, tempMatrix._23, tempMatrix._24);
-        m_vecInstanceData[i].InstanceMatrix[2] = XMFLOAT4(tempMatrix._31, tempMatrix._32, tempMatrix._33, tempMatrix._34);
-        m_vecInstanceData[i].InstanceMatrix[3] = XMFLOAT4(tempMatrix._41, tempMatrix._42, tempMatrix._43, tempMatrix._44);
-    }
-
-    // AABB 박스.
-    for (_uint j = 0; j < m_iNumInstance; ++j)
-    {
-        XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[j]);
-        XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
-
-        XMMATRIX matPosition = XMMatrixTranslation(
-            m_vecInstancePosition[j].x,
-            m_vecInstancePosition[j].y,
-            m_vecInstancePosition[j].z);
-
-        _float3 vScale = _float3(
-            m_vecInstanceScale[j].x,
-            m_vecInstanceScale[j].y,
-            m_vecInstanceScale[j].z);
-
-        _vector vNorScale = XMVector3Normalize(XMLoadFloat3(&vScale));
-        _float3 fTranslatedScale;
-        XMStoreFloat3(&fTranslatedScale, vNorScale);
-        XMMATRIX matScale = XMMatrixScaling(fTranslatedScale.x, fTranslatedScale.y, fTranslatedScale.z);
-        XMMATRIX matWorld = matScale * matRotation * matPosition;
-        XMFLOAT4X4 tempMatrix;
-        XMStoreFloat4x4(&tempMatrix, matWorld);
-
-        if (m_vecColliderCom[j])
-        {
-            m_vecColliderCom[j]->Update(matWorld);
-        }
-    }
-
-#endif
+//#endif
 }
 
 void CGroundObject::Late_Update(_float _fTimeDelta)

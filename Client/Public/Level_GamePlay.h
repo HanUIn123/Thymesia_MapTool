@@ -90,6 +90,7 @@ private:
 
     void                                Update_InstanceObjects();
     void                                Update_InstanceMove();
+    void                                Update_Instance();
     XMFLOAT3                            Compute_ClosestInstanceModelPoint(const XMFLOAT3& _fClickPos);
 
 
@@ -175,6 +176,7 @@ private:
     _float	                            m_fRadiusMax = { 100.f };
 
     _int                                m_iGroundObjectListIndex = { -1 };
+    _int                                m_iNonMoveObjectListIndex = { -1 };
 
     const char* m_strObjectNames[256] =
     {
@@ -221,6 +223,26 @@ private:
         "SM_crypt_06",
         "SM_crypt_08",
         "SM_crypt_09",
+        "SM_fence_14",
+        "SM_fence_16",
+        "SM_fence_01",
+        "SM_fence_02",
+        "SM_fence_03",
+        "SM_fence_08",
+        "SM_fence_15",
+
+    };
+
+    const char* m_strObjectUrnNames[256] =
+    {
+        "SM_urn_01",
+        "SM_urn_02",
+        "SM_urn_03",
+        "SM_urn_04",
+        "SM_urn_05",
+        "SM_urn_06",
+        "SM_urn_07",
+        "SM_urn_09",
     };
 
     const char* m_strGroundObjectNamess[100] =
@@ -229,8 +251,8 @@ private:
         "Tree0",    
         "Railing_base01",
         "Railing_pillar01_2",
-        "Railing01_3",
         "Railing03_1",
+        "Railing01_3",
         "SM_BaseWall_01_Corner",
         "SM_BaseWall_02_Plain",
         "SM_Separator",
@@ -242,6 +264,8 @@ private:
         "SM_LogPile_03",
         "SM_Brick_stone_stairs_1_a",
         "SM_Gate_17d",
+        "SM_Fence_04",
+        "SM_Wall_Combined_03",
     };
 
     const char* m_strGorundobjectClothesNames[9] = {
@@ -316,7 +340,7 @@ private:
 "SM_curb_02",
 "SM_curb_03",
 "SM_curb_05",
-"SM_curb_06"
+"SM_curb_06",
 "SM_curb_07",
 "SM_curb_08",
 "SM_curb_09"
@@ -330,12 +354,15 @@ private:
 "SM_fence_02",
 "SM_fence_03",
 "SM_fence_04",
+"SM_fence_05",
 "SM_fence_06",
 "SM_fence_07",
 "SM_fence_08",
 "SM_fence_09",
+"SM_fence_10",
 "SM_fence_12",
 "SM_fence_13",
+"SM_fence_15",
 "SM_fence_19",
 "SM_fence_20",
 "SM_fence_21",
@@ -343,7 +370,10 @@ private:
 "SM_fence_23",
 "SM_fence_24",
 "SM_fence_25",
-"SM_fence_27"
+"SM_fence_26",
+"SM_fence_27",
+"SM_fence_29",
+"SM_fence_30",
 "SM_fence_31",
 "SM_fence_32",
 "SM_fence_33",
@@ -355,6 +385,43 @@ private:
 "SM_rock_01",
 "SM_rock_02",
 "SM_rock_03",
+    };
+
+    const char* m_strGroundObjectDeseasednames[6] = { 
+        "P_Deceased01",
+"P_Deceased02",
+"P_Deceased03",
+"P_Deceased04",
+"P_Deceased05",
+"P_Deceased06",
+    };
+
+    const char* m_strGroundObjectTreenames[20] = {
+"SM_DeadTree_01a",
+"SM_DeadTree_01",
+"SM_BigTree001",
+"SM_BigTree002",
+"SM_BigTree003",
+"SM_BigTree004",
+"SM_BigTree005",
+"SM_BigTree006",
+"SM_BigTree006_02",
+"SM_BigTree006_03_02",
+"P_TreeAerialRoot01",
+"P_TreeAerialRoot02",
+"P_BrokenTree01",
+"P_DeadTree02",
+"P_DeadTree03",
+"DryTreeT3_2_SM_02",
+"DryTreeT3_branches_1_SM",
+"DryTreeT3_branches_1_SM_02",
+"DryTreeT3_branches_3_SM",
+"DryTreeT3_branches_5_SM",
+
+    };
+
+    const char* m_strGroundObjectStairsNames[3] = {
+        "SM_WoodStairs03",
     };
 
 private:
@@ -394,9 +461,10 @@ private:
     _uint                                   m_iInstancingModelSize = {};
     _bool                                   m_bDraggingInstanceModel = { false };
 
-    _int                                   m_iSelectedInstanceIndex = -1;
+    _int                                   m_iSelectedInstanceIndex = { -1 };
     vector<_int>                            m_vecBoxSize;
 
+    _bool                                   m_bGroundObjectMouseState = { false };
 
 public:
     static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

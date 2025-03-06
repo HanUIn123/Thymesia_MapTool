@@ -111,9 +111,6 @@
     <ClInclude Include="..\Public\Level_Logo.h">
       <Filter>01.Level\01.Logo</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Level_GamePlay.h">
-      <Filter>01.Level\02.GamePlay</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Level_Loading.h">
       <Filter>01.Level\99.Loading</Filter>
     </ClInclude>
@@ -191,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\TempManager.h">
       <Filter>990.TempManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_GamePlay.h">
+      <Filter>01.Level\02.GamePlay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
