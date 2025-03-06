@@ -175,6 +175,26 @@ HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const _char* pContstantName, 
 
 }
 
+void CMesh::Compute_BoundingBox(_float3& _vMin, _float3& _vMax)
+{
+	if (!m_pPos || m_iNumVertices == 0)
+		return;
+
+	_vMin = _float3(FLT_MAX, FLT_MAX, FLT_MAX);
+	_vMax = _float3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+	for (size_t i = 0; i < m_iNumVertices; i++)
+	{
+		_vMin.x = min(_vMin.x, m_pPos[i].x);
+		_vMin.y = min(_vMin.y, m_pPos[i].y);
+		_vMin.z = min(_vMin.z, m_pPos[i].z);
+
+		_vMax.x = max(_vMax.x, m_pPos[i].x);
+		_vMax.y = max(_vMax.y, m_pPos[i].y);
+		_vMax.z = max(_vMax.z, m_pPos[i].z);
+	}
+}
+
 HRESULT CMesh::Ready_VertexBuffer_ForNonAnim(const aiMesh* pAIMesh, _fmatrix PreTransforMatrix)
 {
 	m_iVertexStride = sizeof(VTXMESH);

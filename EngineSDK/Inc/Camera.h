@@ -30,7 +30,7 @@ public:
 	virtual void Late_Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-	_float3 Terrain_PickPoint(HWND _hWnd, CVIBuffer_Terrain* _pTerrainBuffer);
+	_float3 Terrain_PickPoint(HWND _hWnd, CVIBuffer_Terrain* _pTerrainBuffer, CTransform* _pTerrainTransform = nullptr);
 
 
 private:

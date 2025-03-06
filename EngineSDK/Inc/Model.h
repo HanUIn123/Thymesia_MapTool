@@ -40,6 +40,8 @@ public:
 
 	virtual HRESULT Render_Instance(_uint _iMeshIndex, _uint _iNumInstanceNumber);
 
+	void Compute_BoundingBox(_float3& _vMin, _float3& _vMax);
+
 public:
 	void SetUp_Animation(_uint iAnimIndex, _bool isLoop);
 	_bool Play_Animation(_float fTimeDelta);

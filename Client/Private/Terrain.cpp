@@ -18,8 +18,6 @@ HRESULT CTerrain::Initialize_Prototype()
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
 
-
-
 	return S_OK;
 }
 
@@ -31,22 +29,31 @@ HRESULT CTerrain::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.0f, 0.0f, -150.0f, 1.0f));
+
 	return S_OK;
 }
 
 void CTerrain::Priority_Update(_float fTimeDelta)
 {
-	m_pNavigationCom->SetUp_WorldMatrix(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr()));
+	//m_pNavigationCom->SetUp_WorldMatrix(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr()));
 }
 
 void CTerrain::Update(_float fTimeDelta)
 {
 	int a = 10;
+
+	ImGui::Begin("Switch FrameMode", NULL, ImGuiWindowFlags_MenuBar);
+	ImGui::Checkbox("Switching To WireFrame", &m_bWireFrameMode);
+	if (ImGui::Button("WireFrame On"))
+		m_bWireFrameMode = true;
+	if (ImGui::Button("WireFrame Off"))
+		m_bWireFrameMode = false;
+	ImGui::End();
 }
 
 void CTerrain::Late_Update(_float fTimeDelta)
 {
-
 	m_pGameInstance->Add_RenderGroup(CRenderer::RG_NONBLEND, this);
 }
 
@@ -56,11 +63,13 @@ HRESULT CTerrain::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(0);
+	m_bWireFrameMode ? m_pShaderCom->Begin(1) : m_pShaderCom->Begin(0);
+
+	//m_pShaderCom->Begin(0);
 
 	m_pVIBufferCom->Bind_InputAssembler();
 
-	CTempManager::GetInstance()->SwitchFrameMode();
+	//CTempManager::GetInstance()->SwitchFrameMode();
 
 	m_pVIBufferCom->Render();
 
@@ -127,6 +136,9 @@ HRESULT CTerrain::Bind_ShaderResources()
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_PickedPoints", &m_fPickPos, sizeof(_float3))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WireFrameMode", &m_bWireFrameMode, sizeof(_bool))))
 		return E_FAIL;
 
 

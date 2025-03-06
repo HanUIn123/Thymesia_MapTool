@@ -29,7 +29,7 @@ class CLevel_GamePlay final : public CLevel
 {
 public:
     enum IMGUI_TEXTURE_TYPE { IMG_ANIM_MODEL, IMG_NONANIM_MODEL, IMG_GROUND_MODEL, IMG_END };
-    enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI, MT_GROUND, MT_END };
+    enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI, MT_GROUND, MT_HEIGHT, MT_END };
 public:
     struct CELL_POINTS
     {
@@ -56,12 +56,10 @@ public:
 private:
     HRESULT Ready_Lights();
     HRESULT Ready_Layer_BackGround(const _tchar* pLayerTag);
-    HRESULT Ready_Layer_Structure(const _tchar* pLayerTag);
     HRESULT Ready_Layer_Player(const _tchar* pLayerTag);
     HRESULT Ready_Layer_Camera(const _tchar* pLayerTag);
     HRESULT Ready_Layer_Monster(const _tchar* pLayerTag);
     HRESULT Ready_Layer_Effect(const _tchar* pLayerTag);
-    HRESULT Ready_Layer_UI(const _tchar* pLayerTag);
 
 
     // 테스트용 사다리 레이어 추가
@@ -87,10 +85,11 @@ private:
     void								Add_GroundObjects();
     void                                Delete_GroundObjects();
     void								Setting_GroundObjectList();
+    void                                Raising_Terrain(_float _fTimeDelta, _bool _bUp);
+
 
     void                                Update_InstanceObjects();
     void                                Update_InstanceMove();
-    void                                Update_Instance();
     XMFLOAT3                            Compute_ClosestInstanceModelPoint(const XMFLOAT3& _fClickPos);
 
 
@@ -98,6 +97,8 @@ private:
     HRESULT								Load_Objects();
     void	                            OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName);
 
+    HRESULT                             Save_HeightMap();
+    HRESULT                             Load_HeightMap();
 
 private:
     HRESULT								Pick_Object(MENU_TYPE _eMenuType);
@@ -145,6 +146,8 @@ private:
     _bool								m_bAnimObjectMenuSelected = { false };
     _bool								m_bNaviMenuSelected = { false };
     _bool								m_bGrondMenuSelected = { false };
+    _bool                               m_bTerrainHeightSelected = { false };
+
 
     _bool								m_bIsMeshPickingMode = { false };
     _bool								m_bIsTerrainPickingMode = { false };
@@ -268,181 +271,180 @@ private:
         "SM_Wall_Combined_03",
     };
 
-    const char* m_strGorundobjectClothesNames[9] = {
-
-"P_Cloth01",
-"P_Cloth02",
-"P_Cloth03",
-"P_Cloth04",
-"P_Cloth05",
-"P_Cloth06",
-"P_Cloth07",
-"P_Cloth08",
+    const char* m_strGorundobjectClothesNames[9] = 
+    {
+        "P_Cloth01",
+        "P_Cloth02",
+        "P_Cloth03",
+        "P_Cloth04",
+        "P_Cloth05",
+        "P_Cloth06",
+        "P_Cloth07",
+        "P_Cloth08",
     };
 
     const char* m_strGroundObjectGraveStoneNames[63] =
     {
-
-"SM_gravestone_01",
-"SM_gravestone_02",
-"SM_gravestone_03",
-"SM_gravestone_04",
-"SM_gravestone_05",
-"SM_gravestone_06",
-"SM_gravestone_07",
-"SM_gravestone_08",
-"SM_gravestone_09",
-"SM_gravestone_10",
-"SM_gravestone_11",
-"SM_gravestone_12",
-"SM_gravestone_13",
-"SM_gravestone_15",
-"SM_gravestone_16",
-"SM_gravestone_17",
-"SM_gravestone_18",
-"SM_gravestone_20",
-"SM_gravestone_21",
-"SM_gravestone_22",
-"SM_gravestone_23",
-"SM_gravestone_25",
-"SM_gravestone_26",
-"SM_gravestone_27",
-"SM_gravestone_28",
-"SM_gravestone_29",
-"SM_gravestone_31",
-"SM_gravestone_32",
-"SM_gravestone_33",
-"SM_gravestone_34",
-"SM_gravestone_35",
-"SM_gravestone_36",
-"SM_gravestone_37",
-"SM_gravestone_38",
-"SM_gravestone_41",
-"SM_gravestone_42",
-"SM_gravestone_44",
-"SM_gravestone_46",
-"SM_gravestone_48",
-"SM_gravestone_50",
-"SM_gravestone_51",
-"SM_gravestone_53",
-"SM_gravestone_54",
-"SM_gravestone_55",
-"SM_gravestone_56",
-"SM_gravestone_60",
-"SM_gravestone_61",
-"SM_gravestone_62",
-"SM_gravestone_63",
-
+        "SM_gravestone_01",
+        "SM_gravestone_02",
+        "SM_gravestone_03",
+        "SM_gravestone_04",
+        "SM_gravestone_05",
+        "SM_gravestone_06",
+        "SM_gravestone_07",
+        "SM_gravestone_08",
+        "SM_gravestone_09",
+        "SM_gravestone_10",
+        "SM_gravestone_11",
+        "SM_gravestone_12",
+        "SM_gravestone_13",
+        "SM_gravestone_15",
+        "SM_gravestone_16",
+        "SM_gravestone_17",
+        "SM_gravestone_18",
+        "SM_gravestone_20",
+        "SM_gravestone_21",
+        "SM_gravestone_22",
+        "SM_gravestone_23",
+        "SM_gravestone_25",
+        "SM_gravestone_26",
+        "SM_gravestone_27",
+        "SM_gravestone_28",
+        "SM_gravestone_29",
+        "SM_gravestone_31",
+        "SM_gravestone_32",
+        "SM_gravestone_33",
+        "SM_gravestone_34",
+        "SM_gravestone_35",
+        "SM_gravestone_36",
+        "SM_gravestone_37",
+        "SM_gravestone_38",
+        "SM_gravestone_41",
+        "SM_gravestone_42",
+        "SM_gravestone_44",
+        "SM_gravestone_46",
+        "SM_gravestone_48",
+        "SM_gravestone_50",
+        "SM_gravestone_51",
+        "SM_gravestone_53",
+        "SM_gravestone_54",
+        "SM_gravestone_55",
+        "SM_gravestone_56",
+        "SM_gravestone_60",
+        "SM_gravestone_61",
+        "SM_gravestone_62",
+        "SM_gravestone_63",
     };
 
     const char* m_strGroundObjectCurbNames[10] =
-    { "SM_curb_01",
-"SM_curb_02",
-"SM_curb_03",
-"SM_curb_05",
-"SM_curb_06",
-"SM_curb_07",
-"SM_curb_08",
-"SM_curb_09"
+    {
+        "SM_curb_01",
+        "SM_curb_02",
+        "SM_curb_03",
+        "SM_curb_05",
+        "SM_curb_06",
+        "SM_curb_07",
+        "SM_curb_08",
+        "SM_curb_09"
     };
-
 
 
     const char* m_strGroundObjectFenceNames[30] =
     {
-"SM_fence_01",
-"SM_fence_02",
-"SM_fence_03",
-"SM_fence_04",
-"SM_fence_05",
-"SM_fence_06",
-"SM_fence_07",
-"SM_fence_08",
-"SM_fence_09",
-"SM_fence_10",
-"SM_fence_12",
-"SM_fence_13",
-"SM_fence_15",
-"SM_fence_19",
-"SM_fence_20",
-"SM_fence_21",
-"SM_fence_22",
-"SM_fence_23",
-"SM_fence_24",
-"SM_fence_25",
-"SM_fence_26",
-"SM_fence_27",
-"SM_fence_29",
-"SM_fence_30",
-"SM_fence_31",
-"SM_fence_32",
-"SM_fence_33",
-"SM_fence_34",
-"SM_fence_35",
+        "SM_fence_01",
+        "SM_fence_02",
+        "SM_fence_03",
+        "SM_fence_04",
+        "SM_fence_05",
+        "SM_fence_06",
+        "SM_fence_07",
+        "SM_fence_08",
+        "SM_fence_09",
+        "SM_fence_10",
+        "SM_fence_12",
+        "SM_fence_13",
+        "SM_fence_15",
+        "SM_fence_19",
+        "SM_fence_20",
+        "SM_fence_21",
+        "SM_fence_22",
+        "SM_fence_23",
+        "SM_fence_24",
+        "SM_fence_25",
+        "SM_fence_26",
+        "SM_fence_27",
+        "SM_fence_29",
+        "SM_fence_30",
+        "SM_fence_31",
+        "SM_fence_32",
+        "SM_fence_33",
+        "SM_fence_34",
+        "SM_fence_35",
     };
 
-    const char* m_strGroundObjectRocknames[3] = {
-"SM_rock_01",
-"SM_rock_02",
-"SM_rock_03",
+    const char* m_strGroundObjectRocknames[3] = 
+    {
+        "SM_rock_01",
+        "SM_rock_02",
+        "SM_rock_03",
     };
 
-    const char* m_strGroundObjectDeseasednames[6] = { 
+    const char* m_strGroundObjectDeseasednames[6] = 
+    { 
         "P_Deceased01",
-"P_Deceased02",
-"P_Deceased03",
-"P_Deceased04",
-"P_Deceased05",
-"P_Deceased06",
+        "P_Deceased02",
+        "P_Deceased03",
+        "P_Deceased04",
+        "P_Deceased05",
+        "P_Deceased06",
     };
 
-    const char* m_strGroundObjectTreenames[20] = {
-"SM_DeadTree_01a",
-"SM_DeadTree_01",
-"SM_BigTree001",
-"SM_BigTree002",
-"SM_BigTree003",
-"SM_BigTree004",
-"SM_BigTree005",
-"SM_BigTree006",
-"SM_BigTree006_02",
-"SM_BigTree006_03_02",
-"P_TreeAerialRoot01",
-"P_TreeAerialRoot02",
-"P_BrokenTree01",
-"P_DeadTree02",
-"P_DeadTree03",
-"DryTreeT3_2_SM_02",
-"DryTreeT3_branches_1_SM",
-"DryTreeT3_branches_1_SM_02",
-"DryTreeT3_branches_3_SM",
-"DryTreeT3_branches_5_SM",
-
+    const char* m_strGroundObjectTreenames[20] = 
+    {
+        "SM_DeadTree_01a",
+        "SM_DeadTree_01",
+        "SM_BigTree001",
+        "SM_BigTree002",
+        "SM_BigTree003",
+        "SM_BigTree004",
+        "SM_BigTree005",
+        "SM_BigTree006",
+        "SM_BigTree006_02",
+        "SM_BigTree006_03_02",
+        "P_TreeAerialRoot01",
+        "P_TreeAerialRoot02",
+        "P_BrokenTree01",
+        "P_DeadTree02",
+        "P_DeadTree03",
+        "DryTreeT3_2_SM_02",
+        "DryTreeT3_branches_1_SM",
+        "DryTreeT3_branches_1_SM_02",
+        "DryTreeT3_branches_3_SM",
+        "DryTreeT3_branches_5_SM",
     };
 
-    const char* m_strGroundObjectStairsNames[3] = {
+    const char* m_strGroundObjectStairsNames[3] = 
+    {
         "SM_WoodStairs03",
     };
 
 private:
-    CCamera_Free* m_pCamera = { nullptr };
-    CTerrain* m_pTerrain = { nullptr };
-    CVIBuffer_Terrain* m_pTerrainBuffer = { nullptr };
-    CNavigation* m_pNavigation = { nullptr };
+    CCamera_Free*                           m_pCamera = { nullptr };
+    CTerrain*                               m_pTerrain = { nullptr };
+    CVIBuffer_Terrain*                      m_pTerrainBuffer = { nullptr };
+    CNavigation*                            m_pNavigation = { nullptr };
 
-    CTransform* m_pCurrentObjectTransformCom = { nullptr };
-    CObject* m_pCurrentObject = { nullptr };
+    CTransform*                             m_pCurrentObjectTransformCom = { nullptr };
+    CObject*                                m_pCurrentObject = { nullptr };
 
-    CTransform* m_pPrevObjectTrasnformCom = { nullptr };
-    CObject* m_pPrevObject = { nullptr };
+    CTransform*                             m_pPrevObjectTrasnformCom = { nullptr };
+    CObject*                                m_pPrevObject = { nullptr };
 
-
-    CEnvironmentObject* m_pCurrentEnvironmentObject = { nullptr };
-    CGroundObject* m_pSelectedInstancedObject = { nullptr };
-    CTransform* m_pCurrentEnvironmentObjectTransformCom = { nullptr };
+    CEnvironmentObject*                     m_pCurrentEnvironmentObject = { nullptr };
+    CGroundObject*                          m_pSelectedInstancedObject = { nullptr };
+    CTransform*                             m_pCurrentEnvironmentObjectTransformCom = { nullptr };
 
     _float3									m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
-
     _bool									m_bFrustumSphere = { false };
 
 private:
@@ -454,20 +456,20 @@ private:
     _uint                                   m_iInstancePickModeIndex = {};
     _bool                                   m_iModeSelected = { false };
 
-    VTXNORTEX* m_pVertices = { nullptr };
+    VTXNORTEX*                              m_pVertices = { nullptr };
     vector<_float3>                         m_vecInstancedGroundObjectPos;
     vector<_float3>                         m_vecInstancedGroundObjectScale;
     vector<_float4>                         m_vecInstancedGroundObjectRotation;
     _uint                                   m_iInstancingModelSize = {};
     _bool                                   m_bDraggingInstanceModel = { false };
 
-    _int                                   m_iSelectedInstanceIndex = { -1 };
+    _int                                    m_iSelectedInstanceIndex = { -1 };
     vector<_int>                            m_vecBoxSize;
 
     _bool                                   m_bGroundObjectMouseState = { false };
 
 public:
-    static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CLevel_GamePlay*                 Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual void                            Free() override;
 };
 

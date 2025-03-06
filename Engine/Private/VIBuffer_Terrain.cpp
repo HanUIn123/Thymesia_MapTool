@@ -15,7 +15,7 @@ CVIBuffer_Terrain::CVIBuffer_Terrain(const CVIBuffer_Terrain& Prototype)
 
 }
 
-HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _uint dwCntX, const  _uint dwCntZ, _uint dwVertexItv, const _tchar* path)
+HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _uint dwCntX, const  _uint dwCntZ, _uint dwVertexItv, const _tchar* path , const VTXNORTEX* _pLoadHeight)
 {
 	/* 버텍스버퍼와 인덱스 버퍼의 정보*/
 	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -42,17 +42,29 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _uint dwCntX, const  _uint
 	if (nullptr == path)
 	{
 
-		/* 버텍스 정보 넣어주기 */
-		for (size_t i = 0; i < dwCntZ; i++)
+		if (nullptr != _pLoadHeight)
 		{
-			for (size_t j = 0; j < dwCntX; j++)
+			for (size_t i = 0; i < dwCntZ; i++)
 			{
-				pVertices[dwCntZ * i + j].vPosition = _float3(j * dwVertexItv, 0.f, i);
-				pVertices[dwCntZ * i + j].vNormal = _float3(0.f, 1.f, 0.f);
-				pVertices[dwCntZ * i + j].vTexcoord = _float2(j * dwVertexItv / (dwCntX - 1.f), i / (dwCntZ - 1.f));
+				for (size_t j = 0; j < dwCntX; j++)
+				{
+					memcpy(pVertices, _pLoadHeight, sizeof(VTXNORTEX) * m_iNumVertices);
 
-
-				m_VertexPos[dwCntZ * i + j] = XMLoadFloat3(&pVertices[dwCntZ * i + j].vPosition);
+					m_VertexPos[dwCntZ * i + j] = XMLoadFloat3(&pVertices[dwCntZ * i + j].vPosition);
+				}
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < dwCntZ; i++)
+			{
+				for (size_t j = 0; j < dwCntX; j++)
+				{
+					pVertices[dwCntZ * i + j].vPosition = _float3(j * dwVertexItv, 0.f, i);
+					pVertices[dwCntZ * i + j].vNormal = _float3(0.f, 1.f, 0.f);
+					pVertices[dwCntZ * i + j].vTexcoord = _float2(j * dwVertexItv / (dwCntX - 1.f), i / (dwCntZ - 1.f));
+					m_VertexPos[dwCntZ * i + j] = XMLoadFloat3(&pVertices[dwCntZ * i + j].vPosition);
+				}
 			}
 		}
 
@@ -164,8 +176,6 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _uint dwCntX, const  _uint
 				pVertices[iIndex].vPosition = _float3(j * dwVertexItv, (pPixel[iIndex] & 0x000000ff) / 10.f, i);
 				pVertices[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
 				pVertices[iIndex].vTexcoord = _float2(j * dwVertexItv / (dwCntX - 1.f), i / (dwCntZ - 1.f));
-
-
 				m_VertexPos[dwCntZ * i + j] = XMLoadFloat3(&pVertices[dwCntZ * i + j].vPosition);
 			}
 		}
@@ -284,11 +294,11 @@ HRESULT CVIBuffer_Terrain::Initialize(void* pArg)
 
 
 CVIBuffer_Terrain* CVIBuffer_Terrain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
-	_uint iCountX, _uint iCountY, _uint iVertexItv, const _tchar* pPath)
+	_uint iCountX, _uint iCountY, _uint iVertexItv, const _tchar* pPath, const VTXNORTEX* _pLoadHeight)
 {
 	CVIBuffer_Terrain* pInstance = new CVIBuffer_Terrain(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(iCountX, iCountY, iVertexItv, pPath)))
+	if (FAILED(pInstance->Initialize_Prototype(iCountX, iCountY, iVertexItv, pPath, _pLoadHeight)))
 	{
 		MSG_BOX("Failed to Created : Terrain");
 		Safe_Release(pInstance);

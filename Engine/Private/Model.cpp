@@ -175,6 +175,26 @@ HRESULT CModel::Render_Instance(_uint _iMeshIndex, _uint _iNumInstanceNumber)
 	return S_OK;
 }
 
+void CModel::Compute_BoundingBox(_float3& _vMin, _float3& _vMax)
+{
+	_vMin = _float3(FLT_MAX, FLT_MAX, FLT_MAX);
+	_vMax = _float3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+	for (_uint i = 0; i < m_Meshes.size(); i++)
+	{
+		_float3 meshMin, meshMax;
+		m_Meshes[i]->Compute_BoundingBox(meshMin, meshMax);
+
+		_vMin.x = min(_vMin.x, meshMin.x);
+		_vMin.y = min(_vMin.y, meshMin.y);
+		_vMin.z = min(_vMin.z, meshMin.z);
+
+		_vMax.x = max(_vMax.x, meshMax.x);
+		_vMax.y = max(_vMax.y, meshMax.y);
+		_vMax.z = max(_vMax.z, meshMax.z);
+	}
+}
+
 void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop)
 {
 	/*if(m_bFirst)
@@ -300,13 +320,16 @@ HRESULT CModel::Create_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INST
 
 HRESULT CModel::Update_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData)
 {
-	if (nullptr == m_pInstanceBuffer)
+	if (nullptr == m_pInstanceBuffer || nullptr == _TagInstanceData)
+		return E_FAIL;
+
+	if (_iNumInstances == 0 || _iNumInstances > 500)
 		return E_FAIL;
 
 	D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
 	HRESULT hr = m_pContext->Map(m_pInstanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &tagSubResource);
 
-	if (FAILED(hr))
+	if (FAILED(hr) || nullptr == tagSubResource.pData)
 		return E_FAIL;
 
 	memcpy(tagSubResource.pData, _TagInstanceData, sizeof(VTX_MODEL_INSTANCE) * m_iNumInstances);
