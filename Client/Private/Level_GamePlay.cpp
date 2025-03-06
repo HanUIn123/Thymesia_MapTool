@@ -114,7 +114,6 @@ HRESULT CLevel_GamePlay::Initialize()
     m_pCamera = static_cast<CCamera_Free*>(m_pGameInstance->Get_GameObject(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_GAMEPLAY, TEXT("Layer_Camera")));
     m_pTerrain = static_cast<CTerrain*>(m_pGameInstance->Get_GameObject(TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, TEXT("Layer_BackGround")));
     m_pTerrainBuffer = static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain")));
-
     m_pNavigation = static_cast<CNavigation*>(m_pTerrain->Find_Component(TEXT("Com_Navigation")));
 
 	return S_OK;
@@ -122,7 +121,6 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
-    //ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered() ? m_bImguiHovered : !m_bImguiHovered;
     static int iMenuTypeNumber = MENU_TYPE::MT_END;
 
     if (m_pGameInstance->isKeyPressed(DIK_O))
@@ -139,6 +137,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bAnimObjectMenuSelected = false;
         m_bNaviMenuSelected = false;
         m_bGrondMenuSelected = false;
+        m_bTerrainHeightSelected = false;
         m_iNonAnimModelIndex = -1;
     }
     if (ImGui::RadioButton("ANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_ANIMMODEL))
@@ -147,6 +146,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNaviMenuSelected = false;
         m_bAnimObjectMenuSelected = true;
         m_bGrondMenuSelected = false;
+        m_bTerrainHeightSelected = false;
     }
     if (ImGui::RadioButton("NAVIGATION_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_NAVI))
     {
@@ -154,10 +154,20 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNonAnimObjectMenuSelected = false;
         m_bAnimObjectMenuSelected = false;
         m_bGrondMenuSelected = false;
+        m_bTerrainHeightSelected = false;
     }
     if (ImGui::RadioButton("GROUND_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_GROUND))
     {
         m_bGrondMenuSelected = true;
+        m_bNaviMenuSelected = false;
+        m_bNonAnimObjectMenuSelected = false;
+        m_bAnimObjectMenuSelected = false;
+        m_bTerrainHeightSelected = false;
+    }
+    if (ImGui::RadioButton("TERRAIN_HEIGHT", &iMenuTypeNumber, MENU_TYPE::MT_HEIGHT))
+    {
+        m_bTerrainHeightSelected = true;
+        m_bGrondMenuSelected = false;
         m_bNaviMenuSelected = false;
         m_bNonAnimObjectMenuSelected = false;
         m_bAnimObjectMenuSelected = false;
@@ -171,7 +181,6 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     {
         m_bConnectingMode = false;
     }
-
 
     if (ImGui::Button("Turn FrustumSphere"))
     {
@@ -308,7 +317,26 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         }
         else if (m_pGameInstance->isMouseEnter(DIM_RB))
         {
-            Delete_GroundObjects();
+            //Delete_GroundObjects();
+        }
+    }
+    else if (m_bTerrainHeightSelected)
+    {
+        Show_MouseRange(MENU_TYPE::MT_HEIGHT, fTimeDelta);
+
+        if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+        {
+            if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_HEIGHT)))
+            {
+                Raising_Terrain(fTimeDelta, true);
+            }
+        }
+        if (m_pGameInstance->Get_DIKeyState(DIK_R))
+        {
+            if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_HEIGHT)))
+            {
+                Raising_Terrain(fTimeDelta, false);
+            }
         }
     }
 
@@ -395,6 +423,17 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         {
             Load_Navi(1);
         }
+    }
+
+    if (iMenuTypeNumber == MENU_TYPE::MT_HEIGHT)
+    {
+        if (ImGui::Button("Save_Height"))
+            Save_HeightMap();
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Load_Height"))
+            Load_HeightMap();
     }
 
     ImGui::Checkbox("Creating NaviTerritory", &m_bFinishPickingNavi_InCurrentFloor);
@@ -504,67 +543,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar* pLayerTag)
     return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Structure(const _tchar* pLayerTag)
-{
-    /* 여기서 맵 파일 하나하나 다 읽어와야함 */
-
-    _ulong dwByte = {};
-    //HANDLE hFile = CreateFile(TEXT("../Map_File/real76.bin"), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-    HANDLE hFile = CreateFile(TEXT("../Map_File/real143.bin"), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-    while (true)
-    {
-        _tchar Layer_Name[MAX_PATH] = {}; //레이어 이름                              
-        ReadFile(hFile, Layer_Name, MAX_PATH, &dwByte, nullptr);
-
-        if (dwByte == 0)
-            break;
-        /* 이름 작업 */
-        _char   Prototype_Name[MAX_PATH] = {};
-
-        ReadFile(hFile, Prototype_Name, MAX_PATH, &dwByte, nullptr);
-
-
-        _float4x4 WorldMatrix = {};
-        ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr);
-        //int a = 4;
-
-        _tchar Translate_wchar[MAX_PATH] = {};
-        MultiByteToWideChar(CP_ACP, 0, Prototype_Name, static_cast<_int>(strlen(Prototype_Name)), Translate_wchar, MAX_PATH);
-
-        /* 이제 TRANSFORM만 건들면 될듯함.*/
-        //int b = 4;
-        if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, Translate_wchar, LEVEL_GAMEPLAY, Layer_Name)))
-            return E_FAIL;
-
-        //CTransform* pTrasnform = dynamic_cast<CTransform*>(
-        //* Find GaemObject 만들어야 할듯
-        // 구분할 수 있는 방법을 생각해봐야할듯.
-        map<const _wstring, class CLayer*>* Level_Layers = m_pGameInstance->Get_Layers();
-
-        auto& Level_GamePlay = Level_Layers[3];
-
-        for (auto& Layers : Level_GamePlay)
-        {
-            //auto& iter = find(Level_GamePlay.begin(), Level_GamePlay.end(), Layer_Name);   
-            auto iter = Level_GamePlay.find(Layer_Name);
-
-            if (iter == Level_GamePlay.end())
-                return E_FAIL;
-
-            else
-            {
-                CTransform* pTranform = dynamic_cast<CTransform*>(
-                    iter->second->Get_GameObject_List().back()->Find_Component(TEXT("Com_Transform")));
-
-                pTranform->Set_WorldMatrix(WorldMatrix);
-            }
-        }
-    }
-    CloseHandle(hFile);
-
-    return S_OK;
-}
-
 HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 {
     if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Player"), LEVEL_GAMEPLAY, pLayerTag, nullptr)))
@@ -577,8 +555,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar* pLayerTag)
 {
     CCamera_Free::FREE_CAMERA_DESC      Desc = {};
 
-    Desc.vEye = _float3(0.f, 10.f, -7.f);
-    Desc.vAt = _float3(0.f, 0.f, 0.f);
+    //Desc.vEye = _float3(0.f, 10.f, -7.f);
+    //Desc.vAt = _float3(0.f, 0.f, 0.f);
+
+    Desc.vEye = _float3(30.0f, 10.0f, -150.0f);
+    Desc.vAt = _float3(30.f, 0.f, -143.f);
 
     Desc.fFovy = XMConvertToRadians(60.f);
     Desc.fNear = 0.1f;
@@ -586,7 +567,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar* pLayerTag)
     Desc.fMouseSensor = 0.05f;
     Desc.fSpeedPerSec = 25.f;
     Desc.fRotationPerSec = XMConvertToRadians(90.f);
-
 
     if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Camera_Free"), LEVEL_GAMEPLAY, pLayerTag, &Desc)))
         return E_FAIL;
@@ -609,13 +589,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _tchar* pLayerTag)
 {
 
     return S_OK;
-}
-
-HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar* pLayerTag)
-{
-
-    return S_OK;
-
 }
 
 HRESULT CLevel_GamePlay::Ready_Layer_Ladder(const _tchar* pLayerTag)
@@ -832,7 +805,7 @@ void CLevel_GamePlay::Active_PreviewModelImage()
     _float3 vMousePos;
     if (m_bNonAnimObjectMenuSelected && m_pPrevObject && m_bIsTerrainPickingMode)
     {
-        vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+        vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))),  m_pTerrain->Get_Transfrom());
 
         if (nullptr != m_pPrevObjectTrasnformCom)
         {
@@ -918,20 +891,37 @@ void CLevel_GamePlay::Add_GroundObjects()
             m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
             m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
 
+            XMMATRIX matWorld = XMLoadFloat4x4(m_pTerrain->Get_Transfrom()->Get_WorldMatrix_Ptr());
+            XMMATRIX matWorldInv = XMMatrixInverse(nullptr, matWorld);
+
+            XMVECTOR vPickPosWorld = XMLoadFloat3(&m_fPickPos);
+            XMVECTOR vPickPosLocal = XMVector3TransformCoord(vPickPosWorld, matWorldInv);
+
+            XMFLOAT3 fPickPosLocal;
+            XMStoreFloat3(&fPickPosLocal, vPickPosLocal);
+
+            XMFLOAT3 fPickPosWorld;
+            XMStoreFloat3(&fPickPosWorld, vPickPosWorld);
+
             for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
             {
                 for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
                 {
-                    _float fWorldX = m_fPickPos.x + j;
-                    _float fWorldZ = m_fPickPos.z + i;
-                    _uint iIndex = static_cast<_uint>(fWorldZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(fWorldX);
+                    _float fLocalX = fPickPosLocal.x + j;
+                    _float fLocalZ = fPickPosLocal.z + i;
+                    _uint iIndex = static_cast<_uint>(fLocalZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(fLocalX);
 
                     if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
                         continue;
 
-                    XMFLOAT3 terrainPos = m_pVertices[iIndex].vPosition;
-                    EnvironmentDesc.vecInstancePosition.push_back(terrainPos);
-                    m_vecInstancedGroundObjectPos.push_back(terrainPos);
+                    XMFLOAT3 terrainLocalPos = m_pVertices[iIndex].vPosition;
+                    XMVECTOR terrainWorldPos = XMVector3TransformCoord(XMLoadFloat3(&terrainLocalPos), matWorld);
+
+                    XMFLOAT3 fTerrainWorldPos;
+                    XMStoreFloat3(&fTerrainWorldPos, terrainWorldPos);
+
+                    EnvironmentDesc.vecInstancePosition.push_back(fTerrainWorldPos);
+                    m_vecInstancedGroundObjectPos.push_back(fTerrainWorldPos);
 
                     EnvironmentDesc.vecInstanceScale.push_back(EnvironmentDesc.fScaling);
                     m_vecInstancedGroundObjectScale.push_back(EnvironmentDesc.fScaling);
@@ -1147,14 +1137,66 @@ void CLevel_GamePlay::Setting_GroundObjectList()
             ObjectDesc.ObjectName = m_strGroundObjectTreenames[m_iNonAnimModelIndex];
 
         }
+    }
+}
 
+void CLevel_GamePlay::Raising_Terrain(_float _fTimeDelta, _bool _bUp)
+{
+    XMMATRIX matWorld = XMLoadFloat4x4(m_pTerrain->Get_Transfrom()->Get_WorldMatrix_Ptr());
+    XMMATRIX matWorldInv = XMMatrixInverse(nullptr, matWorld);
+
+    XMVECTOR vPickPosWorld = XMLoadFloat3(&m_fPickPos);
+    XMVECTOR vPickPosLocal = XMVector3TransformCoord(vPickPosWorld, matWorldInv);
+
+    XMFLOAT3 fPickPosLocal;
+    XMStoreFloat3(&fPickPosLocal, vPickPosLocal);
+
+    XMFLOAT3 fPickPosWorld;
+    XMStoreFloat3(&fPickPosWorld, vPickPosWorld);
+
+    D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
+    m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
+    m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
+
+    for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
+    {
+        for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
+        {
+            _float fLocalX = fPickPosLocal.x + j;
+            _float fLocalZ = fPickPosLocal.z + i;
+            _uint iIndex = static_cast<_uint>(fLocalZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(fLocalX);
+
+            if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
+                continue;
+
+            if (_bUp)
+                m_pVertices[iIndex].vPosition.y += 0.01f;
+            else
+                m_pVertices[iIndex].vPosition.y -= 0.01f;
+        }
+    }
+    m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
+
+    XMVECTOR* pVertexPos = m_pTerrainBuffer->Get_VertexPos();
+
+    for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
+    {
+        for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
+        {
+            _float fLocalX = fPickPosLocal.x + j;
+            _float fLocalZ = fPickPosLocal.z + i;
+            _uint iIndex = static_cast<_uint>(fLocalZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(fLocalX);
+
+            if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
+                continue;
+
+            pVertexPos[iIndex] = XMLoadFloat3(&m_pVertices[iIndex].vPosition);
+        }
     }
 }
 
 void CLevel_GamePlay::Update_InstanceObjects()
 {
-   
-
     ImGui::Begin("Instanced Ground Objects", NULL, ImGuiWindowFlags_MenuBar);
     {
         if (m_EnvironmentObjects.empty())
@@ -1277,7 +1319,7 @@ void CLevel_GamePlay::Update_InstanceMove()
     if (!m_pSelectedInstancedObject || m_iSelectedInstanceIndex < 0 /*|| m_bGrondMenuSelected || m_bDraggingInstanceModel*/)
         return;
 
-    _float3 vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+    _float3 vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))), m_pTerrain->Get_Transfrom());
 
     if (m_bDraggingInstanceModel)
     {
@@ -1324,25 +1366,6 @@ void CLevel_GamePlay::Update_InstanceMove()
     }
 }
 
-void CLevel_GamePlay::Update_Instance()
-{
-
-    if (m_iSelectedInstanceIndex < 0)
-        return;
-
-    XMVECTOR vCurrentQuaternion = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
-
-    vCurrentQuaternion = XMQuaternionNormalize(vCurrentQuaternion);
-    XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vCurrentQuaternion);
-
-    m_pSelectedInstancedObject->Update_InstanceBuffer(
-        m_iSelectedInstanceIndex,
-        m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
-        m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
-        m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
-    );
-
-}
 
 XMFLOAT3 CLevel_GamePlay::Compute_ClosestInstanceModelPoint(const XMFLOAT3& _fClickPos)
 {
@@ -1604,9 +1627,75 @@ void CLevel_GamePlay::OpenFileDialoge(const _tchar* _pDefaultFileName, const _tc
     }
 }
 
+HRESULT CLevel_GamePlay::Save_HeightMap()
+{
+    wstring fileName;
+    OpenFileDialoge(L"TerrainHeight.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Create TerrainHegiht File!");
+        return E_FAIL;
+    }
+
+    DWORD dwByte = 0;
+
+    _uint iTotalBufferNum = m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ();
+    WriteFile(hFile, &iTotalBufferNum, sizeof(_uint), &dwByte, nullptr);
+    WriteFile(hFile, m_pVertices, sizeof(VTXNORTEX) * iTotalBufferNum, &dwByte, nullptr);
+
+    MSG_BOX("Succeded To Save TerraingHeight File!");
+    CloseHandle(hFile);
+
+    return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Load_HeightMap()
+{
+    wstring fileName;
+    OpenFileDialoge(L"TerrainHeight.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Load TerrainHeight File!");
+        return E_FAIL;
+    }
+
+    DWORD dwByte = 0;
+
+    _uint iBufferTotalCount = {};
+    ReadFile(hFile, &iBufferTotalCount, sizeof(_uint), &dwByte, nullptr);
+
+    D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
+    m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
+    m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
+
+    ReadFile(hFile, tagSubResource.pData, sizeof(VTXNORTEX) * iBufferTotalCount, &dwByte, nullptr);
+
+    m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
+
+    CloseHandle(hFile);
+
+    UINT iVertexStride = sizeof(VTXNORTEX);
+    UINT iOffset = 0;
+    ID3D11Buffer* pVertexBuffer = m_pTerrainBuffer->Get_VB_Buffer();
+    m_pContext->IASetVertexBuffers(0, 1, &pVertexBuffer, &iVertexStride, &iOffset);
+    MSG_BOX("Success To Load TerrainHeight File!");
+
+    return S_OK;
+}
+
 HRESULT CLevel_GamePlay::Pick_Object(MENU_TYPE _eMenuType)
 {
-    m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+    m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))), m_pTerrain->Get_Transfrom());
 
     if (m_fPickPos.y < 0)
         return E_FAIL;
@@ -1639,7 +1728,7 @@ HRESULT CLevel_GamePlay::Picking_Points()
     }
     else
     {
-        m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+        m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))), m_pTerrain->Get_Transfrom());
         m_fWholePickPos = m_fPickPos;
     }
 
@@ -1773,7 +1862,7 @@ pair<XMFLOAT3, XMFLOAT3> CLevel_GamePlay::Compute_NearPoints(const vector<CELL_P
 
 XMFLOAT3 CLevel_GamePlay::Pick_Closest_Cube(const XMFLOAT3& clickPos, _uint _iFloorNumber)
 {
-    const float PICK_RADIUS = 1.0f;
+    const float PICK_RADIUS = 1.5f;
 
     _float fMinDistance = FLT_MAX;
     XMFLOAT3 vSelectedCordinate = XMFLOAT3(FLT_MAX, FLT_MAX, FLT_MAX);
@@ -2031,7 +2120,7 @@ HRESULT CLevel_GamePlay::Load_Navi(_uint _iFloorNumber)
 
 HRESULT CLevel_GamePlay::Show_MouseRange(MENU_TYPE _eMenuType, _float _fTimeDelta)
 {
-    m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))));
+    m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))) , m_pTerrain->Get_Transfrom());
 
     m_pTerrain->Set_TerrainPickPos(m_fPickPos, m_fInstallRange);
 

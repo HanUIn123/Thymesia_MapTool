@@ -44,7 +44,7 @@ public:
 
 public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pContstantName, const vector<class CBone*>& Bones);
-
+	void		Compute_BoundingBox(_float3& _vMin, _float3& _vMax);
 
 private:
 	_char			   m_szName[MAX_PATH] = {};

@@ -17,7 +17,6 @@ HRESULT CEnvironmentObject::Initialize(void* _pArg)
 
 	m_fFrustumRadius = pDesc->fFrustumRadius;
 
-
 	if (FAILED(__super::Initialize(_pArg)))
 		return E_FAIL;
 
@@ -120,8 +119,6 @@ HRESULT CEnvironmentObject::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Calculator"),
 		TEXT("Com_Calculator"), reinterpret_cast<CComponent**>(&m_pCalculatorCom))))
 		return E_FAIL;
-
-
 
 	return S_OK;
 }

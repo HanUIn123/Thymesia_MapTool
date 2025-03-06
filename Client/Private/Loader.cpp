@@ -52,8 +52,6 @@ _uint APIENTRY Thread_Main(void* pArg)
 
 HRESULT CLoader::Initialize(LEVELID eNextLevelID)
 {
-
-
 	m_eNextLevelID = eNextLevelID;
 
 	InitializeCriticalSection(&m_CriticalSection);
@@ -152,7 +150,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	lstrcpyW(m_szLoadingText, TEXT("텍스쳐 원형을 생성한다."));
 	/* For.Prototype_Component_Texture_Terrain*/
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile%d.dds"), 2))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/T_GroundMud_BC.png"), 1))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture__MouseRange"),
@@ -200,14 +198,6 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CCamera_Free::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 #pragma endregion 
-
-
-#pragma region 인스턴스 버퍼 
-	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"),
-	//	CVIBuffer_Instancing::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
-#pragma endregion
-
 
 #pragma region 셰이더
 
@@ -299,7 +289,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	//lstrcpyW(m_szLoadingText, TEXT("네비게이션 원형을 생성한다."));	
 	///* For.Prototype_Component_Navigation */	
 	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),	
-	//	CNavigation::Create(m_pDevice, m_pContext, TEXT("../Navigation_File/test49.bin")))))	
+	//	CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/DataFiles/NavigationData/TestNavigation5.txt")))))	
 	//	return E_FAIL;	
 	lstrcpyW(m_szLoadingText, TEXT("네비게이션 원형을 생성한다."));
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), CNavigation::CreateOnly(m_pDevice, m_pContext))))

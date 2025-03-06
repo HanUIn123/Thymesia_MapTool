@@ -43,6 +43,7 @@ private:
 	_float                          m_fRange = {};
 	_float3                         m_fPickPos = {};
 	_bool							m_bBrushing = { false };
+	_bool							m_bWireFrameMode = { false };
 
 
 public:
