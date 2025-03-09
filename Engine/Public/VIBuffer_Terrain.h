@@ -16,15 +16,16 @@ private:
 	virtual ~CVIBuffer_Terrain() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const _uint dwCntX, const  _uint dwCntZ, _uint dwVertexItv, const _tchar* path, const VTXNORTEX* _pLoadHeight = nullptr);
+	HRESULT Initialize_Prototype(const _uint dwCntX, const _uint dwCntZ, _uint dwVertexItv, const _tchar* path, const _tchar* _HeightPath);
 	virtual HRESULT Initialize(void* pArg) override;
 
 private:
 	XMVECTOR*				m_VertexPos = { nullptr };
 	_uint                   m_iNumverticesX, m_iNumverticesZ;
+	VTXNORTEX*				m_pVertices = { nullptr };
 
 public:
-	static CVIBuffer_Terrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _uint dwCntX, const  _uint dwCntZ, _uint dwVertexItv, const _tchar* pPath,  const VTXNORTEX* _pLoadHeight = nullptr);
+	static CVIBuffer_Terrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _uint dwCntX, const  _uint dwCntZ, _uint dwVertexItv, const _tchar* pPath, const _tchar* _HeightPath);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };

@@ -70,8 +70,22 @@ HRESULT CGroundObject::Initialize(void* _pArg)
                 XMVectorGetZ(XMLoadFloat3(&pDesc->vecInstanceScale[i]))
             );
 
-            XMMATRIX matPosition = XMMatrixTranslation(fTerrainPos.x, fTerrainPos.y, fTerrainPos.z);
+
+            XMMATRIX matPosition = XMMatrixTranslation(fTerrainPos.x, fTerrainPos.y, fTerrainPos.z);// * XMMatrixScaling(1.4286f, 1.4286f, 1.4286f);
+
             XMMATRIX matWorld = matScale * matRotation * matPosition;
+
+            //_vector scale, rot, pos;
+
+            //XMMatrixDecompose(&scale, &rot, &pos, matWorld);
+
+            //// 货肺款 胶纳老 利侩
+            //_vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&pDesc->vecInstanceScale[i]);
+            //XMMATRIX newWorldMatrix = XMMatrixAffineTransformation(newScaleMatrix, g_XMZero, rot, pos);
+
+
+            //XMFLOAT4X4 tempMatrix;
+            //XMStoreFloat4x4(&tempMatrix, newWorldMatrix);
 
             XMFLOAT4X4 tempMatrix;
             XMStoreFloat4x4(&tempMatrix, matWorld);
@@ -128,11 +142,24 @@ HRESULT CGroundObject::Initialize(void* _pArg)
                 XMVectorGetZ(XMLoadFloat3(&pDesc->vecInstanceScale[i]))
             );
 
+
             XMMATRIX matPosition = XMMatrixTranslation(fTerrainPos.x, fTerrainPos.y, fTerrainPos.z);
             XMMATRIX matWorld = matScale * matRotation * matPosition;
 
+
+
+            //_vector scale, rot, pos;
+
+            //XMMatrixDecompose(&scale, &rot, &pos, matWorld);
+
+            //// 货肺款 胶纳老 利侩
+            //_vector newScaleMatrix = XMVectorSet(0.7f, 0.7f, 0.7f, 1.f) * XMLoadFloat3(&pDesc->vecInstanceScale[i]);
+            //XMMATRIX newWorldMatrix = XMMatrixAffineTransformation(newScaleMatrix, g_XMZero, rot, pos);
+
+
             XMFLOAT4X4 tempMatrix;
             XMStoreFloat4x4(&tempMatrix, matWorld);
+
 
             instance.InstanceMatrix[0] = XMFLOAT4(tempMatrix._11, tempMatrix._12, tempMatrix._13, tempMatrix._14);
             instance.InstanceMatrix[1] = XMFLOAT4(tempMatrix._21, tempMatrix._22, tempMatrix._23, tempMatrix._24);

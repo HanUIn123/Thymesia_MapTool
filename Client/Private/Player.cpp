@@ -46,7 +46,7 @@ HRESULT CPlayer::Initialize(void* pArg)
 		return E_FAIL;
 
 	//_vector vInitialPosition = XMVectorSet(70.9525f, 4.39096f, -111.377373f, 1.0f);
-	_vector vInitialPosition = XMVectorSet(70.9525f, 0.1f, -111.377373f, 1.0f);
+	_vector vInitialPosition = XMVectorSet(71.55f, 1.f, -111.497373f, 1.0f);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vInitialPosition);
 
 	m_pGameInstance->Add_ObjCollider(GROUP_TYPE::PLAYER, this);

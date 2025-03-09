@@ -86,6 +86,7 @@ private:
     void                                Delete_GroundObjects();
     void								Setting_GroundObjectList();
     void                                Raising_Terrain(_float _fTimeDelta, _bool _bUp);
+    void                                Set_Terrain_Height(_float _fHeight);
 
 
     void                                Update_InstanceObjects();
@@ -199,7 +200,6 @@ private:
         "SM_Wall_8x8_Broken_01c",
         "SM_Wall_8x8_Broken_01d",
         "SM_Wall_8x8_Broken_01e",
-        "SM_ground_Road_Middle_250x250cm_1_a",
         "T_P_BossRoomVines01",
         "P_BossArtriumCircleRailing_Down02",
         "P_BossArtriumCircleRailing_Down03",
@@ -218,7 +218,6 @@ private:
         "P_CemeteryStairs01",
         "P_CemeteryStairs02",
         "P_CemeteryStairs03",
-        "Brick_Floor",
         "P_Archive_Chair01",
         "Ladder",
         "SM_crypt_01",
@@ -233,7 +232,10 @@ private:
         "SM_fence_03",
         "SM_fence_08",
         "SM_fence_15",
-
+        "House0",
+        "House3",
+        "House5",
+        "Brick_Floor",
     };
 
     const char* m_strObjectUrnNames[256] =
@@ -251,7 +253,7 @@ private:
     const char* m_strGroundObjectNamess[100] =
     {
         "Grass0",
-        "Tree0",    
+        "Tree0",
         "Railing_base01",
         "Railing_pillar01_2",
         "Railing03_1",
@@ -269,9 +271,11 @@ private:
         "SM_Gate_17d",
         "SM_Fence_04",
         "SM_Wall_Combined_03",
+        "SM_ground_Road_Middle_250x250cm_1_a",
+        "Brick_Floor",
     };
 
-    const char* m_strGorundobjectClothesNames[9] = 
+    const char* m_strGorundobjectClothesNames[9] =
     {
         "P_Cloth01",
         "P_Cloth02",
@@ -281,6 +285,30 @@ private:
         "P_Cloth06",
         "P_Cloth07",
         "P_Cloth08",
+    };
+
+
+    const char* m_strGorundobjectRailingNames[20] =
+    {
+        "Railing_base01",
+        "Railing_base02",
+        "Railing_base07",
+        "Railing_base08",
+        "Railing_pillar01",
+        "Railing_pillar01_02",
+        "Railing01_1",
+        "Railing01_3",
+        "Railing02_1",
+        "Railing03_1",
+        "Railing07_1",
+        "Railing08_1",
+        "Railing08_2",
+        "RailingDamage01_1",
+        "RailingDamage01_3",
+        "RailingDamage02_1",
+        "RailingDamage05_1",
+        "RailingDamage06",
+        "RailingDamage07",
     };
 
     const char* m_strGroundObjectGraveStoneNames[63] =
@@ -382,15 +410,15 @@ private:
         "SM_fence_35",
     };
 
-    const char* m_strGroundObjectRocknames[3] = 
+    const char* m_strGroundObjectRocknames[3] =
     {
         "SM_rock_01",
         "SM_rock_02",
         "SM_rock_03",
     };
 
-    const char* m_strGroundObjectDeseasednames[6] = 
-    { 
+    const char* m_strGroundObjectDeseasednames[6] =
+    {
         "P_Deceased01",
         "P_Deceased02",
         "P_Deceased03",
@@ -399,7 +427,7 @@ private:
         "P_Deceased06",
     };
 
-    const char* m_strGroundObjectTreenames[20] = 
+    const char* m_strGroundObjectTreenames[20] =
     {
         "SM_DeadTree_01a",
         "SM_DeadTree_01",
@@ -423,26 +451,48 @@ private:
         "DryTreeT3_branches_5_SM",
     };
 
-    const char* m_strGroundObjectStairsNames[3] = 
+    const char* m_strGroundObjectStairsNames[3] =
     {
         "SM_WoodStairs03",
     };
 
+    const char* m_strGroundObjectTombStoneNames[18] =
+    {
+        "SM_tombstone_01",
+        "SM_tombstone_02",
+        "SM_tombstone_08",
+        "SM_tombstone_10",
+        "SM_tombstone_11",
+        "SM_tombstone_14",
+        "SM_tombstone_15",
+        "SM_tombstone_16",
+        "SM_tombstone_19",
+        "SM_tombstone_20",
+        "SM_tombstone_28",
+        "SM_tombstone_35",
+        "SM_tombstone_36",
+        "SM_tombstone_38",
+        "SM_tombstone_39",
+        "SM_tombstone_40",
+        "SM_tombstone_41",
+        "SM_tombstone_42",
+    };
+
 private:
-    CCamera_Free*                           m_pCamera = { nullptr };
-    CTerrain*                               m_pTerrain = { nullptr };
-    CVIBuffer_Terrain*                      m_pTerrainBuffer = { nullptr };
-    CNavigation*                            m_pNavigation = { nullptr };
+    CCamera_Free* m_pCamera = { nullptr };
+    CTerrain* m_pTerrain = { nullptr };
+    CVIBuffer_Terrain* m_pTerrainBuffer = { nullptr };
+    CNavigation* m_pNavigation = { nullptr };
 
-    CTransform*                             m_pCurrentObjectTransformCom = { nullptr };
-    CObject*                                m_pCurrentObject = { nullptr };
+    CTransform* m_pCurrentObjectTransformCom = { nullptr };
+    CObject* m_pCurrentObject = { nullptr };
 
-    CTransform*                             m_pPrevObjectTrasnformCom = { nullptr };
-    CObject*                                m_pPrevObject = { nullptr };
+    CTransform* m_pPrevObjectTrasnformCom = { nullptr };
+    CObject* m_pPrevObject = { nullptr };
 
-    CEnvironmentObject*                     m_pCurrentEnvironmentObject = { nullptr };
-    CGroundObject*                          m_pSelectedInstancedObject = { nullptr };
-    CTransform*                             m_pCurrentEnvironmentObjectTransformCom = { nullptr };
+    CEnvironmentObject* m_pCurrentEnvironmentObject = { nullptr };
+    CGroundObject* m_pSelectedInstancedObject = { nullptr };
+    CTransform* m_pCurrentEnvironmentObjectTransformCom = { nullptr };
 
     _float3									m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
     _bool									m_bFrustumSphere = { false };
@@ -456,7 +506,7 @@ private:
     _uint                                   m_iInstancePickModeIndex = {};
     _bool                                   m_iModeSelected = { false };
 
-    VTXNORTEX*                              m_pVertices = { nullptr };
+    VTXNORTEX* m_pVertices = { nullptr };
     vector<_float3>                         m_vecInstancedGroundObjectPos;
     vector<_float3>                         m_vecInstancedGroundObjectScale;
     vector<_float4>                         m_vecInstancedGroundObjectRotation;
@@ -467,6 +517,9 @@ private:
     vector<_int>                            m_vecBoxSize;
 
     _bool                                   m_bGroundObjectMouseState = { false };
+
+private:
+    _float                                  m_fTerrainHeightSetting = { 0.f };
 
 public:
     static CLevel_GamePlay*                 Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

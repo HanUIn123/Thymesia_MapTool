@@ -28,7 +28,6 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01c.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01d.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01e.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_ground_Road_Middle_250x250cm_1_a.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/T_P_BossRoomVines01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossArtriumCircleRailing_Down02.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossArtriumCircleRailing_Down03.png"), IMG_NONANIM_MODEL, 1);
@@ -47,7 +46,6 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs02.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs03.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Brick_Floor.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Archive_Chair01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Ladder.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_01.png"), IMG_NONANIM_MODEL, 1);
@@ -62,6 +60,9 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_03.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_08.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_15.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Brick_Floor.png"), IMG_NONANIM_MODEL, 1);
+
+    //   "Brick_Floor",
 
     //=============================================================================================================================
 
@@ -85,6 +86,11 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Gate_17d.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Fence_04.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_Combined_03.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_ground_Road_Middle_250x250cm_1_a.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Brick_Floor.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_0.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_3.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_5.png"), IMG_NONANIM_MODEL, 1);
     //Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_%d.png"), IMG_GROUND_MODEL, 6);
 
 
@@ -323,22 +329,32 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     }
     else if (m_bTerrainHeightSelected)
     {
+        ImGui::InputFloat("Terrain_Height", &m_fTerrainHeightSetting);
+
         Show_MouseRange(MENU_TYPE::MT_HEIGHT, fTimeDelta);
 
-        if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+        if (GetAsyncKeyState(VK_LBUTTON) & 0x8000 && !IO.WantCaptureMouse)
         {
             if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_HEIGHT)))
             {
                 Raising_Terrain(fTimeDelta, true);
             }
         }
-        if (m_pGameInstance->Get_DIKeyState(DIK_R))
+        if (m_pGameInstance->Get_DIKeyState(DIK_R) && !IO.WantCaptureMouse)
         {
             if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_HEIGHT)))
             {
                 Raising_Terrain(fTimeDelta, false);
             }
         }
+        if (GetAsyncKeyState(VK_RBUTTON) & 0x8000 && !IO.WantCaptureMouse)
+        {
+            if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_HEIGHT)))
+            {
+                Set_Terrain_Height(m_fTerrainHeightSetting);
+            }
+        }
+
     }
 
 
@@ -668,6 +684,7 @@ void CLevel_GamePlay::Add_NonAnimObjects()
     case 1:
         Desc.ObjectName = m_strObjectNames[m_iNonAnimModelIndex];
         break;
+
     case 2:
         Desc.ObjectName = m_strGroundObjectGraveStoneNames[m_iNonAnimModelIndex];
         break;
@@ -675,8 +692,13 @@ void CLevel_GamePlay::Add_NonAnimObjects()
     case 3:
         Desc.ObjectName = m_strObjectUrnNames[m_iNonAnimModelIndex];
         break;
+
     case 4:
         Desc.ObjectName = m_strGroundObjectDeseasednames[m_iNonAnimModelIndex];
+        break;
+
+    case 5:
+        Desc.ObjectName = m_strGroundObjectTombStoneNames[m_iNonAnimModelIndex];
         break;
     default :
         return;
@@ -796,6 +818,25 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
         }
 
     }
+    else if (ImGui::CollapsingHeader("TombStone Model List"))
+    {
+        m_iNonMoveObjectListIndex = 5;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectTombStoneNames, IM_ARRAYSIZE(m_strGroundObjectTombStoneNames)))
+        {
+            m_iNonAnimModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectTombStoneNames[m_iNonAnimModelIndex];
+
+        }
+
+    }
 
     //m_strGroundObjectDeseasednames
     //m_strGroundObjectTreenames
@@ -873,6 +914,10 @@ void CLevel_GamePlay::Add_GroundObjects()
 
         case 5:
             EnvironmentDesc.ObjectName = m_strGroundObjectRocknames[m_iGroundModelIndex];
+            break;
+
+        case 6:
+            EnvironmentDesc.ObjectName = m_strGorundobjectRailingNames[m_iGroundModelIndex];
             break;
 
         default:
@@ -1022,7 +1067,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
         static int iCurrentItem = 0;
         ImGui::Combo("##5", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-        for (_uint i = 0; i < 19; ++i)
+        for (_uint i = 0; i < 23; ++i)
         {
             _uint  iTextureIndex = iCurrentItem * 3 + i;
             m_iRandGroundModelIndex = rand() % (iTextureIndex + 1);
@@ -1128,14 +1173,32 @@ void CLevel_GamePlay::Setting_GroundObjectList()
         static int iCurrentItem = 0;
         if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectTreenames, IM_ARRAYSIZE(m_strGroundObjectTreenames)))
         {
-            m_iNonAnimModelIndex = iCurrentItem;
+            m_iGroundModelIndex = iCurrentItem;
 
             CObject::OBJECT_DESC ObjectDesc = {};
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
             ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
-            ObjectDesc.ObjectName = m_strGroundObjectTreenames[m_iNonAnimModelIndex];
+            ObjectDesc.ObjectName = m_strGroundObjectTreenames[m_iGroundModelIndex];
+
+        }
+    }
+    else   if (ImGui::CollapsingHeader("Railing Model List"))
+    {
+        m_iGroundObjectListIndex = 6;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGorundobjectRailingNames, IM_ARRAYSIZE(m_strGorundobjectRailingNames)))
+        {
+            m_iGroundModelIndex = iCurrentItem;
+
+            CEnvironmentObject::ENVIRONMENT_OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.f };
+            ObjectDesc.ObjectName = m_strGorundobjectRailingNames[m_iGroundModelIndex];
 
         }
     }
@@ -1174,6 +1237,58 @@ void CLevel_GamePlay::Raising_Terrain(_float _fTimeDelta, _bool _bUp)
                 m_pVertices[iIndex].vPosition.y += 0.01f;
             else
                 m_pVertices[iIndex].vPosition.y -= 0.01f;
+        }
+    }
+    m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
+
+    XMVECTOR* pVertexPos = m_pTerrainBuffer->Get_VertexPos();
+
+    for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
+    {
+        for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
+        {
+            _float fLocalX = fPickPosLocal.x + j;
+            _float fLocalZ = fPickPosLocal.z + i;
+            _uint iIndex = static_cast<_uint>(fLocalZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(fLocalX);
+
+            if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
+                continue;
+
+            pVertexPos[iIndex] = XMLoadFloat3(&m_pVertices[iIndex].vPosition);
+        }
+    }
+}
+
+void CLevel_GamePlay::Set_Terrain_Height(_float _fHeight)
+{
+    XMMATRIX matWorld = XMLoadFloat4x4(m_pTerrain->Get_Transfrom()->Get_WorldMatrix_Ptr());
+    XMMATRIX matWorldInv = XMMatrixInverse(nullptr, matWorld);
+
+    XMVECTOR vPickPosWorld = XMLoadFloat3(&m_fPickPos);
+    XMVECTOR vPickPosLocal = XMVector3TransformCoord(vPickPosWorld, matWorldInv);
+
+    XMFLOAT3 fPickPosLocal;
+    XMStoreFloat3(&fPickPosLocal, vPickPosLocal);
+
+    XMFLOAT3 fPickPosWorld;
+    XMStoreFloat3(&fPickPosWorld, vPickPosWorld);
+
+    D3D11_MAPPED_SUBRESOURCE tagSubResource = {};
+    m_pContext->Map(m_pTerrainBuffer->Get_VB_Buffer(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &tagSubResource);
+    m_pVertices = static_cast<VTXNORTEX*>(tagSubResource.pData);
+
+    for (_float i = -m_fInstallRange; i <= m_fInstallRange; i += m_fSpacingValue)
+    {
+        for (_float j = -m_fInstallRange; j <= m_fInstallRange; j += m_fSpacingValue)
+        {
+            _float fLocalX = fPickPosLocal.x + j;
+            _float fLocalZ = fPickPosLocal.z + i;
+            _uint iIndex = static_cast<_uint>(fLocalZ) * m_pTerrainBuffer->Get_NumVerticesX() + static_cast<_uint>(fLocalX);
+
+            if (iIndex < 0 || iIndex >= m_pTerrainBuffer->Get_NumVerticesX() * m_pTerrainBuffer->Get_NumVerticesZ())
+                continue;
+
+            m_pVertices[iIndex].vPosition.y = _fHeight;
         }
     }
     m_pContext->Unmap(m_pTerrainBuffer->Get_VB_Buffer(), 0);
@@ -1238,37 +1353,40 @@ void CLevel_GamePlay::Update_InstanceObjects()
 
                         if (m_pGameInstance->isKeyEnter(DIK_Z))
                         {
-                            XMVECTOR vZFlipQuaternion = XMQuaternionRotationAxis(XMVectorSet(0, 0.f, 1.f, 0), XM_PI);
+                            //XMVECTOR vZFlipQuaternion = XMQuaternionRotationAxis(XMVectorSet(0.f, 0.f, 1.f, 0.f), XM_PI);
 
-                            // 현재 인스턴스의 회전값을 로드
-                            XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
+                            //// 현재 인스턴스의 회전값을 로드
+                            ////XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
 
+                            //_vector vRotation = XMQuaternionMultiply(vZFlipQuaternion, vCurrentRotation);
+
+
+
+                            ////vCurrentRotation.m128_f32[3] = -vCurrentRotation.m128_f32[3];
+
+                            ////vCurrentRotation.m128_f32[1] = -vCurrentRotation.m128_f32[1];
                             //// Z축 반전 쿼터니언 적용
-                            //XMVECTOR vFlippedRotation = XMQuaternionMultiply(vCurrentRotation, vZFlipQuaternion);
+                            ////XMVECTOR vFlippedRotation = XMQuaternionMultiply(vCurrentRotation, vZFlipQuaternion);
 
                             //// 결과를 다시 저장
-                            //XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vFlippedRotation);
+                            //XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vRotation);
 
-                        //    m_pSelectedInstancedObject->Update_InstanceBuffer
-                        //    (
-                        //        m_iSelectedInstanceIndex,
-                        //        m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
-                        //        m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
-                        //        m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
-                        //    );
-                        //}
-                        //else if (m_pGameInstance->isKeyEnter(DIK_X))
-                        //{
-                            //XMVECTOR vZFlipQuaternion = XMQuaternionRotationAxis(XMVectorSet(0, 0, 1.f, 0), XM_PI);
 
-                            // 현재 인스턴스의 회전값을 로드
-                          //  XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
+                            XMVECTOR vCurrentPosition = XMLoadFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex]);
+                            XMVECTOR vCurrentScale = XMLoadFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex]);
+                            XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
 
-                            // Z축 반전 쿼터니언 적용
-                            XMVECTOR vFlippedRotation = XMQuaternionMultiply(vCurrentRotation, vZFlipQuaternion);
+                            _vector vChangedPos = XMVector3TransformCoord(vCurrentPosition, XMMatrixScaling(0.7f, 0.7f, 0.7f));
+                            XMStoreFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], vChangedPos);
 
-                            // 결과를 다시 저장
-                            XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vFlippedRotation);
+                            _vector vChangedScale = XMVector3TransformCoord(vCurrentScale, XMMatrixScaling(0.7f, 0.7f, 0.7f));
+                            XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);
+
+                            XMVECTOR quaternion = XMQuaternionRotationAxis(XMVectorSet(1, 0, 0, 0), XM_PI);
+
+                            XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], XMQuaternionMultiply(vCurrentRotation, quaternion));
+
+                            XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);
 
                             m_pSelectedInstancedObject->Update_InstanceBuffer
                             (
@@ -1417,6 +1535,34 @@ HRESULT CLevel_GamePlay::Save_Objects()
         {
             CObject::OBJECT_INFO Info = pObject->Get_ObjectInfo();
 
+            if (strcmp(Info.szName, "House0") == 0)
+            {
+                XMStoreFloat4(&Info.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Info.fPosition), XMMatrixScaling(1.3f, 1.3f, 1.3f)));
+
+              /*  _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&Info.fScale);
+                XMStoreFloat3(&Info.fScale, newScaleMatrix);*/
+            }
+            if (strcmp(Info.szName, "House3") == 0)
+            {
+                XMStoreFloat4(&Info.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Info.fPosition), XMMatrixScaling(1.3f, 1.3f, 1.3f)));
+
+              /*  _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&Info.fScale);
+                XMStoreFloat3(&Info.fScale, newScaleMatrix);*/
+            } 
+            if (strcmp(Info.szName, "Brick_Floor") == 0)
+            {
+                XMStoreFloat4(&Info.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Info.fPosition), XMMatrixScaling(1.3f, 1.3f, 1.3f)));
+
+             /*   _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&Info.fScale);
+                XMStoreFloat3(&Info.fScale, newScaleMatrix);*/
+            }
+
+           /*
+                XMStoreFloat4(&Info.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Info.fPosition), XMMatrixScaling(1.4286f, 1.4286f, 1.4286f)));
+
+                _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&Info.fScale);
+                XMStoreFloat3(&Info.fScale, newScaleMatrix);*/
+
             WriteFile(hFile, Info.szName, MAX_PATH, &dwByte, nullptr);
             WriteFile(hFile, &Info.fPosition, sizeof(_float4), &dwByte, nullptr);
             WriteFile(hFile, &Info.fRotation, sizeof(_float3), &dwByte, nullptr);
@@ -1433,6 +1579,7 @@ HRESULT CLevel_GamePlay::Save_Objects()
     {
         auto& pEnvironmentObject = m_EnvironmentObjects[iGroupIndex];
         CEnvironmentObject::EN_OBJECT_INFO EnvironmentInfo = pEnvironmentObject->Get_EnvironmentObjectInfo();
+
         WriteFile(hFile, EnvironmentInfo.szName, MAX_PATH, &dwByte2, nullptr);
 
         vector<VTX_MODEL_INSTANCE> vecInstanceData = pEnvironmentObject->Get_ModelInstanceVector();
@@ -1450,6 +1597,11 @@ HRESULT CLevel_GamePlay::Save_Objects()
 
             XMVECTOR scale, rotation, translation;
             XMMatrixDecompose(&scale, &rotation, &translation, matWorld);
+
+          /*  XMStoreFloat4(&EnvironmentInfo.fPosition, XMVector3TransformCoord(XMLoadFloat4(&EnvironmentInfo.fPosition), XMMatrixScaling(1.4286f, 1.4286f, 1.4286f)));
+
+            _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&EnvironmentInfo.fScale);
+            XMStoreFloat3(&EnvironmentInfo.fScale, newScaleMatrix);*/
 
             XMFLOAT4 quaternion;
             XMStoreFloat4(&quaternion, rotation);
@@ -1512,12 +1664,18 @@ HRESULT CLevel_GamePlay::Load_Objects()
         _char szLoadName[MAX_PATH] = {};
 
         ReadFile(hFile, szLoadName, MAX_PATH, &dwByte, nullptr);
-        ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte, nullptr) ;
         ReadFile(hFile, &Desc.fRotation, sizeof(_float3), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
 
-        Desc.ObjectName = szLoadName;
+        Desc.ObjectName = szLoadName;/*
+
+        XMStoreFloat4(&Desc.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Desc.fPosition), XMMatrixScaling(0.7f, 0.7f, 0.7f)));
+
+
+        _vector newScaleMatrix = XMVectorSet(0.7f, 0.7f, 0.7f, 1.f) * XMLoadFloat3(&Desc.fScaling);
+        XMStoreFloat3(&Desc.fScaling, newScaleMatrix);*/
 
         CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
 

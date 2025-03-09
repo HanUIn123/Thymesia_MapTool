@@ -159,7 +159,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	
 	lstrcpyW(m_szLoadingText, TEXT("터레인 컴포넌트 생성"));
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain")
-		, CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100, 1, nullptr))))
+		, CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 150, 150, 1, nullptr, TEXT("../Bin/DataFiles/ObjectData/TerrainHeight10.txt")))))
 		return E_FAIL;
 
 
@@ -427,18 +427,6 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Wall_8x8_Broken_01e/SM_Wall_8x8_Broken_01e.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing_base01"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railing_base01/Railing_base01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing_pillar01_2"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railing_pillar01_2/Railing_pillar01_2.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing01_3"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railing01_3/Railing01_3.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
-		return E_FAIL;
-
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_Brick_stone_stairs_1_a"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Brick_stone_stairs_1_a/SM_Brick_stone_stairs_1_a.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
@@ -489,10 +477,6 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_P_BossAtriumCircleRailing_Up03"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/P_BossAtriumCircleRailing_Up03/P_BossAtriumCircleRailing_Up03.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing03_1"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railing03_1/Railing03_1.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_P_Fortress_BossDoor_Left01"),
@@ -1204,6 +1188,87 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_42.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing_base01"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railing_base01/Railing_base01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing_base02"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/Railing_base02.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing_base07"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/Railing_base07.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing_base08"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/Railing_base08.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing_pillar01"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/Railing_pillar01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing_pillar01_2"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railing_pillar01_2/Railing_pillar01_2.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing01_1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/Railing01_3.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing01_3"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railing01_3/Railing07.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing02_1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/Railing02_1.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing03_1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railing03_1/Railing03_1.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing07_1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/Railing07_1.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing08_1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/Railing08_1.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing08_2"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/Railing08_2.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_RailingDamage01_1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/RailingDamage01_1.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_RailingDamage01_3"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/RailingDamage01_3.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_RailingDamage02_1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/RailingDamage02_1.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_RailingDamage05_1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/RailingDamage05_1.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Railing06"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/RailingDamage06.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_RailingDamage07"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/RailingDamage07.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_RailingPillarDamage01"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Railings/RailingPillarDamage01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"),
 		CNonMoveObject::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
@@ -1226,8 +1291,25 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/Tree0/Tree0.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
-	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House0"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House0/House0.fbx", CModel::MODEL_NONANIM, PreTransformMatrix,true))))
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House0"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House_0/House_0.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House1"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House_1/House_1.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House2"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House_2/House_2.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
+	//	return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House3"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House_3/House_3.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House5"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House_5/House_5.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
 	//	return E_FAIL;
 
 
