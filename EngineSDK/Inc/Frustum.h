@@ -19,7 +19,7 @@ public:
 
 public:
 	_bool isIn_WorldSpace(_fvector vWorldPoint, _float fRange = 0.f);
-
+	_bool isIn_AABB_Box(const XMFLOAT3& _fMin, const XMFLOAT3& _fMax);
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	_float4					m_vOriginal_Points[8];

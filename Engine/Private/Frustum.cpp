@@ -52,6 +52,47 @@ _bool CFrustum::isIn_WorldSpace(_fvector vWorldPoint, _float fRange)
 	return true;
 }
 
+_bool CFrustum::isIn_AABB_Box(const XMFLOAT3& _fMin, const XMFLOAT3& _fMax)
+{
+	_float fOffset = 1.0f;
+	XMFLOAT3 fAdjustMin = XMFLOAT3(_fMin.x - fOffset, _fMin.y - fOffset, _fMin.z - fOffset);
+	XMFLOAT3 fAdjustMax = XMFLOAT3(_fMin.x + fOffset, _fMin.y + fOffset, _fMin.z + fOffset);
+
+	for (_uint i = 0; i < 6; ++i)
+	{
+		XMVECTOR vPlane = XMLoadFloat4(&m_vWorld_Planes[i]);
+
+		XMFLOAT3 fPoints[8] =
+		{
+			XMFLOAT3(fAdjustMin.x, fAdjustMax.y, fAdjustMin.z),
+			XMFLOAT3(fAdjustMax.x, fAdjustMax.y, fAdjustMin.z),
+			XMFLOAT3(fAdjustMax.x, fAdjustMin.y, fAdjustMin.z),
+			XMFLOAT3(fAdjustMin.x, fAdjustMin.y, fAdjustMin.z),
+
+			XMFLOAT3(fAdjustMin.x, fAdjustMax.y, fAdjustMax.z),
+			XMFLOAT3(fAdjustMax.x, fAdjustMax.y, fAdjustMax.z),
+			XMFLOAT3(fAdjustMax.x, fAdjustMin.y, fAdjustMax.z),
+			XMFLOAT3(fAdjustMin.x, fAdjustMin.y, fAdjustMax.z)
+		};
+
+		_uint iCulledPointCount = {};
+
+		for (_uint j = 0; j < 8; ++j)
+		{
+			XMVECTOR vPoint = XMLoadFloat3(&fPoints[j]);
+			if (XMVectorGetX(XMPlaneDotCoord(vPlane, vPoint)) > 0.0f)
+			{
+				iCulledPointCount++;
+			}
+		}
+
+		if (iCulledPointCount == 8)
+			return false;
+	}
+
+	return true;
+}
+
 void CFrustum::Make_Planes(const _float4* pPoints, _float4* pPlanes)
 {
 	/* +x */

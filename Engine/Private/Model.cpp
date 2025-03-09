@@ -332,7 +332,7 @@ HRESULT CModel::Update_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INST
 	if (FAILED(hr) || nullptr == tagSubResource.pData)
 		return E_FAIL;
 
-	memcpy(tagSubResource.pData, _TagInstanceData, sizeof(VTX_MODEL_INSTANCE) * m_iNumInstances);
+	memcpy(tagSubResource.pData, _TagInstanceData, sizeof(VTX_MODEL_INSTANCE) * _iNumInstances);
 
 	m_pContext->Unmap(m_pInstanceBuffer, 0);
 
