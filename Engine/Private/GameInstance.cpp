@@ -504,6 +504,10 @@ _bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPoint, _float fRange
 {
 	return m_pFrustum->isIn_WorldSpace(vWorldPoint, fRange);
 }
+_bool CGameInstance::isAABB_InFrustum(const XMFLOAT3& _fMin, const XMFLOAT3& _fMax)
+{
+	return m_pFrustum->isIn_AABB_Box(_fMin, _fMax);
+}
 #pragma endregion
 
 #pragma region ITEM_MANAGER
