@@ -31,10 +31,13 @@ public:
 	virtual HRESULT Render() override;
 
 	void Update_InstanceBuffer(_uint _iInstanceIndex, const XMFLOAT3& _vPosition, const XMFLOAT3& _vScale, const XMFLOAT4& _vRotation);
+	void Update_InstanceBuffer_ForCulling();
 	virtual void Set_BoxSize(_uint _iBoxSize) override;
 private:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Bind_ShaderResources() override;
+	vector<_bool>				m_vecVisible;
+
 
 public:
 	static CGroundObject* Create(ID3D11Device* _pDevice, ID3D11DeviceContext* _pContext);

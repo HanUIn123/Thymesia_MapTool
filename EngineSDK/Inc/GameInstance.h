@@ -170,6 +170,7 @@ public:
 
 #pragma region FRUSTUM
 	_bool isIn_Frustum_WorldSpace(_fvector vWorldPoint, _float fRange = 0.f);
+	_bool isAABB_InFrustum(const XMFLOAT3& _fMin, const XMFLOAT3& _fMax);
 #pragma endregion
 
 
@@ -183,6 +184,9 @@ public:
 	HRESULT SetUp_ShadowLight(_fvector vEye, _fvector vAt, _float fLightAngle, _float fAspect, _float fNear, _float fFar, class CGameObject* _pPlayer);
 	HRESULT Bind_Shadow_Matrices(class CShader* pShader, const _char* pViewConstantName, const _char* pProjConstantName);
 #pragma endregion
+
+
+
 
 
 private:
