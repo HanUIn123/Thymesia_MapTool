@@ -20,7 +20,7 @@ public:
 	HRESULT Bind_Matrix(const _char* pConstantName, const _float4x4* pMatrix);
 	HRESULT Bind_Matrices(const _char* pConstantName, const _float4x4* pMatrix, _uint iNumMatrices);
 	HRESULT Bind_SRV(const _char* pConstantName, ID3D11ShaderResourceView* pSRV);
-
+	HRESULT Bind_SRVs(const _char* pConstantName, ID3D11ShaderResourceView** ppSRV, _uint iNumSRVs);
 private:
 	ID3DX11Effect*					m_pEffect = { nullptr };
 	vector<ID3D11InputLayout*>		m_InputLayout;

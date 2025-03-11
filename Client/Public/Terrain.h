@@ -16,6 +16,13 @@ BEGIN(Client)
 
 class CTerrain final : public CGameObject
 {
+public:
+	typedef struct TerrainDesc : public CGameObject::GAMEOBJECT_DESC {
+		ID3D11ShaderResourceView* pMaskTexture = { nullptr };
+		ID3D11ShaderResourceView* pWaterMapTexture = { nullptr };
+
+	}TERRAINDESC;
+
 private:
 	CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CTerrain(const CTerrain& Prototype);
@@ -35,6 +42,8 @@ public:
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CTexture* m_pTextureCom = { nullptr };
+	CTexture* m_pTextureNormalCom = { nullptr };
+	CTexture* m_pTextureORMCom = { nullptr };
 	CTexture* m_pMouseTextureCom = { nullptr };
 	CVIBuffer_Terrain* m_pVIBufferCom = { nullptr };
 	CNavigation* m_pNavigationCom = { nullptr };
@@ -45,7 +54,8 @@ private:
 	_bool							m_bBrushing = { false };
 	_bool							m_bWireFrameMode = { false };
 
-
+	ID3D11ShaderResourceView* m_pMaskTexture = { nullptr };
+	ID3D11ShaderResourceView* m_pWaterMapTexture = { nullptr };
 public:
 	HRESULT Ready_Components();
 	HRESULT Bind_ShaderResources();

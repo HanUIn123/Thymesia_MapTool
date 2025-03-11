@@ -3,6 +3,7 @@
 #include "Level_GamePlay.h"
 #include "Camera_Free.h"
 #include "Layer.h"   
+#include "Terrain.h"
 
 #include "GameObject.h"
 
@@ -14,7 +15,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/HORSE_P_WoodenFrame02_05.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Rag03.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_Shelf.dds"), IMG_NONANIM_MODEL, 1);
-   // Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodStairs03.dds"), IMG_NONANIM_MODEL, 1);
+    // Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodStairs03.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossAtriumCircle01.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossCemetery_02_02.dds"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BossCemetery_04.dds"), IMG_NONANIM_MODEL, 1);
@@ -95,7 +96,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 
     /*
-    
+
         "SM_BaseWall_01_Corner",
         "SM_BaseWall_02_Plain",
         "SM_Separator",
@@ -109,6 +110,8 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_GamePlay::Initialize()
 {
+    Ready_TerrainMasking();
+
     if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
         return E_FAIL;
     if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
@@ -123,7 +126,7 @@ HRESULT CLevel_GamePlay::Initialize()
     m_pTerrainBuffer = static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain")));
     m_pNavigation = static_cast<CNavigation*>(m_pTerrain->Find_Component(TEXT("Com_Navigation")));
 
-	return S_OK;
+    return S_OK;
 }
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
@@ -145,6 +148,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNaviMenuSelected = false;
         m_bGrondMenuSelected = false;
         m_bTerrainHeightSelected = false;
+        m_bTerrainMaskSelected = false;
+        m_bTerrainWaterMaskSelected = false;
         m_iNonAnimModelIndex = -1;
     }
     if (ImGui::RadioButton("ANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_ANIMMODEL))
@@ -154,6 +159,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bAnimObjectMenuSelected = true;
         m_bGrondMenuSelected = false;
         m_bTerrainHeightSelected = false;
+        m_bTerrainMaskSelected = false;
+        m_bTerrainWaterMaskSelected = false;
     }
     if (ImGui::RadioButton("NAVIGATION_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_NAVI))
     {
@@ -162,6 +169,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bAnimObjectMenuSelected = false;
         m_bGrondMenuSelected = false;
         m_bTerrainHeightSelected = false;
+        m_bTerrainMaskSelected = false;
+        m_bTerrainWaterMaskSelected = false;
     }
     if (ImGui::RadioButton("GROUND_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_GROUND))
     {
@@ -170,6 +179,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNonAnimObjectMenuSelected = false;
         m_bAnimObjectMenuSelected = false;
         m_bTerrainHeightSelected = false;
+        m_bTerrainMaskSelected = false;
+        m_bTerrainWaterMaskSelected = false;
     }
     if (ImGui::RadioButton("TERRAIN_HEIGHT", &iMenuTypeNumber, MENU_TYPE::MT_HEIGHT))
     {
@@ -178,6 +189,31 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bNaviMenuSelected = false;
         m_bNonAnimObjectMenuSelected = false;
         m_bAnimObjectMenuSelected = false;
+        m_bTerrainMaskSelected = false;
+        m_bTerrainWaterMaskSelected = false;
+    }
+
+    if (ImGui::RadioButton("TERRAIN_MASK", &iMenuTypeNumber, MENU_TYPE::MT_TERRAIN_MASK))
+    {
+        m_bTerrainHeightSelected = false;
+        m_bGrondMenuSelected = false;
+        m_bNaviMenuSelected = false;
+        m_bNonAnimObjectMenuSelected = false;
+        m_bAnimObjectMenuSelected = false;
+        m_bTerrainMaskSelected = true;
+        m_bTerrainWaterMaskSelected = false;
+    }
+
+
+    if (ImGui::RadioButton("WATER_MASK", &iMenuTypeNumber, MENU_TYPE::MT_WATER_MASK))
+    {
+        m_bTerrainHeightSelected = false;
+        m_bGrondMenuSelected = false;
+        m_bNaviMenuSelected = false;
+        m_bNonAnimObjectMenuSelected = false;
+        m_bAnimObjectMenuSelected = false;
+        m_bTerrainMaskSelected = false;
+        m_bTerrainWaterMaskSelected = true;
     }
 
     if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)
@@ -408,7 +444,6 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
             }
             m_pCurrentObject = nullptr;
         }
-
         ImGui::End();
     }
 
@@ -495,6 +530,109 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     Delete_Cell_Mode(1);
 
+    ImGui::InputFloat4("Monster_Pos", m_vMonsterPos);
+    ImGui::InputInt("Monster_Index", &m_fMonsterIndex);
+
+    //ZeroMemory(&m_MonsterInfo, sizeof(m_MonsterInfo));
+
+    if (ImGui::Button("Add_MonsterInfo"))
+    {
+        m_MonsterInfos[m_fMonsterIndex].vMonsterPos.push_back(_float4(m_vMonsterPos[0], m_vMonsterPos[1], m_vMonsterPos[2], 1.f));
+    }
+
+    if (ImGui::Button("Save_MonsterIndex"))
+    {
+        Save_Monster_Index();
+    }
+
+    if (m_bTerrainMaskSelected)
+    {
+        if (!IO.WantCaptureMouse)
+        {
+            if (m_pGameInstance->Get_DIMouseState(DIM_LB))
+            {
+                if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_TERRAIN_MASK)))
+                {
+                    Make_MaskTexture(XMLoadFloat3(&m_fPickPos));
+                }
+            }
+
+
+            if (m_pGameInstance->Get_DIMouseState(DIM_RB))
+            {
+                if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_TERRAIN_MASK)))
+                {
+                    if (SUCCEEDED(Erase_MaskTexture(XMLoadFloat3(&m_fPickPos))))
+                    {
+                        MSG_BOX("Succeeded To Create Texture");
+                    }
+                }
+            }
+        }
+
+
+        ImGui::InputInt("MaskIndex", &m_iMaskTextureIndex);
+
+        if (ImGui::Button("Make_Mask_DDS"))
+        {
+            if (FAILED(Save_MaskTexture(m_iMaskTextureIndex)))
+            {
+                MSG_BOX("Failed To Created MaskTexture!");
+            }
+        }
+
+        if (ImGui::Button("Load_Mask_DDS"))
+        {
+            if (FAILED(Load_MaskTexture(m_iMaskTextureIndex)))
+            {
+                MSG_BOX("Failed To Loaded MaskTexture!");
+            }
+        }
+    }
+
+
+    if (m_bTerrainWaterMaskSelected)
+    {
+        if (!IO.WantCaptureMouse)
+        {
+            if (m_pGameInstance->Get_DIMouseState(DIM_LB))
+            {
+                if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_WATER_MASK)))
+                {
+                    Make_WaterMapTexture(XMLoadFloat3(&m_fPickPos));
+                }
+            }
+
+
+            if (m_pGameInstance->Get_DIMouseState(DIM_RB))
+            {
+                if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_WATER_MASK)))
+                {
+                    Erase_WaterMapTexture(XMLoadFloat3(&m_fPickPos));
+                }
+            }
+        }
+
+
+        ImGui::InputInt("WaterMapIndex", &m_iMaskTextureIndex);
+
+        if (ImGui::Button("Make_WaterMap_DDS"))
+        {
+            if (FAILED(Save_WaterMapTexture(m_iMaskTextureIndex)))
+            {
+                MSG_BOX("Failed To Created MaskTexture!");
+            }
+        }
+
+        if (ImGui::Button("Load_WaterMap_DDS"))
+        {
+            if (FAILED(Load_WaterMapTexture(m_iMaskTextureIndex)))
+            {
+                MSG_BOX("Failed To Loaded MaskTexture!");
+            }
+        }
+    }
+    //m_bTerrainWaterMaskSelected
     ImGui::End();
 
     if (m_bNonAnimObjectMenuSelected)
@@ -503,8 +641,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     if (m_bGrondMenuSelected)
         Setting_GroundObjectList();
 
-   /* if (m_bGroundObjectMouseState)
-        Update_InstanceMove();*/
+    /* if (m_bGroundObjectMouseState)
+         Update_InstanceMove();*/
 
     Update_InstanceObjects();
 
@@ -532,9 +670,9 @@ HRESULT CLevel_GamePlay::Ready_Lights()
     /* 2월 8일 빛 */
     LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
     LightDesc.vDirection = _float4(1.f, 1.f, 1.f, 0.f);
-    LightDesc.vDiffuse = _float4(0.9f, 0.9f, 0.9f, 1.f);
-    LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-    LightDesc.vSpecular = _float4(0.3f, 0.3f, 0.3f, 1.f);
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vSpecular = _float4(0.5f, 0.5f, 0.5f, 1.f);
 
 
     /*LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
@@ -551,7 +689,15 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar* pLayerTag)
 {
-    if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, pLayerTag, nullptr)))
+    CTerrain::TERRAINDESC pDesc = {};
+
+    if (m_pCopyMaskSRV != nullptr)
+        pDesc.pMaskTexture = m_pCopyMaskSRV;
+
+    if (m_pCopyWaterMapSRV != nullptr)
+        pDesc.pWaterMapTexture = m_pCopyWaterMapSRV;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, pLayerTag, &pDesc)))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag, nullptr)))
@@ -700,7 +846,7 @@ void CLevel_GamePlay::Add_NonAnimObjects()
     case 5:
         Desc.ObjectName = m_strGroundObjectTombStoneNames[m_iNonAnimModelIndex];
         break;
-    default :
+    default:
         return;
     }
 
@@ -847,7 +993,7 @@ void CLevel_GamePlay::Active_PreviewModelImage()
     _float3 vMousePos;
     if (m_bNonAnimObjectMenuSelected && m_pPrevObject && m_bIsTerrainPickingMode)
     {
-        vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))),  m_pTerrain->Get_Transfrom());
+        vMousePos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))), m_pTerrain->Get_Transfrom());
 
         if (nullptr != m_pPrevObjectTrasnformCom)
         {
@@ -1353,40 +1499,23 @@ void CLevel_GamePlay::Update_InstanceObjects()
 
                         if (m_pGameInstance->isKeyEnter(DIK_Z))
                         {
-                            //XMVECTOR vZFlipQuaternion = XMQuaternionRotationAxis(XMVectorSet(0.f, 0.f, 1.f, 0.f), XM_PI);
-
-                            //// 현재 인스턴스의 회전값을 로드
-                            ////XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
-
-                            //_vector vRotation = XMQuaternionMultiply(vZFlipQuaternion, vCurrentRotation);
-
-
-
-                            ////vCurrentRotation.m128_f32[3] = -vCurrentRotation.m128_f32[3];
-
-                            ////vCurrentRotation.m128_f32[1] = -vCurrentRotation.m128_f32[1];
-                            //// Z축 반전 쿼터니언 적용
-                            ////XMVECTOR vFlippedRotation = XMQuaternionMultiply(vCurrentRotation, vZFlipQuaternion);
-
-                            //// 결과를 다시 저장
-                            //XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vRotation);
 
 
                             XMVECTOR vCurrentPosition = XMLoadFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex]);
                             XMVECTOR vCurrentScale = XMLoadFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex]);
                             XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
 
-                            _vector vChangedPos = XMVector3TransformCoord(vCurrentPosition, XMMatrixScaling(0.7f, 0.7f, 0.7f));
-                            XMStoreFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], vChangedPos);
+                            //_vector vChangedPos = XMVector3TransformCoord(vCurrentPosition, XMMatrixScaling(0.7f, 0.7f, 0.7f));
+                            //XMStoreFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], vChangedPos);
 
-                            _vector vChangedScale = XMVector3TransformCoord(vCurrentScale, XMMatrixScaling(0.7f, 0.7f, 0.7f));
-                            XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);
+                            //_vector vChangedScale = XMVector3TransformCoord(vCurrentScale, XMMatrixScaling(0.7f, 0.7f, 0.7f));
+                            //XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);
 
                             XMVECTOR quaternion = XMQuaternionRotationAxis(XMVectorSet(1, 0, 0, 0), XM_PI);
 
                             XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], XMQuaternionMultiply(vCurrentRotation, quaternion));
 
-                            XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);
+                            /*    XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);*/
 
                             m_pSelectedInstancedObject->Update_InstanceBuffer
                             (
@@ -1535,34 +1664,6 @@ HRESULT CLevel_GamePlay::Save_Objects()
         {
             CObject::OBJECT_INFO Info = pObject->Get_ObjectInfo();
 
-            if (strcmp(Info.szName, "House0") == 0)
-            {
-                XMStoreFloat4(&Info.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Info.fPosition), XMMatrixScaling(1.3f, 1.3f, 1.3f)));
-
-              /*  _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&Info.fScale);
-                XMStoreFloat3(&Info.fScale, newScaleMatrix);*/
-            }
-            if (strcmp(Info.szName, "House3") == 0)
-            {
-                XMStoreFloat4(&Info.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Info.fPosition), XMMatrixScaling(1.3f, 1.3f, 1.3f)));
-
-              /*  _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&Info.fScale);
-                XMStoreFloat3(&Info.fScale, newScaleMatrix);*/
-            } 
-            if (strcmp(Info.szName, "Brick_Floor") == 0)
-            {
-                XMStoreFloat4(&Info.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Info.fPosition), XMMatrixScaling(1.3f, 1.3f, 1.3f)));
-
-             /*   _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&Info.fScale);
-                XMStoreFloat3(&Info.fScale, newScaleMatrix);*/
-            }
-
-           /*
-                XMStoreFloat4(&Info.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Info.fPosition), XMMatrixScaling(1.4286f, 1.4286f, 1.4286f)));
-
-                _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&Info.fScale);
-                XMStoreFloat3(&Info.fScale, newScaleMatrix);*/
-
             WriteFile(hFile, Info.szName, MAX_PATH, &dwByte, nullptr);
             WriteFile(hFile, &Info.fPosition, sizeof(_float4), &dwByte, nullptr);
             WriteFile(hFile, &Info.fRotation, sizeof(_float3), &dwByte, nullptr);
@@ -1597,11 +1698,6 @@ HRESULT CLevel_GamePlay::Save_Objects()
 
             XMVECTOR scale, rotation, translation;
             XMMatrixDecompose(&scale, &rotation, &translation, matWorld);
-
-          /*  XMStoreFloat4(&EnvironmentInfo.fPosition, XMVector3TransformCoord(XMLoadFloat4(&EnvironmentInfo.fPosition), XMMatrixScaling(1.4286f, 1.4286f, 1.4286f)));
-
-            _vector newScaleMatrix = XMVectorSet(1.4286f, 1.4286f, 1.4286f, 1.f) * XMLoadFloat3(&EnvironmentInfo.fScale);
-            XMStoreFloat3(&EnvironmentInfo.fScale, newScaleMatrix);*/
 
             XMFLOAT4 quaternion;
             XMStoreFloat4(&quaternion, rotation);
@@ -1664,7 +1760,7 @@ HRESULT CLevel_GamePlay::Load_Objects()
         _char szLoadName[MAX_PATH] = {};
 
         ReadFile(hFile, szLoadName, MAX_PATH, &dwByte, nullptr);
-        ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte, nullptr) ;
+        ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fRotation, sizeof(_float3), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
@@ -1760,6 +1856,41 @@ HRESULT CLevel_GamePlay::Load_Objects()
     }
 
     CloseHandle(hFile);
+}
+
+HRESULT CLevel_GamePlay::Save_Monster_Index()
+{
+    wstring fileName;
+    OpenFileDialoge(L"ObjectData.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Create ObjectData File!");
+        return E_FAIL;
+    }
+
+    DWORD dwByte = 0;
+
+    // 일반 오브젝트
+    _uint iObjectCount = static_cast<_uint>(m_MonsterInfos.size());
+    WriteFile(hFile, &iObjectCount, sizeof(_uint), &dwByte, nullptr);
+
+    for (auto& MonsterInfo : m_MonsterInfos)
+    {
+        _int iPosSize = MonsterInfo.vMonsterPos.size();
+        WriteFile(hFile, &iPosSize, sizeof(_int), &dwByte, nullptr);
+        if (iPosSize > 0)
+            WriteFile(hFile, &MonsterInfo.vMonsterPos[0], iPosSize * sizeof(_float4), &dwByte, nullptr);
+        WriteFile(hFile, &MonsterInfo.iMonsterIndex, sizeof(_int), &dwByte, nullptr);
+    }
+
+    CloseHandle(hFile);
+
+    return S_OK;
 }
 
 void CLevel_GamePlay::OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName)
@@ -2279,11 +2410,437 @@ HRESULT CLevel_GamePlay::Load_Navi(_uint _iFloorNumber)
 
 HRESULT CLevel_GamePlay::Show_MouseRange(MENU_TYPE _eMenuType, _float _fTimeDelta)
 {
-    m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))) , m_pTerrain->Get_Transfrom());
+    m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))), m_pTerrain->Get_Transfrom());
 
     m_pTerrain->Set_TerrainPickPos(m_fPickPos, m_fInstallRange);
 
     return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_TerrainMasking()
+{
+    D3D11_TEXTURE2D_DESC			TextureDesc{};
+
+    TextureDesc.Width = 256;
+    TextureDesc.Height = 256;
+    TextureDesc.MipLevels = 1;
+    TextureDesc.ArraySize = 1;
+    TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+    TextureDesc.SampleDesc.Quality = 0;
+    TextureDesc.SampleDesc.Count = 1;
+    TextureDesc.Usage = D3D11_USAGE_STAGING;
+    TextureDesc.BindFlags = 0;
+    TextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+    TextureDesc.MiscFlags = 0;
+
+    _uint			iNumPixels = TextureDesc.Width * TextureDesc.Height;
+
+    m_pPixels = new _uint[iNumPixels];
+    ZeroMemory(m_pPixels, sizeof(_uint) * iNumPixels);
+
+    D3D11_SUBRESOURCE_DATA		InitialDesc{};
+    InitialDesc.pSysMem = m_pPixels;
+    InitialDesc.SysMemPitch = 4 * TextureDesc.Width;
+
+    if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, &InitialDesc, &m_pMaskTexture)))
+        return E_FAIL;
+
+    D3D11_TEXTURE2D_DESC gpuTextureDesc = TextureDesc;
+    gpuTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+    gpuTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    gpuTextureDesc.CPUAccessFlags = 0;
+
+    if (FAILED(m_pDevice->CreateTexture2D(&gpuTextureDesc, nullptr, &m_pCopyMaskTexture)))
+        return E_FAIL;
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC gpuSRVDesc = { DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_SRV_DIMENSION_TEXTURE2D, 0, 0 };
+    gpuSRVDesc.Texture2D.MipLevels = 1;
+    gpuSRVDesc.Texture2D.MostDetailedMip = 0;
+
+    if (FAILED(m_pDevice->CreateShaderResourceView(m_pCopyMaskTexture, &gpuSRVDesc, &m_pCopyMaskSRV)))
+        return E_FAIL;
+
+    //물기 텍스쳐 생성
+
+    D3D11_TEXTURE2D_DESC			WaterMapTextureDesc{};
+
+    WaterMapTextureDesc.Width = 256;
+    WaterMapTextureDesc.Height = 256;
+    WaterMapTextureDesc.MipLevels = 1;
+    WaterMapTextureDesc.ArraySize = 1;
+    WaterMapTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+    WaterMapTextureDesc.SampleDesc.Quality = 0;
+    WaterMapTextureDesc.SampleDesc.Count = 1;
+    WaterMapTextureDesc.Usage = D3D11_USAGE_STAGING;
+    WaterMapTextureDesc.BindFlags = 0;
+    WaterMapTextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+    WaterMapTextureDesc.MiscFlags = 0;
+
+    _uint			iWaterNumPixels = WaterMapTextureDesc.Width * WaterMapTextureDesc.Height;
+
+    m_pWaterMapPixels = new _uint[iWaterNumPixels];
+    ZeroMemory(m_pWaterMapPixels, sizeof(_uint) * iWaterNumPixels);
+
+
+    D3D11_SUBRESOURCE_DATA		WaterInitialDesc{};
+    WaterInitialDesc.pSysMem = m_pWaterMapPixels;
+    WaterInitialDesc.SysMemPitch = 4 * WaterMapTextureDesc.Width;
+
+    if (FAILED(m_pDevice->CreateTexture2D(&WaterMapTextureDesc, &InitialDesc, &m_pWaterMapTexture)))
+        return E_FAIL;
+
+    D3D11_TEXTURE2D_DESC gpuWaterTextureDesc = WaterMapTextureDesc;
+    gpuWaterTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+    gpuWaterTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    gpuWaterTextureDesc.CPUAccessFlags = 0;
+
+    if (FAILED(m_pDevice->CreateTexture2D(&gpuWaterTextureDesc, nullptr, &m_pCopyWaterMapTexture)))
+        return E_FAIL;
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC gpuWaterSRVDesc = { DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_SRV_DIMENSION_TEXTURE2D, 0, 0 };
+    gpuWaterSRVDesc.Texture2D.MipLevels = 1;
+    gpuWaterSRVDesc.Texture2D.MostDetailedMip = 0;
+
+    if (FAILED(m_pDevice->CreateShaderResourceView(m_pCopyWaterMapTexture, &gpuWaterSRVDesc, &m_pCopyWaterMapSRV)))
+        return E_FAIL;
+
+    //_uint			iNumPixels = TextureDesc.Width * TextureDesc.Height;
+
+    //_uint* pPixels = new _uint[iNumPixels];
+    //ZeroMemory(pPixels, sizeof(_uint) * iNumPixels);
+
+    //D3D11_SUBRESOURCE_DATA		InitialDesc{};
+    //InitialDesc.pSysMem = pPixels;
+    //InitialDesc.SysMemPitch = 4 * TextureDesc.Width;
+
+    //if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, &InitialDesc, &pTexture2D)))
+    ////	return E_FAIL;
+
+    //D3D11_MAPPED_SUBRESOURCE	SubResource{};
+
+    /////* 텍스체에 값을 채운다. 수정 변경한다. */
+    //m_pContext->Map(m_pMaskTexture, 0, D3D11_MAP_READ_WRITE, 0, &SubResource);
+
+    //_uint* pMappedPixel = static_cast<_uint*>(SubResource.pData);
+
+    //for (size_t i = 0; i < TextureDesc.Height; i++)
+    //{
+    //	for (size_t j = 0; j < TextureDesc.Width; j++)
+    //	{
+    //		_uint		iIndex = i * TextureDesc.Width + j;
+
+    //		pMappedPixel[iIndex] = 0x00000000;
+    //	}
+    //}
+
+
+
+    //m_pContext->Unmap(m_pMaskTexture, 0);
+
+
+    //string strDataPath = "../Bin/DataFiles/Mask/MaskData";
+
+    //strDataPath = strDataPath + to_string(iFileIndex) + ".dds";
+
+    //_tchar		szLastPath[MAX_PATH] = {};
+
+    //MultiByteToWideChar(CP_ACP, 0, strDataPath.c_str(), static_cast<_int>(strlen(strDataPath.c_str())), szLastPath, MAX_PATH);
+
+    ///* 텍스쳐를 파일로 저장한다. */
+    //if (FAILED(SaveDDSTextureToFile(m_pContext, pTexture2D, szLastPath)))
+    //	return E_FAIL;
+
+    //Safe_Release(pTexture2D);
+
+    //Safe_Delete_Array(pPixels);
+
+    return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Make_MaskTexture(_vector vPickPos)
+{
+    D3D11_MAPPED_SUBRESOURCE	SubResource{};
+
+    /* 텍스체에 값을 채운다. 수정 변경한다. */
+    m_pContext->Map(m_pMaskTexture, 0, D3D11_MAP_READ_WRITE, 0, &SubResource);
+
+    _uint* pMappedPixel = static_cast<_uint*>(SubResource.pData);
+
+    //m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.0f, 0.0f, -150.0f, 1.0f)); -> TerrainPos
+
+
+    _uint		iIndex = ((_int)((XMVectorGetZ(vPickPos) + 150.f) * (256.f / 150.f)) * 256 + ((_int)(XMVectorGetX(vPickPos) - 30.f) * (256.f / 150.f)));
+
+    for (_int k = -m_fInstallRange; k < m_fInstallRange; k++)
+    {
+        if (iIndex + (k * 256) > 0 && iIndex + (k * 256) < 256 * 256)
+            pMappedPixel[iIndex + (k * 256)] = 0xffffffff;
+
+        for (_int j = -m_fInstallRange; j < m_fInstallRange; j++)
+        {
+            if ((iIndex + (k * 256) + j) > 0 && ((iIndex + (k * 256) + j) < 256 * 256))
+                pMappedPixel[iIndex + (k * 256) + j] = 0xffffffff;
+        }
+    }
+
+    m_pContext->Unmap(m_pMaskTexture, 0);
+
+    m_pContext->CopyResource(m_pCopyMaskTexture, m_pMaskTexture);
+
+    return S_OK;
+}
+
+
+
+HRESULT CLevel_GamePlay::Erase_MaskTexture(_vector vPickPos)
+{
+    D3D11_MAPPED_SUBRESOURCE	SubResource{};
+
+    /* 텍스체에 값을 채운다. 수정 변경한다. */
+    m_pContext->Map(m_pMaskTexture, 0, D3D11_MAP_READ_WRITE, 0, &SubResource);
+
+    _uint* pMappedPixel = static_cast<_uint*>(SubResource.pData);
+
+    //m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.0f, 0.0f, -150.0f, 1.0f)); -> TerrainPos
+
+
+    _uint		iIndex = ((_int)((XMVectorGetZ(vPickPos) + 150.f) * (256.f / 150.f)) * 256 + ((_int)(XMVectorGetX(vPickPos) - 30.f) * (256.f / 150.f)));
+
+    for (_int k = -m_fInstallRange; k < m_fInstallRange; k++)
+    {
+        if (iIndex + (k * 256) > 0 && iIndex + (k * 256) < 256 * 256)
+            pMappedPixel[iIndex + (k * 256)] = 0xff000000;
+
+        for (_int j = -m_fInstallRange; j < m_fInstallRange; j++)
+        {
+            if ((iIndex + (k * 256) + j) > 0 && ((iIndex + (k * 256) + j) < 256 * 256))
+                pMappedPixel[iIndex + (k * 256) + j] = 0xff000000;
+        }
+    }
+
+    m_pContext->Unmap(m_pMaskTexture, 0);
+
+    m_pContext->CopyResource(m_pCopyMaskTexture, m_pMaskTexture);
+
+    return S_OK;
+}
+
+
+HRESULT CLevel_GamePlay::Make_WaterMapTexture(_vector vPickPos)
+{
+    D3D11_MAPPED_SUBRESOURCE	SubResource{};
+
+    /* 텍스체에 값을 채운다. 수정 변경한다. */
+    m_pContext->Map(m_pWaterMapTexture, 0, D3D11_MAP_READ_WRITE, 0, &SubResource);
+
+    _uint* pMappedPixel = static_cast<_uint*>(SubResource.pData);
+
+    //m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.0f, 0.0f, -150.0f, 1.0f)); -> TerrainPos
+
+
+    _uint		iIndex = ((_int)((XMVectorGetZ(vPickPos) + 150.f) * (256.f / 150.f)) * 256 + ((_int)(XMVectorGetX(vPickPos) - 30.f) * (256.f / 150.f)));
+
+    for (_int k = -m_fInstallRange; k < m_fInstallRange; k++)
+    {
+        if (iIndex + (k * 256) > 0 && iIndex + (k * 256) < 256 * 256)
+            pMappedPixel[iIndex + (k * 256)] = 0xffffffff;
+
+        for (_int j = -m_fInstallRange; j < m_fInstallRange; j++)
+        {
+            if ((iIndex + (k * 256) + j) > 0 && ((iIndex + (k * 256) + j) < 256 * 256))
+                pMappedPixel[iIndex + (k * 256) + j] = 0xffffffff;
+        }
+    }
+
+    m_pContext->Unmap(m_pWaterMapTexture, 0);
+
+    m_pContext->CopyResource(m_pCopyWaterMapTexture, m_pWaterMapTexture);
+
+    return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Erase_WaterMapTexture(_vector vPickPos)
+{
+    D3D11_MAPPED_SUBRESOURCE	SubResource{};
+
+    /* 텍스체에 값을 채운다. 수정 변경한다. */
+    m_pContext->Map(m_pWaterMapTexture, 0, D3D11_MAP_READ_WRITE, 0, &SubResource);
+
+    _uint* pMappedPixel = static_cast<_uint*>(SubResource.pData);
+
+    //m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.0f, 0.0f, -150.0f, 1.0f)); -> TerrainPos
+
+
+    _uint		iIndex = ((_int)((XMVectorGetZ(vPickPos) + 150.f) * (256.f / 150.f)) * 256 + ((_int)(XMVectorGetX(vPickPos) - 30.f) * (256.f / 150.f)));
+
+    for (_int k = -m_fInstallRange; k < m_fInstallRange; k++)
+    {
+        if (iIndex + (k * 256) > 0 && iIndex + (k * 256) < 256 * 256)
+            pMappedPixel[iIndex + (k * 256)] = 0xff000000;
+
+        for (_int j = -m_fInstallRange; j < m_fInstallRange; j++)
+        {
+            if ((iIndex + (k * 256) + j) > 0 && ((iIndex + (k * 256) + j) < 256 * 256))
+                pMappedPixel[iIndex + (k * 256) + j] = 0xff000000;
+        }
+    }
+
+    m_pContext->Unmap(m_pWaterMapTexture, 0);
+
+    m_pContext->CopyResource(m_pCopyWaterMapTexture, m_pWaterMapTexture);
+
+    return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Save_MaskTexture(_int iFileIndex)
+{
+
+    string strDataPath = "E:/Github/Thymesia_MapTool_Test/Client/Bin/DataFiles/Mask/MaskData";
+
+    strDataPath = strDataPath + to_string(iFileIndex) + ".dds";
+
+    _tchar		szLastPath[MAX_PATH] = {};
+
+    MultiByteToWideChar(CP_ACP, 0, strDataPath.c_str(), static_cast<_int>(strlen(strDataPath.c_str())), szLastPath, MAX_PATH);
+
+    /* 텍스쳐를 파일로 저장한다. */
+    HRESULT hr = SaveDDSTextureToFile(m_pContext, m_pMaskTexture, szLastPath);
+
+    return hr;
+}
+
+
+HRESULT CLevel_GamePlay::Save_WaterMapTexture(_int iFileIndex)
+{
+
+    string strDataPath = "E:/Github/Thymesia_MapTool_Test/Client/Bin/DataFiles/Mask/WaterMapData";
+
+    strDataPath = strDataPath + to_string(iFileIndex) + ".dds";
+
+    _tchar		szLastPath[MAX_PATH] = {};
+
+    MultiByteToWideChar(CP_ACP, 0, strDataPath.c_str(), static_cast<_int>(strlen(strDataPath.c_str())), szLastPath, MAX_PATH);
+
+    /* 텍스쳐를 파일로 저장한다. */
+    HRESULT hr = SaveDDSTextureToFile(m_pContext, m_pWaterMapTexture, szLastPath);
+
+    return hr;
+}
+
+
+
+HRESULT CLevel_GamePlay::Load_MaskTexture(_int iFileIndex)
+{
+
+    string strDataPath = "E:/Github/Thymesia_MapTool_Test/Client/Bin/DataFiles/Mask/MaskData";
+
+    strDataPath = strDataPath + to_string(iFileIndex) + ".dds";
+
+    _tchar		szLastPath[MAX_PATH] = {};
+
+    MultiByteToWideChar(CP_ACP, 0, strDataPath.c_str(), static_cast<_int>(strlen(strDataPath.c_str())), szLastPath, MAX_PATH);
+
+
+    ID3D11Texture2D* pTempTexture = nullptr;
+    /* 텍스쳐를 파일로 저장한다. */
+    HRESULT hr = CreateDDSTextureFromFile(m_pDevice, szLastPath, (ID3D11Resource**)&pTempTexture, nullptr);
+
+    if (hr == E_FAIL)
+    {
+        MSG_BOX("Wrong_Path");
+
+        return hr;
+    }
+
+    m_pContext->CopySubresourceRegion(m_pMaskTexture, 0, 0, 0, 0, pTempTexture, 0, nullptr);
+
+    pTempTexture->Release();
+
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    hr = m_pContext->Map(m_pMaskTexture, 0, D3D11_MAP_READ, 0, &mappedResource);
+
+    D3D11_TEXTURE2D_DESC desc;
+    m_pMaskTexture->GetDesc(&desc);
+
+    if (SUCCEEDED(hr))
+    {
+        _uint rowPitch = mappedResource.RowPitch;
+        _uint pixelSize = 4;
+
+        for (_uint y = 0; y < desc.Height; y++)
+        {
+            memcpy(
+                m_pPixels + y * desc.Width,
+                (BYTE*)mappedResource.pData + y * rowPitch,
+                desc.Width * pixelSize
+            );
+        }
+    }
+
+    m_pContext->Unmap(m_pMaskTexture, 0);
+
+    m_pContext->CopyResource(m_pCopyMaskTexture, m_pMaskTexture);
+
+    return hr;
+}
+
+
+
+HRESULT CLevel_GamePlay::Load_WaterMapTexture(_int iFileIndex)
+{
+
+    string strDataPath = "E:/Github/Thymesia_MapTool_Test/Client/Bin/DataFiles/Mask/MaskData";
+
+    strDataPath = strDataPath + to_string(iFileIndex) + ".dds";
+
+    _tchar		szLastPath[MAX_PATH] = {};
+
+    MultiByteToWideChar(CP_ACP, 0, strDataPath.c_str(), static_cast<_int>(strlen(strDataPath.c_str())), szLastPath, MAX_PATH);
+
+
+    ID3D11Texture2D* pTempTexture = nullptr;
+    /* 텍스쳐를 파일로 저장한다. */
+    HRESULT hr = CreateDDSTextureFromFile(m_pDevice, szLastPath, (ID3D11Resource**)&pTempTexture, nullptr);
+
+    if (hr == E_FAIL)
+    {
+        MSG_BOX("Wrong_Path");
+
+        return hr;
+    }
+
+    m_pContext->CopySubresourceRegion(m_pWaterMapTexture, 0, 0, 0, 0, pTempTexture, 0, nullptr);
+
+    pTempTexture->Release();
+
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    hr = m_pContext->Map(m_pWaterMapTexture, 0, D3D11_MAP_READ, 0, &mappedResource);
+
+    D3D11_TEXTURE2D_DESC desc;
+    m_pWaterMapTexture->GetDesc(&desc);
+
+    if (SUCCEEDED(hr))
+    {
+        _uint rowPitch = mappedResource.RowPitch;
+        _uint pixelSize = 4;
+
+        for (_uint y = 0; y < desc.Height; y++)
+        {
+            memcpy(
+                m_pPixels + y * desc.Width,
+                (BYTE*)mappedResource.pData + y * rowPitch,
+                desc.Width * pixelSize
+            );
+        }
+    }
+
+    m_pContext->Unmap(m_pWaterMapTexture, 0);
+
+    m_pContext->CopyResource(m_pCopyWaterMapTexture, m_pWaterMapTexture);
+
+    return hr;
 }
 
 CLevel_GamePlay* CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -2315,4 +2872,14 @@ void CLevel_GamePlay::Free()
     for (auto& pSRV : m_vecGroundModelSRVs)
         Safe_Release(pSRV);
     m_vecGroundModelSRVs.clear();
+
+    Safe_Release(m_pMaskTexture);
+    Safe_Release(m_pCopyMaskTexture);
+    Safe_Release(m_pCopyMaskSRV);
+    Safe_Delete_Array(m_pPixels);
+
+    Safe_Release(m_pWaterMapTexture);
+    Safe_Release(m_pCopyWaterMapSRV);
+    Safe_Release(m_pCopyWaterMapTexture);
+    Safe_Delete_Array(m_pWaterMapPixels);
 }

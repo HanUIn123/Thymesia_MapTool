@@ -2,21 +2,21 @@
 
 #include "Shader.h"
 
-CTexture::CTexture(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
-	: CComponent { pDevice, pContext }
+CTexture::CTexture(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CComponent{ pDevice, pContext }
 {
 }
 
-CTexture::CTexture(const CTexture & Prototype)
-	: CComponent( Prototype )
-	, m_iNumSRVs { Prototype.m_iNumSRVs }
+CTexture::CTexture(const CTexture& Prototype)
+	: CComponent(Prototype)
+	, m_iNumSRVs{ Prototype.m_iNumSRVs }
 	, m_SRVs{ Prototype.m_SRVs }
 {
 	for (auto& pSRV : m_SRVs)
 		Safe_AddRef(pSRV);
 }
 
-HRESULT CTexture::Initialize_Prototype(const _tchar * pTextureFilePath, _uint iNumTextures)
+HRESULT CTexture::Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNumTextures)
 {
 	m_iNumSRVs = iNumTextures;
 
@@ -26,13 +26,13 @@ HRESULT CTexture::Initialize_Prototype(const _tchar * pTextureFilePath, _uint iN
 
 	for (size_t i = 0; i < m_iNumSRVs; i++)
 	{
-		ID3D11Texture2D*					pTexture2D = { nullptr };
-		ID3D11ShaderResourceView*			pSRV = { nullptr };
+		ID3D11Texture2D* pTexture2D = { nullptr };
+		ID3D11ShaderResourceView* pSRV = { nullptr };
 
 		_tchar			szTextureFilePath[MAX_PATH] = TEXT("");
 
 		wsprintf(szTextureFilePath, pTextureFilePath, i);
-		
+
 		HRESULT			hr = {};
 
 
@@ -55,26 +55,32 @@ HRESULT CTexture::Initialize_Prototype(const _tchar * pTextureFilePath, _uint iN
 
 		m_SRVs.push_back(pSRV);
 	}
-	
+
 	return S_OK;
 }
 
-HRESULT CTexture::Initialize(void * pArg)
+HRESULT CTexture::Initialize(void* pArg)
 {
 	return S_OK;
 }
 
-HRESULT CTexture::Bind_ShaderResource(CShader * pShader, const _char * pConstantName, _uint iIndex)
+HRESULT CTexture::Bind_ShaderResource(CShader* pShader, const _char* pConstantName, _uint iIndex)
 {
 	if (iIndex >= m_iNumSRVs)
 		return E_FAIL;
 
-	return pShader->Bind_SRV(pConstantName, m_SRVs[iIndex]);	
+	return pShader->Bind_SRV(pConstantName, m_SRVs[iIndex]);
 }
 
-CTexture * CTexture::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _tchar * pTextureFilePath, _uint iNumTextures)
+HRESULT CTexture::Bind_ShaderResources(CShader* pShader, const _char* pConstantName)
 {
-	CTexture*	pInstance = new CTexture(pDevice, pContext);
+
+	return pShader->Bind_SRVs(pConstantName, &m_SRVs.front(), m_iNumSRVs);
+}
+
+CTexture* CTexture::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pTextureFilePath, _uint iNumTextures)
+{
+	CTexture* pInstance = new CTexture(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype(pTextureFilePath, iNumTextures)))
 	{
@@ -85,9 +91,9 @@ CTexture * CTexture::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pConte
 	return pInstance;
 }
 
-CComponent * CTexture::Clone(void * pArg)
+CComponent* CTexture::Clone(void* pArg)
 {
-	CTexture*	pInstance = new CTexture(*this);
+	CTexture* pInstance = new CTexture(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{

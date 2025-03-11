@@ -23,7 +23,15 @@ HRESULT CTerrain::Initialize_Prototype()
 
 HRESULT CTerrain::Initialize(void* pArg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	TERRAINDESC* pDesc = static_cast<TERRAINDESC*>(pArg);
+
+	if (pDesc->pMaskTexture != nullptr)
+		m_pMaskTexture = pDesc->pMaskTexture;
+
+	if (pDesc->pWaterMapTexture != nullptr)
+		m_pWaterMapTexture = pDesc->pWaterMapTexture;
+
+	if (FAILED(__super::Initialize(nullptr)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -63,7 +71,7 @@ HRESULT CTerrain::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_bWireFrameMode ? m_pShaderCom->Begin(1) : m_pShaderCom->Begin(0);
+	m_bWireFrameMode ? m_pShaderCom->Begin(1) : m_pShaderCom->Begin(2);
 
 	//m_pShaderCom->Begin(0);
 
@@ -92,6 +100,14 @@ HRESULT CTerrain::Ready_Components()
 	/* Com_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain_Normal"),
+		TEXT("Com_NormalTexture"), reinterpret_cast<CComponent**>(&m_pTextureNormalCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain_ORM"),
+		TEXT("Com_ORMTexture"), reinterpret_cast<CComponent**>(&m_pTextureORMCom))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture__MouseRange
@@ -126,7 +142,19 @@ HRESULT CTerrain::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pGameInstance->Get_Transform_Float4x4(CPipeLine::D3DTS_PROJ))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResources(m_pShaderCom, "g_DiffuseTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pTextureNormalCom->Bind_ShaderResources(m_pShaderCom, "g_NormalTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pTextureORMCom->Bind_ShaderResources(m_pShaderCom, "g_ORMTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_SRV("g_MaskTexture", m_pMaskTexture)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_SRV("g_WaterMapTexture", m_pWaterMapTexture)))
 		return E_FAIL;
 
 	if (FAILED(m_pMouseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MouseTexture", 0)))
@@ -180,4 +208,6 @@ void CTerrain::Free()
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pMouseTextureCom);
+	Safe_Release(m_pTextureNormalCom);
+	Safe_Release(m_pTextureORMCom);
 }

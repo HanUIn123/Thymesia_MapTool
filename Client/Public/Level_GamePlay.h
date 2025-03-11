@@ -29,7 +29,7 @@ class CLevel_GamePlay final : public CLevel
 {
 public:
     enum IMGUI_TEXTURE_TYPE { IMG_ANIM_MODEL, IMG_NONANIM_MODEL, IMG_GROUND_MODEL, IMG_END };
-    enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI, MT_GROUND, MT_HEIGHT, MT_END };
+    enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI, MT_GROUND, MT_HEIGHT, MT_TERRAIN_MASK, MT_WATER_MASK, MT_END };
 public:
     struct CELL_POINTS
     {
@@ -43,6 +43,23 @@ public:
         _float3 fPosition;
         CObject* pObject;
     }MESHPOS;
+
+
+    typedef struct Monster_Index_Info
+    {
+        vector<_float4> vMonsterPos;
+        _int            iMonsterIndex;
+    }MONSTERINDEXINFO;
+
+    enum MonsterType
+    {
+        VILLAGER_M,
+        VILLAGER_F,
+        KNIGHT_SWORD,
+        KNIGHT_SPEAR,
+        BOSS_JOKER,
+        BOSS_VARG,
+    };
 
 private:
     CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -96,6 +113,7 @@ private:
 
     HRESULT								Save_Objects();
     HRESULT								Load_Objects();
+    HRESULT                             Save_Monster_Index();
     void	                            OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName);
 
     HRESULT                             Save_HeightMap();
@@ -124,6 +142,16 @@ private:
 private:
     HRESULT                             Show_MouseRange(MENU_TYPE _eMenuType, _float _fTimeDelta);
 
+private:
+    HRESULT                                 Ready_TerrainMasking();
+    HRESULT		                            Make_MaskTexture(_vector vPickPos);
+    HRESULT                                 Erase_MaskTexture(_vector vPickPos);
+    HRESULT                                 Make_WaterMapTexture(_vector vPickPos);
+    HRESULT                                 Erase_WaterMapTexture(_vector vPickPos);
+    HRESULT                                 Save_MaskTexture(_int iFileIndex);
+    HRESULT                                 Save_WaterMapTexture(_int iFileIndex);
+    HRESULT                                 Load_MaskTexture(_int iFileIndex);
+    HRESULT                                 Load_WaterMapTexture(_int iFileIndex);
 
 private:
     _uint                               m_iNumCellCount = {};
@@ -148,6 +176,8 @@ private:
     _bool								m_bNaviMenuSelected = { false };
     _bool								m_bGrondMenuSelected = { false };
     _bool                               m_bTerrainHeightSelected = { false };
+    _bool                               m_bTerrainMaskSelected = { false };
+    _bool                               m_bTerrainWaterMaskSelected = { false };
 
 
     _bool								m_bIsMeshPickingMode = { false };
@@ -521,8 +551,35 @@ private:
 private:
     _float                                  m_fTerrainHeightSetting = { 0.f };
 
+    _int								    m_fMonsterIndex = { 0 };
+
+    _float                                  m_vMonsterPos[4] = { 0.f, 0.f, 0.f, 1.f };
+
+
+    MONSTERINDEXINFO                        m_MonsterInfo = {};
+
+    vector<MONSTERINDEXINFO>                m_MonsterInfos;
+
+    _int				                    m_iMaskTextureIndex = { 0 };
+
+    ID3D11Texture2D* m_pMaskTexture = { nullptr };
+
+    ID3D11Texture2D* m_pCopyMaskTexture = { nullptr };
+    ID3D11ShaderResourceView* m_pCopyMaskSRV = { nullptr };
+
+
+    ID3D11Texture2D* m_pWaterMapTexture = { nullptr };
+
+    ID3D11Texture2D* m_pCopyWaterMapTexture = { nullptr };
+    ID3D11ShaderResourceView* m_pCopyWaterMapSRV = { nullptr };
+
+
+
+    _uint* m_pPixels = { nullptr };
+    _uint* m_pWaterMapPixels = { nullptr };
+
 public:
-    static CLevel_GamePlay*                 Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual void                            Free() override;
 };
 

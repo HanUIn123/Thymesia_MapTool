@@ -31,10 +31,10 @@
 
 
 
-CLoader::CLoader(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
 	, m_pContext{ pContext }
-	, m_pGameInstance { CGameInstance::GetInstance()}
+	, m_pGameInstance{ CGameInstance::GetInstance() }
 {
 	Safe_AddRef(m_pGameInstance);
 	Safe_AddRef(m_pContext);
@@ -43,7 +43,7 @@ CLoader::CLoader(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 
 _uint APIENTRY Thread_Main(void* pArg)
 {
-	CLoader*		pLoader = static_cast<CLoader*>(pArg);
+	CLoader* pLoader = static_cast<CLoader*>(pArg);
 
 	pLoader->Start_Loading();
 
@@ -128,7 +128,7 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	/* For.Prototype_GameObject_BackGround */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_GameObject_BackGround"),
 		CBackGround::Create(m_pDevice, m_pContext))))
-		return E_FAIL;	
+		return E_FAIL;
 
 	/* 로딩이 완료되었습ㄴ미다 */
 	lstrcpyW(m_szLoadingText, TEXT("로딩끝."));
@@ -144,29 +144,37 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	lstrcpyW(m_szLoadingText, TEXT("게임플레이레벨을 위한 자원을 로딩 중입니다."));
 
 	// 초기 설정을 위한 트랜스폼 
-	_matrix PreTransformMatrix = XMMatrixIdentity();	
+	_matrix PreTransformMatrix = XMMatrixIdentity();
 
 #pragma region 지형
 	lstrcpyW(m_szLoadingText, TEXT("텍스쳐 원형을 생성한다."));
 	/* For.Prototype_Component_Texture_Terrain*/
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/T_GroundMud_BC.png"), 1))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/T_Terrain_%d.dds"), 2))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain_Normal"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/T_Terrain_Nor_%d.dds"), 2))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain_ORM"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/T_Terrain_ORM_%d.dds"), 2))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture__MouseRange"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/MouseRange.png"), 1))))
 		return E_FAIL;
-	
+
 	lstrcpyW(m_szLoadingText, TEXT("터레인 컴포넌트 생성"));
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain")
-		, CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 150, 150, 1, nullptr, TEXT("../Bin/DataFiles/ObjectData/TerrainHeight10.txt")))))
+		, CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 150, 150, 1, nullptr, TEXT("../Bin/DataFiles/HeightData/TerrainHeight12.txt")))))
 		return E_FAIL;
 
 
 	/* For.Prototype_GameObject_Terrain */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Terrain"),	
-		CTerrain::Create(m_pDevice, m_pContext))))		
-		return E_FAIL;	
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Terrain"),
+		CTerrain::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 #pragma endregion 
 
 
@@ -219,7 +227,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 
 	/* For.Prototype_Component_Shader_Shader_VtxMeshNoDefferd */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VtxMeshNoDefferd"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMeshNoDefferd.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))	
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMeshNoDefferd.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_VtxAnimMesh */
@@ -228,9 +236,9 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_VtxAnimMeshNoDefferd */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VtxAnimMeshNoDefferd"),	
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMeshNoDefferd.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))	
-		return E_FAIL;	
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VtxAnimMeshNoDefferd"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMeshNoDefferd.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+		return E_FAIL;
 
 
 	/* For.Prototype_Component_Shader_VtxPosTex */
@@ -248,6 +256,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxPointInstance.hlsl"), VTX_POINT_INSTANCE::Elements, VTX_POINT_INSTANCE::iNumElements))))
 		return E_FAIL;
 
+	//Prototype_Component_Texture__MouseRange
 #pragma endregion 
 
 
@@ -286,24 +295,24 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 #pragma endregion 
 
 #pragma region Navigation 
-	//lstrcpyW(m_szLoadingText, TEXT("네비게이션 원형을 생성한다."));	
-	///* For.Prototype_Component_Navigation */	
-	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),	
-	//	CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/DataFiles/NavigationData/TestNavigation5.txt")))))	
-	//	return E_FAIL;	
+	lstrcpyW(m_szLoadingText, TEXT("네비게이션 원형을 생성한다."));
+	///* For.Prototype_Component_Navigation */	sssss
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
+		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/DataFiles/NavigationData/TestNavigation6.txt")))))
+		return E_FAIL;	/*
 	lstrcpyW(m_szLoadingText, TEXT("네비게이션 원형을 생성한다."));
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), CNavigation::CreateOnly(m_pDevice, m_pContext))))
-		return E_FAIL;
+		return E_FAIL;*/
 #pragma endregion 
 
 #pragma region Collider
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"),
-		CCollider::Create(m_pDevice, m_pContext,CCollider::TYPE_AABB))))	
+		CCollider::Create(m_pDevice, m_pContext, CCollider::TYPE_AABB))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_SPHERE"),
-		CCollider::Create(m_pDevice, m_pContext, CCollider::TYPE_SPHERE))))	
+		CCollider::Create(m_pDevice, m_pContext, CCollider::TYPE_SPHERE))))
 		return E_FAIL;
 
 #pragma endregion
@@ -317,22 +326,22 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 #pragma endregion
 
 #pragma region 티메시아 캐릭터 
-	lstrcpyW(m_szLoadingText, TEXT("티메시아 모델을 생성한다."));	
+	lstrcpyW(m_szLoadingText, TEXT("티메시아 모델을 생성한다."));
 	/* For.Prototype_Component_Model_Kaku*/
-	PreTransformMatrix = /*XMMatrixScaling(0.015f, 0.015f, 0.015f) **/ XMMatrixRotationY(XMConvertToRadians(180.f));		
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Corner"),	
+	PreTransformMatrix = /*XMMatrixScaling(0.015f, 0.015f, 0.015f) **/ XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Corner"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Thymesia/realtest.fbx", CModel::MODEL_ANIM, PreTransformMatrix))))
-		return E_FAIL;		
+		return E_FAIL;
 
 	///* For.Prototype_GameObject_Body_Player */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Body_Player"),	
-		CBody_Player::Create(m_pDevice, m_pContext))))	
-		return E_FAIL;	
-	
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Body_Player"),
+		CBody_Player::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	///* For.Prototype_GameObject_Player */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Player"),	
-		CPlayer::Create(m_pDevice, m_pContext))))	
-		return E_FAIL;	
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Player"),
+		CPlayer::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 #pragma endregion 
 
@@ -442,7 +451,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		return E_FAIL;
 
 
- 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_T_P_BossRoomVines01"),
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_T_P_BossRoomVines01"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/P_BossRoomVines01/P_BossRoomVines01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
@@ -463,7 +472,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/P_BossAtriumCircleRailing_Top01/P_BossAtriumCircleRailing_Top01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
- 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_P_BossAtriumCircleRailing_Up01"),
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_P_BossAtriumCircleRailing_Up01"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/P_BossAtriumCircleRailing_Up01/P_BossAtriumCircleRailing_Up01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
@@ -494,7 +503,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_Debris_02a"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Debris_02a/SM_Debris_02a.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
-		
+
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_Scafold_01b"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Scafold_01b/SM_Scafold_01b.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
@@ -778,7 +787,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_fence_30"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Fences/SM_fence_30.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
-	
+
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_fence_31"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Fences/SM_fence_31.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
@@ -1135,7 +1144,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_11"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_11.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
-	
+
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_tombstone_14"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/TombStones/SM_tombstone_14.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
@@ -1277,7 +1286,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_"),
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
 	//	return E_FAIL;
-	
+
 #pragma endregion
 
 
@@ -1360,14 +1369,14 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 
 #pragma endregion 
 	/* 로딩이 완료되었습ㄴ미다 */
-	lstrcpyW(m_szLoadingText, TEXT("로딩끝."));	
+	lstrcpyW(m_szLoadingText, TEXT("로딩끝."));
 	m_isFinished = true;
 	return S_OK;
 }
 
-CLoader * CLoader::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, LEVELID eNextLevelID)
+CLoader* CLoader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVELID eNextLevelID)
 {
-	CLoader*	pInstance = new CLoader(pDevice, pContext);
+	CLoader* pInstance = new CLoader(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize(eNextLevelID)))
 	{
