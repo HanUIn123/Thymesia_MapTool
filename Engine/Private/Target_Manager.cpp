@@ -115,6 +115,25 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DepthStencilView* _pDSV)
     return S_OK;
 }
 
+HRESULT CTarget_Manager::Bind_ShaderResource(const _wstring& _strRenderTargetTag, CShader* _pShader, const _char* _pConstantName)
+{
+    CRenderTarget* pRenderTarget = Find_RenderTarget(_strRenderTargetTag);
+
+    if (nullptr == pRenderTarget)
+        return E_FAIL;
+
+    return pRenderTarget->Bind_ShaderResource(_pShader, _pConstantName);
+}
+
+HRESULT CTarget_Manager::Copy_TextureResource(const _wstring& _strRenderTargetTag, ID3D11Texture2D* _pTexture2D)
+{
+    CRenderTarget* pRenderTarget = Find_RenderTarget(_strRenderTargetTag);
+    if (nullptr == pRenderTarget)
+        return E_FAIL;
+
+    return pRenderTarget->Copy_TextureResource(_pTexture2D);
+}
+
 HRESULT CTarget_Manager::Ready_RT_Debug(const _wstring& strRenderTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
 {
     CRenderTarget* pRenderTarget = Find_RenderTarget(strRenderTargetTag);

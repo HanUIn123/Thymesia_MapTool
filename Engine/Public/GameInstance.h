@@ -116,6 +116,9 @@ public:
 	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strRenderTargetTag);	
 	HRESULT Begin_MRT(const _wstring& strMRTTag, _bool isClear = true, ID3D11DepthStencilView* pDSV = nullptr);
 	HRESULT End_MRT(ID3D11DepthStencilView* _pDSV = nullptr);
+
+	HRESULT         Bind_RenderTarget_ShaderResource(const _wstring& _strRenderTargetTag, class CShader* _pShader, const _char* _pConstantName);
+	HRESULT         Copy_RenderTarget_TextureResource(const _wstring& _strRenderTargetTag, ID3D11Texture2D* _pTexture2D);
 #ifdef _DEBUG
 public:
 	HRESULT Ready_RT_Debug(const _wstring& strRenderTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
@@ -185,6 +188,9 @@ public:
 	HRESULT Bind_Shadow_Matrices(class CShader* pShader, const _char* pViewConstantName, const _char* pProjConstantName);
 #pragma endregion
 
+#pragma region PICKING
+	_bool								Compute_PickPos(_float3* _pOut);
+#pragma endregion
 
 
 
@@ -211,6 +217,8 @@ private:
 	class CFrustum*						m_pFrustum            = { nullptr };
 	class CItemMgr*						m_pItemMgr            = { nullptr };
 	class CShadow*						m_pShadow             = { nullptr };
+	class CPicking*						m_pPicking			  = { nullptr };
+
 
 public:
 	void Release_Engine();

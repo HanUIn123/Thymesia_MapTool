@@ -94,6 +94,9 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_5.png"), IMG_NONANIM_MODEL, 1);
     //Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_%d.png"), IMG_GROUND_MODEL, 6);
 
+    //=============================================================================================================================
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/TempCollider/TempCollider%d.png"), IMG_TRIGGER_OBJECT, 1);
+
 
     /*
 
@@ -150,6 +153,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainHeightSelected = false;
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
+        m_bTriggerObjectMenuSelected = false;
         m_iNonAnimModelIndex = -1;
     }
     if (ImGui::RadioButton("ANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_ANIMMODEL))
@@ -161,6 +165,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainHeightSelected = false;
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
+        m_bTriggerObjectMenuSelected = false;
     }
     if (ImGui::RadioButton("NAVIGATION_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_NAVI))
     {
@@ -171,6 +176,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainHeightSelected = false;
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
+        m_bTriggerObjectMenuSelected = false;
     }
     if (ImGui::RadioButton("GROUND_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_GROUND))
     {
@@ -181,6 +187,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainHeightSelected = false;
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
+        m_bTriggerObjectMenuSelected = false;
     }
     if (ImGui::RadioButton("TERRAIN_HEIGHT", &iMenuTypeNumber, MENU_TYPE::MT_HEIGHT))
     {
@@ -191,6 +198,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bAnimObjectMenuSelected = false;
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
+        m_bTriggerObjectMenuSelected = false;
     }
 
     if (ImGui::RadioButton("TERRAIN_MASK", &iMenuTypeNumber, MENU_TYPE::MT_TERRAIN_MASK))
@@ -202,6 +210,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bAnimObjectMenuSelected = false;
         m_bTerrainMaskSelected = true;
         m_bTerrainWaterMaskSelected = false;
+        m_bTriggerObjectMenuSelected = false;
     }
 
 
@@ -214,6 +223,19 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bAnimObjectMenuSelected = false;
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = true;
+        m_bTriggerObjectMenuSelected = false;
+    }
+
+    if (ImGui::RadioButton("TRIGGER OBJECT PICKING", &iMenuTypeNumber, MENU_TYPE::MT_TRIGGER))
+    {
+        m_bTriggerObjectMenuSelected = true;
+        m_bTerrainHeightSelected = false;
+        m_bGrondMenuSelected = false;
+        m_bNaviMenuSelected = false;
+        m_bNonAnimObjectMenuSelected = false;
+        m_bAnimObjectMenuSelected = false;
+        m_bTerrainWaterMaskSelected = false;
+        m_bTerrainMaskSelected = false;
     }
 
     if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)
@@ -335,9 +357,12 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     }
     else if (m_bNaviMenuSelected)
     {
-        if (m_pGameInstance->isMouseEnter(DIM_LB))
+        if (!IO.WantCaptureMouse)
         {
-            Picking_Points();
+            if (m_pGameInstance->isMouseEnter(DIM_LB))
+            {
+                Picking_Points();
+            }
         }
     }
     else if (m_bGrondMenuSelected)
@@ -360,7 +385,6 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         }
         else if (m_pGameInstance->isMouseEnter(DIM_RB))
         {
-            //Delete_GroundObjects();
         }
     }
     else if (m_bTerrainHeightSelected)
@@ -391,6 +415,66 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
             }
         }
 
+    }
+    else if (m_bTriggerObjectMenuSelected)
+    {
+        if (!IO.WantCaptureMouse)
+        {
+            if (m_pGameInstance->isMouseEnter(DIM_LB))
+            {
+                if (m_bIsMeshPickingMode)
+                {
+                    vector<Mesh_Pos> vMesh;
+
+                    for (auto& pObject : m_Objects)
+                    {
+                        CObject::MESHINFO pInfo;
+
+                        if (pObject != nullptr && pObject->Picking_Objects(pInfo))
+                        {
+                            Mesh_Pos vPos{};
+                            vPos.fPosition = pInfo.fPosition;
+                            vPos.fDist = pInfo.fDist;
+                            vPos.pObject = pObject;
+
+                            vMesh.push_back(vPos);
+                        }
+                    }
+
+                    if (vMesh.size() != 0)
+                    {
+                        sort(vMesh.begin(), vMesh.end(), [](Mesh_Pos a, Mesh_Pos b) {
+                            if (a.fDist < b.fDist) return true;
+                            else
+                                return false;
+                            });
+
+                        _float3 fPos = { 0.f ,0.f ,0.f };
+
+                        fPos = vMesh.front().fPosition;
+
+                        m_fMeshPickPos = fPos;
+
+                        m_fObjectPos[0] = fPos.x;
+
+                        m_fObjectPos[1] = fPos.y;
+
+                        m_fObjectPos[2] = fPos.z;
+
+                        Add_TriggerObjects();
+
+                    }
+                }
+                else if (m_bIsTerrainPickingMode)
+                {
+                    if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_TRIGGER)))
+                    {
+                        Add_TriggerObjects();
+                    }
+                }
+
+            }
+        }
     }
 
 
@@ -486,6 +570,17 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
         if (ImGui::Button("Load_Height"))
             Load_HeightMap();
+    }
+
+
+    if (iMenuTypeNumber == MENU_TYPE::MT_TRIGGER)
+    {
+        if (ImGui::Button("Save_Trigger"))
+            Save_TriggerObjects();
+        ImGui::SameLine();
+
+        if (ImGui::Button("Load Trigger"))
+            Load_TriggerObjects();
     }
 
     ImGui::Checkbox("Creating NaviTerritory", &m_bFinishPickingNavi_InCurrentFloor);
@@ -640,6 +735,9 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     if (m_bGrondMenuSelected)
         Setting_GroundObjectList();
+
+    if (m_bTriggerObjectMenuSelected)
+        Setting_TriggerObjects();
 
     /* if (m_bGroundObjectMouseState)
          Update_InstanceMove();*/
@@ -805,6 +903,9 @@ HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageF
                 break;
             case IMG_GROUND_MODEL:
                 m_vecGroundModelSRVs.push_back(pSRV);
+                break;
+            case IMG_TRIGGER_OBJECT:
+                m_vecTriggerObjectSRVs.push_back(pSRV);
                 break;
             }
         }
@@ -1160,48 +1261,6 @@ void CLevel_GamePlay::Add_GroundObjects()
     }
 }
 
-void CLevel_GamePlay::Delete_GroundObjects()
-{
-    vector<CEnvironmentObject*> vecObjectsToRemove;
-
-    for (auto& pEnvironment : m_EnvironmentObjects)
-    {
-        vector<VTX_MODEL_INSTANCE>& vecInstanceData = pEnvironment->Get_ModelInstanceVector();
-
-        for (auto iter = vecInstanceData.rbegin(); iter != vecInstanceData.rend();)
-        {
-            if (
-                (*iter).InstanceMatrix[3].x == m_fPickPos.x &&
-                (*iter).InstanceMatrix[3].y == m_fPickPos.y &&
-                (*iter).InstanceMatrix[3].z == m_fPickPos.z
-                )
-            {
-                iter = decltype(iter)(vecInstanceData.erase((iter + 1).base()));
-
-                m_pGameInstance->Add_DeadObject(L"Layer_GroundObject", pEnvironment);
-            }
-            else
-            {
-                ++iter;
-            }
-        }
-
-        if (vecInstanceData.empty())
-        {
-            vecObjectsToRemove.push_back(pEnvironment);
-        }
-    }
-
-    for (auto& pObj : vecObjectsToRemove)
-    {
-        auto it = find(m_EnvironmentObjects.begin(), m_EnvironmentObjects.end(), pObj);
-        if (it != m_EnvironmentObjects.end())
-        {
-            m_EnvironmentObjects.erase(it);
-        }
-    }
-}
-
 void CLevel_GamePlay::Setting_GroundObjectList()
 {
     if (ImGui::CollapsingHeader("Ground Model List"))
@@ -1457,6 +1516,71 @@ void CLevel_GamePlay::Set_Terrain_Height(_float _fHeight)
     }
 }
 
+void CLevel_GamePlay::Add_TriggerObjects()
+{
+    if (m_iTempColliderListIndex == -1)
+        return;
+
+    CTempCollider::TC_DESC Desc{};
+
+    Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
+    Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
+    Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
+
+    CTempCollider* pTempCollider = reinterpret_cast<CTempCollider*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_TempColliderObject"), LEVEL_GAMEPLAY, TEXT("Layer_TriggerObject"), &Desc));
+
+    if (pTempCollider != nullptr)
+        m_vecTempColliderObjects.push_back(pTempCollider);
+}
+
+void CLevel_GamePlay::Setting_TriggerObjects()
+{
+    if (ImGui::CollapsingHeader("Trigger List"))
+    {
+        m_iNonMoveObjectListIndex = 1;
+
+        const char* szItems[] = { "Trigger List" };
+
+        static int iCurrentItem = 0;
+        ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
+
+        for (_uint i = 0; i < 2; ++i)
+        {
+            _uint  iTextureIndex = iCurrentItem * 3 + i;
+
+            if (iTextureIndex < m_vecTriggerObjectSRVs.size())
+            {
+                if (ImGui::ImageButton(("Trigger Object" + to_string(iTextureIndex)).c_str(), (ImTextureID)m_vecTriggerObjectSRVs[iTextureIndex], ImVec2(50.0f, 50.0f)))
+                {
+                    m_iTempColliderListIndex = iTextureIndex;
+                }
+
+                if ((i + 1) % 4 != 0)
+                {
+                    ImGui::SameLine();
+                }
+            }
+        }
+    }
+    else if (ImGui::CollapsingHeader("Grave_Stone Model List"))
+    {
+        m_iNonMoveObjectListIndex = 2;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectGraveStoneNames, IM_ARRAYSIZE(m_strGroundObjectGraveStoneNames)))
+        {
+            m_iNonAnimModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectGraveStoneNames[m_iNonAnimModelIndex];
+        }
+    }
+}
+
 void CLevel_GamePlay::Update_InstanceObjects()
 {
     ImGui::Begin("Instanced Ground Objects", NULL, ImGuiWindowFlags_MenuBar);
@@ -1499,8 +1623,6 @@ void CLevel_GamePlay::Update_InstanceObjects()
 
                         if (m_pGameInstance->isKeyEnter(DIK_Z))
                         {
-
-
                             XMVECTOR vCurrentPosition = XMLoadFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex]);
                             XMVECTOR vCurrentScale = XMLoadFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex]);
                             XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
@@ -1556,6 +1678,49 @@ void CLevel_GamePlay::Update_InstanceObjects()
             }
             ImGui::Separator();
         }
+
+        if (m_bGrondMenuSelected)
+        {
+            if (m_pGameInstance->isMouseEnter(DIM_RB))
+            {
+                _float3 vPickedPos;
+                if (m_pGameInstance->Compute_PickPos(&vPickedPos))
+                {
+                    _uint iClosestInstanceIndex = -1;
+                    _float fMinDistance = FLT_MAX;
+                    CGroundObject* pClosestObject = nullptr;
+
+                    for (auto& pEnvironmentObject : m_EnvironmentObjects)
+                    {
+                        CGroundObject* pGroundObject = dynamic_cast<CGroundObject*>(pEnvironmentObject);
+                        if (!pEnvironmentObject)
+                            continue;
+
+                        for (_uint i = 0; i < pGroundObject->Get_InstanceCount(); ++i)
+                        {
+                            XMFLOAT3 fInstancePos = pGroundObject->Get_InstancePosition()[i];
+
+                            _float fDistance = sqrtf(
+                                pow(fInstancePos.x - vPickedPos.x, 2) +
+                                pow(fInstancePos.y - vPickedPos.y, 2) +
+                                pow(fInstancePos.z - vPickedPos.z, 2)
+                            );
+
+                            if (fDistance < fMinDistance)
+                            {
+                                fMinDistance = fDistance;
+                                iClosestInstanceIndex = i;
+                                pClosestObject = pGroundObject;
+                            }
+                        }
+                    }
+
+                    if (nullptr != pClosestObject && iClosestInstanceIndex != -1)
+                        pClosestObject->Delete_InstanceObject(iClosestInstanceIndex);
+                }
+            }
+        }
+      
     }
     ImGui::End();
 }
@@ -1917,6 +2082,91 @@ void CLevel_GamePlay::OpenFileDialoge(const _tchar* _pDefaultFileName, const _tc
     }
 }
 
+HRESULT CLevel_GamePlay::Save_TriggerObjects()
+{
+    wstring fileName;
+    OpenFileDialoge(L"TriggerObject.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Create TriggerData File!");
+        return E_FAIL;
+    }
+
+    DWORD dwByte = 0;
+
+    _uint iTriggerObjectCount = static_cast<_uint>(m_vecTempColliderObjects.size());
+    WriteFile(hFile, &iTriggerObjectCount, sizeof(_uint), &dwByte, nullptr);
+
+
+    for (auto& pTriggerObject : m_vecTempColliderObjects)
+    {
+        if (nullptr != pTriggerObject)
+        {
+            CTempCollider::TC_INFO tagInfo = pTriggerObject->Get_Info();
+            WriteFile(hFile, &tagInfo.fPosition, sizeof(_float4), &dwByte, nullptr);
+            WriteFile(hFile, &tagInfo.fRotation, sizeof(_float3), &dwByte, nullptr);
+            WriteFile(hFile, &tagInfo.fScale, sizeof(_float3), &dwByte, nullptr);
+
+        }
+    }
+
+    MSG_BOX("Success Save");
+    CloseHandle(hFile);
+
+    return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Load_TriggerObjects()
+{
+    wstring fileName;
+    OpenFileDialoge(L"TriggerObjectData.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Load TriggerObjectData File!");
+        return E_FAIL;
+    }
+
+    for (auto& pTempColliders : m_vecTempColliderObjects)
+    {
+        m_pGameInstance->Add_DeadObject(L"Layer_TriggerObject", pTempColliders);
+    }
+    m_vecTempColliderObjects.clear();
+
+    DWORD dwByte = 0;
+
+    _uint iSize = 0;
+    ReadFile(hFile, &iSize, sizeof(_uint), &dwByte, nullptr);
+
+    m_vecTempColliderObjects.resize(iSize);
+
+    CTempCollider::TC_INFO Info = {  };
+    for (size_t i = 0; i < iSize; i++)
+    {
+        CTempCollider::TC_DESC Desc{};
+        //
+        ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fRotation, sizeof(_float3), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte, nullptr);
+
+        CTempCollider* pTempCollider = reinterpret_cast<CTempCollider*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_TempColliderObject"), LEVEL_GAMEPLAY, TEXT("Layer_TriggerObject"), &Desc));
+
+        if (nullptr != pTempCollider)
+            m_vecTempColliderObjects.push_back(pTempCollider);
+    }
+
+    return S_OK;
+}
+
 HRESULT CLevel_GamePlay::Save_HeightMap()
 {
     wstring fileName;
@@ -2222,13 +2472,13 @@ XMFLOAT3 CLevel_GamePlay::Compute_Closest_Point(const vector<XMFLOAT3>& vAllpoin
         if (point.x == point2.x && point.y == point2.y && point.z == point2.z)
             continue;
 
-        _float dist1 = Compute_Cell_Distance(point, point1);
-        _float dist2 = Compute_Cell_Distance(point, point2);
-        _float totalDist = dist1 + dist2;
+        _float fDist1 = Compute_Cell_Distance(point, point1);
+        _float fDist2 = Compute_Cell_Distance(point, point2);
+        _float fTotalDist = fDist1 + fDist2;
 
-        if (totalDist < fMinDistance)
+        if (fTotalDist < fMinDistance)
         {
-            fMinDistance = totalDist;
+            fMinDistance = fTotalDist;
             closestPoint = point;
         }
     }
@@ -2734,7 +2984,7 @@ HRESULT CLevel_GamePlay::Save_WaterMapTexture(_int iFileIndex)
 HRESULT CLevel_GamePlay::Load_MaskTexture(_int iFileIndex)
 {
 
-    string strDataPath = "E:/Github/Thymesia_MapTool_Test/Client/Bin/DataFiles/Mask/MaskData";
+    string strDataPath = "../Bin/DataFiles/Mask/MaskData";
 
     strDataPath = strDataPath + to_string(iFileIndex) + ".dds";
 
@@ -2872,6 +3122,10 @@ void CLevel_GamePlay::Free()
     for (auto& pSRV : m_vecGroundModelSRVs)
         Safe_Release(pSRV);
     m_vecGroundModelSRVs.clear();
+
+    for (auto& pSRV : m_vecTriggerObjectSRVs)
+        Safe_Release(pSRV);
+    m_vecTriggerObjectSRVs.clear();
 
     Safe_Release(m_pMaskTexture);
     Safe_Release(m_pCopyMaskTexture);

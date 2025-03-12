@@ -19,6 +19,9 @@ public:
 	HRESULT Begin_MRT(const _wstring& strMRTTag, _bool isClear = true, ID3D11DepthStencilView* pDSV = nullptr);	
 	HRESULT End_MRT(ID3D11DepthStencilView* _pDSV = nullptr);		
 
+	HRESULT	Bind_ShaderResource(const _wstring& _strRenderTargetTag, class CShader* _pShader, const _char* _pConstantName);
+	HRESULT	Copy_TextureResource(const _wstring& _strRenderTargetTag, ID3D11Texture2D* _pTexture2D);
+
 #ifdef _DEBUG
 public:
 	HRESULT Ready_RT_Debug(const _wstring& strRenderTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);

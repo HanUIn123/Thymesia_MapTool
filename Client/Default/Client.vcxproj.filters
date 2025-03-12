@@ -88,6 +88,9 @@
     <Filter Include="990.TempManager">
       <UniqueIdentifier>{c426b426-a284-453b-887b-e8332921b10a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\TempCollider">
+      <UniqueIdentifier>{2abf03a7-be9f-443d-980f-402cea0c0d16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -192,6 +195,9 @@
     <ClInclude Include="..\public\MainApp.h">
       <Filter>01.Level</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\TempCollider.h">
+      <Filter>02.GameObject\TempCollider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -283,6 +289,9 @@
     </ClCompile>
     <ClCompile Include="Client.cpp">
       <Filter>98.Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TempCollider.cpp">
+      <Filter>02.GameObject\TempCollider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

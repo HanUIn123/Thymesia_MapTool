@@ -54,6 +54,13 @@ HRESULT CRenderTarget::Bind_ShaderResource(CShader* pShader, const _char* pConst
     return pShader->Bind_SRV(pConstantName, m_pSRV);    
 }
 
+HRESULT CRenderTarget::Copy_TextureResource(ID3D11Texture2D* _pTexture2D)
+{
+    m_pContext->CopyResource(_pTexture2D, m_pTexture2D);
+
+    return S_OK;
+}
+
 HRESULT CRenderTarget::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
     _uint           iNumViewports = { 1 };

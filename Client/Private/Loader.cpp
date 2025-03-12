@@ -27,6 +27,7 @@
 
 #pragma region 테스트용 사다리
 #include "Ladder.h"
+#include "TempCollider.h"
 #pragma endregion
 
 
@@ -604,7 +605,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Curb/SM_curb_08.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_curb_09"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Curb/SM_curb_09.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Curb/SM_curb_09.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_P_Cloth01"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/Clothes/P_Cloth01.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
@@ -1014,7 +1015,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_Fence_04"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Woods/SM_Fence_04.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_Woods/SM_Fence_04.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SM_Wall_Combined_03"),
@@ -1314,7 +1315,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	//	return E_FAIL;
 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House3"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House_3/House_3.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/GroundObjects/House_3/House_3.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
 	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_House5"),
@@ -1327,6 +1328,12 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		return E_FAIL;
 #pragma endregion
 
+
+#pragma region
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_TempColliderObject"),
+		CTempCollider::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+#pragma endregion
 
 
 

@@ -40,5 +40,12 @@ namespace Engine
 		MAXCHANNEL = 32,
 	};
 	
+	enum class TRIGGER_TYPE
+	{
+		TT_FADE_IN,
+		TT_FADE_OUT,
+		TT_INTERACTION,
+		TT_END
+	};
 }
 #endif // Engine_Enum_h__
