@@ -15,6 +15,7 @@ public:
 	HRESULT Initialize(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4 & vClearColor);	
 	void Clear();
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName);
+	HRESULT Copy_TextureResource(ID3D11Texture2D* _pTexture2D);
 
 public:
 	ID3D11RenderTargetView* Get_RTV() const { return m_pRTV; }

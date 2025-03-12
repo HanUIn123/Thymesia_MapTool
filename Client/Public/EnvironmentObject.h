@@ -82,6 +82,7 @@ public:
     //virtual void Update_InstanceBuffer();
 public:
     _uint           Get_InstanceCount() { return  m_iNumInstance; }
+    vector<_float3> Get_InstancePosition() { return m_vecInstancePosition; }
     virtual void    Set_BoxSize(_uint _iBoxSize) = 0;
     _uint           Get_BoxSize() { return m_iBoxSize; }
 protected:

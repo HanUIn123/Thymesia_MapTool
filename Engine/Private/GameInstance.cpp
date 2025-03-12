@@ -17,6 +17,8 @@
 #include "Frustum.h"
 #include "ItemMgr.h"
 #include "Shadow.h"
+#include "Picking.h"
+
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -90,6 +92,9 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC & EngineDesc, _Inout_
 	if (nullptr == m_pSound_Manager)
 		return E_FAIL; 
 	
+	m_pPicking = CPicking::Create(*ppDevice, *ppContext, EngineDesc.hWnd);
+	if (nullptr == m_pPicking)
+		return E_FAIL;
 
 	m_pFrustum = CFrustum::Create();
 	if (nullptr == m_pFrustum)
@@ -113,6 +118,8 @@ void CGameInstance::Update_Engine(_float fTimeDelta)
 	/* 내 게임내에 필요한  다수 객체의 갱신작업을 모두 모아서 수행을 할거다. */
 
 	m_pInput_Device->Update_InputDev();
+
+	m_pPicking->Update();
 
 	m_pLevel_Manager->Update(fTimeDelta);
 
@@ -393,6 +400,16 @@ HRESULT CGameInstance::End_MRT(ID3D11DepthStencilView* _pDSV)
 	return m_pTarget_Manager->End_MRT(_pDSV);
 }
 
+HRESULT CGameInstance::Bind_RenderTarget_ShaderResource(const _wstring& _strRenderTargetTag, CShader* _pShader, const _char* _pConstantName)
+{
+	return m_pTarget_Manager->Bind_ShaderResource(_strRenderTargetTag, _pShader, _pConstantName);
+}
+
+HRESULT CGameInstance::Copy_RenderTarget_TextureResource(const _wstring& _strRenderTargetTag, ID3D11Texture2D* _pTexture2D)
+{
+	return m_pTarget_Manager->Copy_TextureResource(_strRenderTargetTag, _pTexture2D);
+}
+
 HRESULT CGameInstance::Ready_RT_Debug(const _wstring& strRenderTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
 {
 	return m_pTarget_Manager->Ready_RT_Debug(strRenderTargetTag, fX, fY, fSizeX, fSizeY);
@@ -539,6 +556,10 @@ HRESULT CGameInstance::Bind_Shadow_Matrices(CShader* pShader, const _char* pView
 
 	return S_OK;
 }
+_bool CGameInstance::Compute_PickPos(_float3* _pOut)
+{
+	return m_pPicking->Compute_PickPos(_pOut);
+}
 #pragma endregion
 
 void CGameInstance::Release_Engine()
@@ -559,6 +580,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pItemMgr);	
+	Safe_Release(m_pPicking);
 	Safe_Release(m_pShadow);	
 	m_pSound_Manager->Release();
 	m_pSound_Manager->Free();

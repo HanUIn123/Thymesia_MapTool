@@ -217,6 +217,9 @@
     <Filter Include="01.Utility\04.Components\VIBuffer\VIBuffer_Instancing">
       <UniqueIdentifier>{704c470d-1b9a-42b0-a5d9-b929015b9ce7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\21.Picking">
+      <UniqueIdentifier>{a32faa78-aefb-47aa-ac98-2f63bfe3e44b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -429,6 +432,9 @@
     <ClInclude Include="..\Public\VIBuffer_Instancing.h">
       <Filter>01.Utility\04.Components\VIBuffer\VIBuffer_Instancing</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Picking.h">
+      <Filter>01.Utility\21.Picking</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\Base.cpp">
@@ -625,6 +631,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Instancing.cpp">
       <Filter>01.Utility\04.Components\VIBuffer\VIBuffer_Instancing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Picking.cpp">
+      <Filter>01.Utility\21.Picking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

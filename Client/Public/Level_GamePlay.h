@@ -11,8 +11,8 @@
 #include "Navigation.h"
 #include "Cell.h"
 
-//#include "EnvironmentObject.h"
 #include "GroundObject.h"
+#include "TempCollider.h"
 
 
 
@@ -28,8 +28,8 @@ BEGIN(Client)
 class CLevel_GamePlay final : public CLevel
 {
 public:
-    enum IMGUI_TEXTURE_TYPE { IMG_ANIM_MODEL, IMG_NONANIM_MODEL, IMG_GROUND_MODEL, IMG_END };
-    enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI, MT_GROUND, MT_HEIGHT, MT_TERRAIN_MASK, MT_WATER_MASK, MT_END };
+    enum IMGUI_TEXTURE_TYPE { IMG_ANIM_MODEL, IMG_NONANIM_MODEL, IMG_GROUND_MODEL, IMG_TRIGGER_OBJECT, IMG_END };
+    enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI, MT_GROUND, MT_HEIGHT, MT_TERRAIN_MASK, MT_WATER_MASK, MT_TRIGGER,  MT_END };
 public:
     struct CELL_POINTS
     {
@@ -91,6 +91,9 @@ private:
     vector<ID3D11ShaderResourceView*>	m_vecAnimModelSRVs;
     vector<ID3D11ShaderResourceView*>	m_vecNonAnimModelSRVs;
     vector<ID3D11ShaderResourceView*>	m_vecGroundModelSRVs;
+    vector<ID3D11ShaderResourceView*>	m_vecTriggerObjectSRVs;
+
+
 
 
 private:
@@ -105,6 +108,8 @@ private:
     void                                Raising_Terrain(_float _fTimeDelta, _bool _bUp);
     void                                Set_Terrain_Height(_float _fHeight);
 
+    void                                Add_TriggerObjects();
+    void                                Setting_TriggerObjects();
 
     void                                Update_InstanceObjects();
     void                                Update_InstanceMove();
@@ -115,6 +120,9 @@ private:
     HRESULT								Load_Objects();
     HRESULT                             Save_Monster_Index();
     void	                            OpenFileDialoge(const _tchar* _pDefaultFileName, const _tchar* _pFilter, std::wstring& outFileName);
+
+    HRESULT                             Save_TriggerObjects();
+    HRESULT                             Load_TriggerObjects();
 
     HRESULT                             Save_HeightMap();
     HRESULT                             Load_HeightMap();
@@ -178,6 +186,8 @@ private:
     _bool                               m_bTerrainHeightSelected = { false };
     _bool                               m_bTerrainMaskSelected = { false };
     _bool                               m_bTerrainWaterMaskSelected = { false };
+    _bool                               m_bTriggerObjectMenuSelected = { false };
+
 
 
     _bool								m_bIsMeshPickingMode = { false };
@@ -202,6 +212,8 @@ private:
 
     list<CObject*>                      m_Objects;
     vector<CEnvironmentObject*>         m_EnvironmentObjects;
+    vector<CTempCollider*>              m_vecTempColliderObjects;
+
 
     _float3                             m_fMeshPickPos = { 0.f, 0.f, 0.f };
     _float                              m_fPosMax[2] = { -100.f, 100.f };
@@ -211,6 +223,8 @@ private:
 
     _int                                m_iGroundObjectListIndex = { -1 };
     _int                                m_iNonMoveObjectListIndex = { -1 };
+    _int                                m_iTempColliderListIndex = { -1 };
+
 
     const char* m_strObjectNames[256] =
     {
@@ -523,6 +537,11 @@ private:
     CEnvironmentObject* m_pCurrentEnvironmentObject = { nullptr };
     CGroundObject* m_pSelectedInstancedObject = { nullptr };
     CTransform* m_pCurrentEnvironmentObjectTransformCom = { nullptr };
+
+    CTempCollider* m_pTempCollider = { nullptr };
+
+
+
 
     _float3									m_fCurrentObjectPos = { 0.f, 0.f, 0.f };
     _bool									m_bFrustumSphere = { false };

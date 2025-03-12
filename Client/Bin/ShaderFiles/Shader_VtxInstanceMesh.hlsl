@@ -83,6 +83,9 @@ struct PS_OUT
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
     float fSpecular : SV_TARGET3;
+    
+        
+    float4 vPickDepth : SV_TARGET4;
 };
 
 
@@ -112,6 +115,9 @@ PS_OUT PS_MAIN(PS_IN In)
     //Out.vNormal  = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.fSpecular = 0.1f;
+    
+    Out.vPickDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 1.f, 0.f);
+
     return Out;
 }
 

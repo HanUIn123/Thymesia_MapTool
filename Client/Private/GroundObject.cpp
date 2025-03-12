@@ -364,6 +364,25 @@ void CGroundObject::Set_BoxSize(_uint _iBoxSize)
     }
 }
 
+void CGroundObject::Delete_InstanceObject(_uint _iInstanceIndex)
+{
+    if (_iInstanceIndex >= m_iNumInstance)
+        return;
+
+    m_vecInstancePosition.erase(m_vecInstancePosition.begin() + _iInstanceIndex);
+    m_vecInstanceScale.erase(m_vecInstanceScale.begin() + _iInstanceIndex);
+    m_vecInstanceRotation.erase(m_vecInstanceRotation.begin() + _iInstanceIndex);
+    m_vecInstanceData.erase(m_vecInstanceData.begin() + _iInstanceIndex);
+    m_vecVisible.erase(m_vecVisible.begin() + _iInstanceIndex);
+
+    m_iNumInstance--;
+
+    if (m_iNumInstance > 0)
+    {
+        m_pModelCom->Update_InstanceBuffer(m_iNumInstance, m_vecInstanceData.data());
+    }
+}
+
 HRESULT CGroundObject::Ready_Components()
 {
     if (FAILED(__super::Ready_Components()))
