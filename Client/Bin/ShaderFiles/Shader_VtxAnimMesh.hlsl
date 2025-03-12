@@ -1,50 +1,50 @@
 #include "../../../EngineSDK/hlsl/Engine_Shader_Defines.hlsli"
 
-float4x4		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 
 /* 이 메시(정점들에)에 영향을 주는 뼈 행렬들 (즉 총 뼈의 개수라고 생각하면 됨) 나는 여기서 그냥 256개로한다 */
 /* 너무 많은 뼈의 개수 배열을 선언하면 셰이더는 메모리를 큰 구조가 아니기 때문에 안된다.*/
 //float4x4		g_BoneMatrices[900];
 
-StructuredBuffer<float4x4> g_BoneMatrices;	
-Texture2D g_DiffuseTexture;	
-Texture2D g_NormalTexture;	
+StructuredBuffer<float4x4> g_BoneMatrices;
+Texture2D g_DiffuseTexture;
+Texture2D g_NormalTexture;
 
 /*  Dissolve 관련 상수 버퍼들 */
 Texture2D g_NoiseTexture;
-float     g_DissolveAmount; 
-float     g_EdgeWidth = 1.f; 
-float4    g_EdgeColor = { 0.f, 0.f, 1.f, 1.f };
-float     g_Time;
+float g_DissolveAmount;
+float g_EdgeWidth = 1.f;
+float4 g_EdgeColor = { 0.f, 0.f, 1.f, 1.f };
+float g_Time;
 
 
 
 struct VS_IN
 {
-	float3			vPosition :   POSITION;	
-	float3			vNormal   :   NORMAL;
-	float2			vTexcoord :   TEXCOORD0;	
-	float3			vTangent  :   TANGENT;
+    float3 vPosition : POSITION;
+    float3 vNormal : NORMAL;
+    float2 vTexcoord : TEXCOORD0;
+    float3 vTangent : TANGENT;
 
-    uint4			vBlendIndex  : BLENDINDEX;
-    float4			vBlendWeight : BLENDWEIGHT;
+    uint4 vBlendIndex : BLENDINDEX;
+    float4 vBlendWeight : BLENDWEIGHT;
 };
 
 struct VS_OUT
 {
-    float4			vPosition : SV_POSITION; // 해당 SV_ 라는 접미사는 투영 행렬 및 Z나누기가 다 완료된 점들의 좌표를 나타낸 것 
-	float4			vNormal   : NORMAL;
-	float2			vTexcoord : TEXCOORD0;
-    float4			vWorldPos : TEXCOORD1;
-    float4			vProjPos  : TEXCOORD2;  // SV_ 라는 접미사가 없으므로 Z나누기및 투영행렬이 되서 나온게 아님. 
+    float4 vPosition : SV_POSITION; // 해당 SV_ 라는 접미사는 투영 행렬 및 Z나누기가 다 완료된 점들의 좌표를 나타낸 것 
+    float4 vNormal : NORMAL;
+    float2 vTexcoord : TEXCOORD0;
+    float4 vWorldPos : TEXCOORD1;
+    float4 vProjPos : TEXCOORD2; // SV_ 라는 접미사가 없으므로 Z나누기및 투영행렬이 되서 나온게 아님. 
    
-    float4          vTangent   : TANGENT;   
-    float4          vBinormal  : BINORMAL;  
+    float4 vTangent : TANGENT;
+    float4 vBinormal : BINORMAL;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
-{	
+{
 	
     VS_OUT Out = (VS_OUT) 0;
 
@@ -70,13 +70,13 @@ VS_OUT VS_MAIN(VS_IN In)
     vector vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
 
     Out.vPosition = mul(vPosition, matWVP);
-    Out.vNormal   = normalize(mul(vNormal, g_WorldMatrix));
+    Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(vPosition, g_WorldMatrix);
-    Out.vProjPos  = Out.vPosition;	
+    Out.vProjPos = Out.vPosition;
     
-    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix)); 
-    Out.vBinormal = vector(normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz)), 0.f);   
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
+    Out.vBinormal = vector(normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz)), 0.f);
 	
     return Out;
 }
@@ -114,21 +114,22 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 
 struct PS_IN
 {
-	float4			vPosition : SV_POSITION;
-	float4			vNormal   : NORMAL;
-    float2			vTexcoord : TEXCOORD0;
-    float4			vWorldPos : TEXCOORD1; 
-    float4			vProjPos  : TEXCOORD2;
+    float4 vPosition : SV_POSITION;
+    float4 vNormal : NORMAL;
+    float2 vTexcoord : TEXCOORD0;
+    float4 vWorldPos : TEXCOORD1;
+    float4 vProjPos : TEXCOORD2;
 	
-    float4          vTangent  : TANGENT;
-    float4          vBinormal : BINORMAL;
+    float4 vTangent : TANGENT;
+    float4 vBinormal : BINORMAL;
 };
 
 struct PS_OUT
 {
-    float4 vDiffuse : SV_TARGET0;	// 렌더타겟 0번에 저장 
-    float4 vNormal  : SV_TARGET1;   // 렌더타겟 1번에 저장 
-    float4 vDepth   : SV_TARGET2;   // 렌더타겟 2번에 저장 
+    float4 vDiffuse : SV_TARGET0; // 렌더타겟 0번에 저장 
+    float4 vNormal : SV_TARGET1; // 렌더타겟 1번에 저장 
+    float4 vDepth : SV_TARGET2; // 렌더타겟 2번에 저장 
+    float fSpecular : SV_TARGET3; // 렌더타겟 3번에 저장 
 };
 
 struct PS_IN_SHADOW
@@ -144,40 +145,44 @@ struct PS_OUT_SHADOW
 
 PS_OUT PS_MAIN(PS_IN In)
 {
-	PS_OUT		Out = (PS_OUT)0;
+    PS_OUT Out = (PS_OUT) 0;
 
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);	
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
     
     if (vMtrlDiffuse.a < 0.1f)  
-        discard;    
+        discard;
    
     
     
     float4 vNormalDesc = g_NormalTexture.Sample(LinearSampler, In.vTexcoord);
 	
     /* 탄젠트 스페이스에 존재하는 노멀이다. 지금 (0~1 ) UnNormal로 저장 되어 있음 */  
-    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;     
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
 
    /* 월드 스페이스상의 노말로 변환하자. */
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz, In.vNormal.xyz);
     
-    vNormal = normalize(mul(vNormal, WorldMatrix)); 
+    vNormal = normalize(mul(vNormal, WorldMatrix));
     
-    Out.vDiffuse = vMtrlDiffuse;	    
-    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);       
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     //Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
-    Out.vDepth  = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
-
-
-
-	return Out;
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.fSpecular = 0.1f;
+    
+    return Out;
 }
 
-
-
-PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
+struct PS_OUT_DISSOVE
 {
-    PS_OUT Out = (PS_OUT) 0;
+    float4 vDiffuse : SV_TARGET0; // 렌더타겟 0번에 저장 
+    float4 vNormal : SV_TARGET1; // 렌더타겟 1번에 저장 
+    float4 vDepth : SV_TARGET2; // 렌더타겟 2번에 저장 
+};
+
+PS_OUT_DISSOVE PS_MAIN_DISSOLVE(PS_IN In)
+{
+    PS_OUT_DISSOVE Out = (PS_OUT_DISSOVE) 0;
 
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
     
@@ -187,8 +192,8 @@ PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
     /* Dissolve 관련 */ 
     
     // 노이즈 텍스처에서 샘플링 (UV 스케일, 타임 등을 이용해 변형 가능)
-    float2 noiseUV    = In.vTexcoord + float2(0.0f, g_Time * 0.1);  
-    float  noiseValue = g_NoiseTexture.Sample(LinearSampler, noiseUV).r;    
+    float2 noiseUV = In.vTexcoord + float2(0.0f, g_Time * 0.1);
+    float noiseValue = g_NoiseTexture.Sample(LinearSampler, noiseUV).r;
     
     // Dissolve 조건 
     // noiseValue < gDissolveAmount 이면 픽셀을 버린다 ( 투명 처리 ) 
@@ -225,7 +230,7 @@ PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
     
     vNormal = normalize(mul(vNormal, WorldMatrix));
     
-    Out.vDiffuse = vMtrlDiffuse;       
+    Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     //Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
@@ -235,7 +240,7 @@ PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
     return Out;
 }
 
-PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)   
+PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
 {
     PS_OUT_SHADOW Out = (PS_OUT_SHADOW) 0;
 
@@ -248,20 +253,7 @@ PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
 
 technique11 DefaultTechnique
 {
-	pass DefaultPass
-	{
-
-        SetRasterizerState(RS_Default);	
-        SetDepthStencilState(DSS_Default, 0);	
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-		VertexShader = compile vs_5_0 VS_MAIN();
-        GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
-	}
-
-
-    pass DessolvePass   
+    pass DefaultPass
     {
 
         SetRasterizerState(RS_Default);
@@ -270,7 +262,20 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();    
+        PixelShader = compile ps_5_0 PS_MAIN();
+    }
+
+
+    pass DessolvePass
+    {
+
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();
     }
 
 
