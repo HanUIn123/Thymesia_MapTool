@@ -60,6 +60,19 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), WorldMatrix));
     Out.vBinormal = vector(normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz)), 0.f); // 외적 순서 중요하다 왜냐하면 순서바뀌면 binormal이 - 축으로 설정되니깐 
 	
+    /*
+    
+
+    Out.vPosition = mul(vector(In.vPosition, 1.f), matWVP);
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
+    Out.vTexcoord = In.vTexcoord;
+    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vProjPos = Out.vPosition;
+	
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
+    Out.vBinormal = vector(normalize(cross(Out.vNormal.xyz, Out.vTangent.xyz)), 0.f); // 외적 순서 중요하다 왜냐하면 순서바뀌면 binormal이 - 축으로 설정되니깐 
+	
+    */
     return Out;
 }
 
@@ -102,8 +115,8 @@ PS_OUT PS_MAIN(PS_IN In)
 	
 
 	/* 탄젠트 스페이스에 존재하는 노멀이다. */	
-    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
-	
+    float3 vNormal = vNormalDesc.xyz * 0.5f + 0.5f;
+  
 	
 	/* 월드 스페이스상의 노말로 변환하자. */
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz, In.vNormal.xyz);
@@ -118,6 +131,24 @@ PS_OUT PS_MAIN(PS_IN In)
     
     Out.vPickDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 1.f, 0.f);
 
+ //   /*
+ //   float4 vNormalDesc = g_NormalTexture.Sample(LinearSampler, In.vTexcoord);
+	
+
+	///* 탄젠트 스페이스에 존재하는 노멀이다. */	
+ //   float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+	///* 월드 스페이스상의 노말로 변환하자. */
+ //   float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz, In.vNormal.xyz);
+ //   vNormal = normalize(mul(vNormal, WorldMatrix));
+	
+
+ //   Out.vDiffuse = vMtrlDiffuse;
+ //   Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+ //   //Out.vNormal  = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+ //   Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+ //   Out.fSpecular = 1.f;
+ //*/
     return Out;
 }
 

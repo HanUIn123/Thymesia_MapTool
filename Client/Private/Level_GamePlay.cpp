@@ -758,30 +758,59 @@ HRESULT CLevel_GamePlay::Render()
 
 HRESULT CLevel_GamePlay::Ready_Lights()
 {
-    if (FAILED(m_pGameInstance->SetUp_ShadowLight(XMVectorSet(232.f, 200.f, 150.f, 1.f), XMVectorSet(232.f, 62.f, 60.f, 1.f),
-        XMConvertToRadians(60.f), g_iWinSizeX / static_cast<_float>(g_iWinSizeY), 0.1f, 800.f
+  /*  if (FAILED(m_pGameInstance->SetUp_ShadowLight(XMVectorSet(232.f, 200.f, 150.f, 1.f), XMVectorSet(232.f, 62.f, 60.f, 1.f),
+        XMConvertToRadians(60.f), static_cast<_float>(g_iWinSizeX / g_iWinSizeY), 0.1f, 800.f
         , m_pGameInstance->Get_Player_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Player")))))
-        return E_FAIL;
+        return E_FAIL;*/
 
     LIGHT_DESC            LightDesc{};
 
-    /* 2¿ù 8ÀÏ ºû */
+    /* 2¿ù 8ÀÏ ºû *//*
     LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
     LightDesc.vDirection = _float4(1.f, 1.f, 1.f, 0.f);
     LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
     LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
-    LightDesc.vSpecular = _float4(0.5f, 0.5f, 0.5f, 1.f);
+    LightDesc.vSpecular = _float4(0.5f, 0.5f, 0.5f, 1.f);*/
 
 
-    /*LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
+    LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
     LightDesc.vDirection = _float4(1.f, 1.f, 1.f, 0.f);
-    LightDesc.vDiffuse   = _float4(0.9f, 0.9f, 0.9f, 1.f);
-    LightDesc.vAmbient   = _float4(0.5f, 0.5f, 0.5f, 1.f);
-    LightDesc.vSpecular  = _float4(0.3f, 0.3f, 0.3f, 1.f);   */
+    LightDesc.vDiffuse   = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient   = _float4(0.6f, 0.6f, 0.6f, 1.f);
+    LightDesc.vSpecular  = _float4(0.3f, 0.3f, 0.3f, 1.f);  
 
     if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
         return E_FAIL;
 
+    ZeroMemory(&LightDesc, sizeof(LightDesc));
+
+    LightDesc.eType = LIGHT_DESC::TYPE_POINT;
+
+  //  LightDesc.vDirection = _float4(1.f, -1.f, 0.f, 0.f);
+    LightDesc.vPosition = _float4(-378.5, 12.000, -64.000, 1.f);
+    LightDesc.vDiffuse = _float4(0.8f, 0.8f, 0.8f, 1.f);
+    LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+    //_float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vSpecular = _float4(0.5f, 0.5f, 0.5f, 1.f);
+    LightDesc.fRange = 15.f;
+
+
+    if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+        return E_FAIL;
+
+    ZeroMemory(&LightDesc, sizeof(LightDesc));
+    
+    LightDesc.eType = LIGHT_DESC::TYPE_POINT;
+
+    //  LightDesc.vDirection = _float4(1.f, -1.f, 0.f, 0.f);
+    LightDesc.vPosition = _float4(83.0f, 7.5f, -118.0f, 1.0f);
+    LightDesc.vDiffuse = _float4(0.f, 1.f, 0.f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.fRange = 3.f;
+
+    if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
+        return E_FAIL;
     return S_OK;
 }
 

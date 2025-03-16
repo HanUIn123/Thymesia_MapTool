@@ -40,7 +40,8 @@ void CLight_Manager::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 {
 	for (auto& pLight : m_Lights)
 	{
-		pLight->Render(pShader, pVIBuffer);		
+		if (FAILED(pLight->Render(pShader, pVIBuffer)))
+			return;
 	}
 }
 

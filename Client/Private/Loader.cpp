@@ -168,7 +168,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 
 	lstrcpyW(m_szLoadingText, TEXT("터레인 컴포넌트 생성"));
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain")
-		, CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 150, 150, 1, nullptr, TEXT("../Bin/DataFiles/HeightData/TerrainHeight12.txt")))))
+		, CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 150, 150, 1, nullptr, TEXT("../Bin/DataFiles/HeightData/TerrainHeight16.txt")))))
 		return E_FAIL;
 
 

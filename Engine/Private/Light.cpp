@@ -18,25 +18,63 @@ HRESULT CLight::Initialize(const LIGHT_DESC & LightDesc)
 	return S_OK;
 }
 
-void CLight::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)	
+HRESULT CLight::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)	
 {
-	if (FAILED(pShader->Bind_RawValue("g_vLightDir", &m_LightDesc.vDirection, sizeof(_float4))))	
-		return;		
+
+	_uint iPassIndex = {};
+
+	if (LIGHT_DESC::TYPE_DIRECTIONAL == m_LightDesc.eType)
+	{
+		iPassIndex = 1;
+
+		if (FAILED(pShader->Bind_RawValue("g_vLightDir", &m_LightDesc.vDirection, sizeof(_float4))))
+			return E_FAIL;
+	}
+
+	else if (LIGHT_DESC::TYPE_POINT == m_LightDesc.eType)
+	{
+		iPassIndex = 2;
+
+		if (FAILED(pShader->Bind_RawValue("g_vLightPos", &m_LightDesc.vPosition, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(pShader->Bind_RawValue("g_fRange", &m_LightDesc.fRange, sizeof(_float))))
+			return E_FAIL;
+	}
+
+
+
+	else if (LIGHT_DESC::TYPE_SPOT == m_LightDesc.eType)
+	{
+		iPassIndex = 10;
+
+		if (FAILED(pShader->Bind_RawValue("g_vLightPos", &m_LightDesc.vPosition, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(pShader->Bind_RawValue("g_fRange", &m_LightDesc.fRange, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(pShader->Bind_RawValue("g_fSpot", &m_LightDesc.fSpot, sizeof(_float4))))
+			return E_FAIL;
+	}
+
 
 	if (FAILED(pShader->Bind_RawValue("g_vLightDiffuse", &m_LightDesc.vDiffuse, sizeof(_float4))))
-		return;
+		return E_FAIL;
 
 	if (FAILED(pShader->Bind_RawValue("g_vLightAmbient", &m_LightDesc.vAmbient, sizeof(_float4))))
-		return;
+		return E_FAIL;
 
 	if (FAILED(pShader->Bind_RawValue("g_vLightSpecular", &m_LightDesc.vSpecular, sizeof(_float4))))
-		return;
+		return E_FAIL;
 
 
-	pShader->Begin(1);		
+	pShader->Begin(iPassIndex);
 
-	pVIBuffer->Bind_InputAssembler();		
-	pVIBuffer->Render();		
+	pVIBuffer->Bind_InputAssembler();
+	pVIBuffer->Render();
+
+	return S_OK;
 
 }
 

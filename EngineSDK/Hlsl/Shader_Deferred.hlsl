@@ -17,7 +17,7 @@ float4 g_vLightSpecular;
 Texture2D g_DiffuseTexture;
 float4 g_vMtrlAmbient = vector(1.f, 1.f, 1.f, 1.f);
 Texture2D<float> g_MtrlSpecularTexture;
-//float4			g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
+float4			g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
 
 Texture2D g_SpecularTexture;
 Texture2D g_NormalTexture;
@@ -92,12 +92,11 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     PS_OUT_LIGHT Out = (PS_OUT_LIGHT) 0;
 
     vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, In.vTexcoord);
-    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
-
+    
     vector vDepthDesc = g_DepthTexture.Sample(LinearSampler, In.vTexcoord);
     float fViewZ = vDepthDesc.y;
 	
-    vector vShade = saturate(max(dot(normalize(g_vLightDir * -1.f), normalize(vNormal)), 0.f) + (g_vLightAmbient * g_vMtrlAmbient));
+    vector vShade = saturate(max(dot(normalize(g_vLightDir * -1.f), normalize(vNormalDesc)), 0.f) + (g_vLightAmbient * g_vMtrlAmbient));
     Out.vShade = g_vLightDiffuse * vShade;
     
     float fMtrlSpecular = g_MtrlSpecularTexture.Sample(LinearSampler, In.vTexcoord);
@@ -123,7 +122,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	/* 로컬위치 * 월드행렬  */
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
 	
-    vector vReflect = reflect(normalize(g_vLightDir), normalize(vNormal));
+    vector vReflect = reflect(normalize(g_vLightDir), normalize(vNormalDesc));
     vector vLook = vWorldPos - g_vCamPosition; // 캠에서 해당 물체를 바라보는 look 방향을 구한거 .
 	
     Out.vSpecular = (g_vLightSpecular * fMtrlSpecular) * pow(max(dot(normalize(vReflect * -1.f), normalize(vLook)), 0.f), 90.f);
@@ -141,8 +140,6 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 
     vector vDepthDesc = g_DepthTexture.Sample(LinearSampler, In.vTexcoord);
     float fViewZ = vDepthDesc.y;
-    
-    float fMtrlSpecular = g_MtrlSpecularTexture.Sample(LinearSampler, In.vTexcoord);
 
     vector vWorldPos;
 
@@ -168,20 +165,18 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 
     float fAtt = saturate((g_fRange - fLength) / g_fRange);
 
-
     vector vShade = saturate(max(dot(normalize(vLightDir * -1.f), normalize(vNormal)), 0.f) + (g_vLightAmbient * g_vMtrlAmbient));
 
     Out.vShade = g_vLightDiffuse * vShade * fAtt;
 
-	// vector		vWorldPos = g_WorldTexture.Sample(PointSampler, In.vTexcoord);
-
-
     vector vReflect = reflect(normalize(vLightDir), normalize(vNormal));
     vector vLook = vWorldPos - g_vCamPosition;
 
-    Out.vSpecular = (g_vLightSpecular * fMtrlSpecular) * pow(max(dot(normalize(vReflect * -1.f), normalize(vLook)), 0.f), 50.f) * fAtt;
+    Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * pow(max(dot(normalize(vReflect * -1.f), normalize(vLook)), 0.f), 50.f) * fAtt;
+    
     return Out;
 }
+
 
 
 
@@ -250,7 +245,6 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
     //    Out.vColor = blurredColor; // 또는 Out.vColor = lerp(deferredColor, blurredColor, blendFactor);
     //else
     //    Out.vColor = Out.vColor;//+blurredColor;
-    
     
     return Out;
 }
@@ -335,7 +329,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_SKip_Z, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_DIRECTIONAL();
@@ -345,10 +339,10 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_SKip_Z, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_DIRECTIONAL();
+        PixelShader = compile ps_5_0 PS_MAIN_POINT();
     }
 
 
