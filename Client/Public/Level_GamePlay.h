@@ -103,13 +103,15 @@ private:
     void								Active_PreviewModelImage();
 
     void								Add_GroundObjects();
-    void                                Delete_GroundObjects();
+    //void                                Delete_GroundObjects();
     void								Setting_GroundObjectList();
     void                                Raising_Terrain(_float _fTimeDelta, _bool _bUp);
     void                                Set_Terrain_Height(_float _fHeight);
 
     void                                Add_TriggerObjects();
     void                                Setting_TriggerObjects();
+    void                                Delete_TriggerObjects();
+    void                                Update_TriggerObjects();
 
     void                                Update_InstanceObjects();
     void                                Update_InstanceMove();
@@ -209,6 +211,8 @@ private:
     _float                              m_fMeshScale[3] = { 0.01f, 0.01f, 0.01f };
     _float                              m_fObjectRotation[3] = { 0.f, 0.f, 0.f };
     _float	                            m_fFrustumRadius = { 1.f };
+
+    _float                              m_fTriggerScale[3] = { 0.01f, 0.01f, 0.01f };
 
     list<CObject*>                      m_Objects;
     vector<CEnvironmentObject*>         m_EnvironmentObjects;

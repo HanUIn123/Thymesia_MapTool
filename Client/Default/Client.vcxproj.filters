@@ -192,11 +192,11 @@
     <ClInclude Include="..\Public\Level_GamePlay.h">
       <Filter>01.Level\02.GamePlay</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\MainApp.h">
-      <Filter>01.Level</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\TempCollider.h">
       <Filter>02.GameObject\TempCollider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MainApp.h">
+      <Filter>00.MainApp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

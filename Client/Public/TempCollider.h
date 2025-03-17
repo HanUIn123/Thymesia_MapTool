@@ -3,7 +3,9 @@
 #include "GameObject.h"
 
 BEGIN(Engine)
-class CCollider;
+//class CCollider;
+class CVIBuffer_Cube;
+class CShader;
 END
 
 BEGIN(Client)
@@ -44,11 +46,20 @@ public:
     void                                                Set_Info(TC_INFO _tagInfo) { m_tagInfoTempCollider = _tagInfo; }
 public:
     HRESULT                                             Ready_Components();
+    HRESULT                                             Bind_ShaderResources();
 
     _bool                                               Check_Collision_With_Player();
     TRIGGER_TYPE                                        m_eTriggerType = { TRIGGER_TYPE::TT_END };
+
+    _float4                                             Get_TempColliderPosition() const { return m_tagInfoTempCollider.fPosition; }
+    _float3                                             Get_TempColliderScale()const { return m_tagInfoTempCollider.fScale; }
+    void                                                Set_TempColliderScale(_float3 _vScale);
 private:
-    CCollider* m_pColliderCom = { nullptr };
+    //CCollider* m_pColliderCom = { nullptr };
+    CVIBuffer_Cube* m_pVIBufferCom = { nullptr };
+    CShader* m_pShaderCom = { nullptr };
+
+
 private:
     _bool                                               m_bFade = { false };
     TC_INFO                                             m_tagInfoTempCollider;
