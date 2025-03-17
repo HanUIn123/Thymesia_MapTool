@@ -2,6 +2,8 @@
 #include "TempCollider.h"
 //#include "BlackScreen.h"
 #include "GameInstance.h"
+//#include "Bounding_AABB.h"
+//#include "Bounding.h"
 
 CTempCollider::CTempCollider(ID3D11Device* _pDevice, ID3D11DeviceContext* _pContext)
     :CGameObject{ _pDevice, _pContext }
@@ -35,8 +37,12 @@ HRESULT CTempCollider::Initialize(void* _pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+
+    m_pTransformCom->Scaling(m_tagInfoTempCollider.fScale);
     m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_tagInfoTempCollider.fPosition.x, m_tagInfoTempCollider.fPosition.y, m_tagInfoTempCollider.fPosition.z, m_tagInfoTempCollider.fPosition.w));
 
+
+    
     return S_OK;
 }
 
@@ -46,12 +52,11 @@ void CTempCollider::Priority_Update(_float _fTimeDelta)
 
 void CTempCollider::Update(_float _fTimeDelta)
 {
-    m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr()));
 }
 
 void CTempCollider::Late_Update(_float _fTimeDelta)
 {
-  /*  if (Check_Collision_With_Player())
+   /* if (Check_Collision_With_Player())
     {
         if (!m_bFade)
         {
@@ -67,6 +72,12 @@ void CTempCollider::Late_Update(_float _fTimeDelta)
             m_bFade = false;
         }
     }*/
+
+    //if(Check_Collision_With_Player())
+    //    cout << "醱給 脾 六" << endl;
+    //else
+    //    cout << "寰脾" << endl;
+
 
     // duration 高 還檜賊 說塭颶. 
     //if (m_pGameInstance->Get_DIKeyState(DIK_1) & 0x80)
@@ -88,17 +99,42 @@ void CTempCollider::Late_Update(_float _fTimeDelta)
 
 HRESULT CTempCollider::Render()
 {
-    m_pColliderCom->Render();
+    if (FAILED(Bind_ShaderResources()))
+        return E_FAIL;
+
+    m_pShaderCom->Begin(1);
+
+    m_pVIBufferCom->Bind_InputAssembler();
+
+    m_pVIBufferCom->Render();
+
     return S_OK;
 }
 
 HRESULT CTempCollider::Ready_Components()
 {
-    CBounding_AABB::BOUNDING_AABB_DESC ColliderDesc{};
-    ColliderDesc.vExtents = _float3(0.3f, -0.3f, 0.3f);
-    ColliderDesc.vCenter = _float3(0.f, 0.0f, 0.f);
+    if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
+        return E_FAIL;
 
-    if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColliderDesc)))
+    if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VtxCube"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CTempCollider::Bind_ShaderResources()
+{
+    if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+        return E_FAIL;
+
+    _float4x4   ViewMatrix, ProjMatrix;
+    ViewMatrix = m_pGameInstance->Get_Transform_Float4x4(CPipeLine::D3DTS_VIEW);
+    ProjMatrix = m_pGameInstance->Get_Transform_Float4x4(CPipeLine::D3DTS_PROJ);
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &ViewMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &ProjMatrix)))
         return E_FAIL;
 
     return S_OK;
@@ -106,17 +142,15 @@ HRESULT CTempCollider::Ready_Components()
 
 _bool CTempCollider::Check_Collision_With_Player()
 {
-    if (nullptr == m_pColliderCom)
-        return false;
-
-    CCollider* pTargetCollider = static_cast<CCollider*>(m_pGameInstance->Find_Component(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Collider")));
-
-    if (nullptr == pTargetCollider)
-        return false;
-
-    return m_pColliderCom->Intersect(pTargetCollider);
-
+    return true;
 }
+
+void CTempCollider::Set_TempColliderScale(_float3 _vScale)
+{
+    m_tagInfoTempCollider.fScale = _vScale;
+    m_pTransformCom->Scaling(_vScale);
+}
+
 
 CTempCollider* CTempCollider::Create(ID3D11Device* _pDevice, ID3D11DeviceContext* _pContext)
 {
@@ -148,5 +182,7 @@ void CTempCollider::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pColliderCom);
+    //Safe_Release(m_pColliderCom);
+    Safe_Release(m_pVIBufferCom);
+    Safe_Release(m_pShaderCom);
 }

@@ -17,7 +17,7 @@ CMainApp::CMainApp()
 
 HRESULT CMainApp::Initialize()
 {
-/*#ifdef _DEBUG
+#ifdef _DEBUG
 
     if (::AllocConsole() == TRUE)
     {
@@ -27,7 +27,7 @@ HRESULT CMainApp::Initialize()
         freopen_s(nfp + 2, "CONOUT$", "wb", stderr);
         ios::sync_with_stdio();
     }
-#endif*/ // _DEBUG
+#endif // _DEBUG
 
 	ENGINE_DESC		EngineDesc{};
 

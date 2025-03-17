@@ -63,6 +63,7 @@ struct PS_OUT
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
     float fSpecular : SV_TARGET3;
+    float4 vPickDepth : SV_TARGET4;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -141,7 +142,9 @@ PS_OUT PS_MASKING_MAIN(PS_IN In)
     + ((1 - vSourORM.b) * 0.5f + (vSourORM.b * 1.f)) * (1 - vSourORM.g) * (1.f - vMaskTexture); // Sour¿« specular ∞ËªÍ
     
     Out.fSpecular += vWaterTexture.r; //lerp(Out.fSpecular, 1.f, vWaterTexture.r / 255.f);
-	
+    Out.vPickDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 1.f, 0.f);
+    
+    
     return Out;
 }
 

@@ -581,6 +581,12 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
         if (ImGui::Button("Load Trigger"))
             Load_TriggerObjects();
+
+
+
+        //ImGui::CollapsingHeader("Trigger Object Settings");
+        //ImGui::InputFloat3("Trigger_ObjectScale", m_fTriggerScale);
+        //ImGui::End();
     }
 
     ImGui::Checkbox("Creating NaviTerritory", &m_bFinishPickingNavi_InCurrentFloor);
@@ -734,13 +740,16 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         Setting_NonAnimObjectList();
 
     if (m_bGrondMenuSelected)
+    {
         Setting_GroundObjectList();
+    }
 
     if (m_bTriggerObjectMenuSelected)
+    {
         Setting_TriggerObjects();
 
-    /* if (m_bGroundObjectMouseState)
-         Update_InstanceMove();*/
+        Update_TriggerObjects();
+    }
 
     Update_InstanceObjects();
 
@@ -758,10 +767,10 @@ HRESULT CLevel_GamePlay::Render()
 
 HRESULT CLevel_GamePlay::Ready_Lights()
 {
-  /*  if (FAILED(m_pGameInstance->SetUp_ShadowLight(XMVectorSet(232.f, 200.f, 150.f, 1.f), XMVectorSet(232.f, 62.f, 60.f, 1.f),
-        XMConvertToRadians(60.f), static_cast<_float>(g_iWinSizeX / g_iWinSizeY), 0.1f, 800.f
-        , m_pGameInstance->Get_Player_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Player")))))
-        return E_FAIL;*/
+    /*  if (FAILED(m_pGameInstance->SetUp_ShadowLight(XMVectorSet(232.f, 200.f, 150.f, 1.f), XMVectorSet(232.f, 62.f, 60.f, 1.f),
+          XMConvertToRadians(60.f), static_cast<_float>(g_iWinSizeX / g_iWinSizeY), 0.1f, 800.f
+          , m_pGameInstance->Get_Player_GameObject_To_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Player")))))
+          return E_FAIL;*/
 
     LIGHT_DESC            LightDesc{};
 
@@ -775,9 +784,9 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
     LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
     LightDesc.vDirection = _float4(1.f, 1.f, 1.f, 0.f);
-    LightDesc.vDiffuse   = _float4(1.f, 1.f, 1.f, 1.f);
-    LightDesc.vAmbient   = _float4(0.6f, 0.6f, 0.6f, 1.f);
-    LightDesc.vSpecular  = _float4(0.3f, 0.3f, 0.3f, 1.f);  
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+    LightDesc.vSpecular = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
     if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
         return E_FAIL;
@@ -786,10 +795,12 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
     LightDesc.eType = LIGHT_DESC::TYPE_POINT;
 
-  //  LightDesc.vDirection = _float4(1.f, -1.f, 0.f, 0.f);
+    //  LightDesc.vDirection = _float4(1.f, -1.f, 0.f, 0.f);
     LightDesc.vPosition = _float4(-378.5, 12.000, -64.000, 1.f);
     LightDesc.vDiffuse = _float4(0.8f, 0.8f, 0.8f, 1.f);
+
     LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
+
     //_float4(1.f, 1.f, 1.f, 1.f);
     LightDesc.vSpecular = _float4(0.5f, 0.5f, 0.5f, 1.f);
     LightDesc.fRange = 15.f;
@@ -799,15 +810,15 @@ HRESULT CLevel_GamePlay::Ready_Lights()
         return E_FAIL;
 
     ZeroMemory(&LightDesc, sizeof(LightDesc));
-    
+
     LightDesc.eType = LIGHT_DESC::TYPE_POINT;
 
     //  LightDesc.vDirection = _float4(1.f, -1.f, 0.f, 0.f);
     LightDesc.vPosition = _float4(83.0f, 7.5f, -118.0f, 1.0f);
-    LightDesc.vDiffuse = _float4(0.f, 1.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(1.0f, 1.0f, 1.0f, 1.f);
     LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
     LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
-    LightDesc.fRange = 3.f;
+    LightDesc.fRange = 30.f;
 
     if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
         return E_FAIL;
@@ -1553,7 +1564,8 @@ void CLevel_GamePlay::Add_TriggerObjects()
     CTempCollider::TC_DESC Desc{};
 
     Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
-    Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
+    //Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
+    Desc.fScale = { m_fTriggerScale[0], m_fTriggerScale[1], m_fTriggerScale[2] };
     Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
 
     CTempCollider* pTempCollider = reinterpret_cast<CTempCollider*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_TempColliderObject"), LEVEL_GAMEPLAY, TEXT("Layer_TriggerObject"), &Desc));
@@ -1608,6 +1620,133 @@ void CLevel_GamePlay::Setting_TriggerObjects()
             ObjectDesc.ObjectName = m_strGroundObjectGraveStoneNames[m_iNonAnimModelIndex];
         }
     }
+}
+
+void CLevel_GamePlay::Delete_TriggerObjects()
+{
+    //if (m_vecTempColliderObjects.empty())
+    //    return;
+
+    //_float3 vPickedPos;
+    //if (!m_pGameInstance->Compute_PickPos(&vPickedPos)) 
+    //    return;
+
+    //_float fMinDistance = FLT_MAX;
+    //CTempCollider* pClosestCollider = nullptr;
+
+    //for (auto& pCollider : m_vecTempColliderObjects)
+    //{
+    //    if (pCollider == nullptr)
+    //        continue;
+
+    //    _float4 vColliderPos = pCollider->Get_TempColliderPosition();
+
+    //    _float fDistance = sqrtf(
+    //        pow(vColliderPos.x - vPickedPos.x, 2) +
+    //        pow(vColliderPos.y - vPickedPos.y, 2) +
+    //        pow(vColliderPos.z - vPickedPos.z, 2)
+    //    );
+
+    //    if (fDistance < fMinDistance)
+    //    {
+    //        fMinDistance = fDistance;
+    //        pClosestCollider = pCollider;
+    //    }
+    //}
+
+    //if (pClosestCollider && fMinDistance < 1.0f) 
+    //{
+    //    //m_vecTempColliderObjects.erase();
+    //    m_pGameInstance->Add_DeadObject(TEXT("Layer_TriggerObject"), pClosestCollider);
+    //}
+
+    if (m_vecTempColliderObjects.empty())
+        return;
+
+    _float3 vPickedPos;
+    if (!m_pGameInstance->Compute_PickPos(&vPickedPos))
+        return;
+
+    _float fMinDistance = FLT_MAX;
+    auto closestIter = m_vecTempColliderObjects.end();
+
+    for (auto iter = m_vecTempColliderObjects.begin(); iter != m_vecTempColliderObjects.end(); ++iter)
+    {
+        CTempCollider* pCollider = *iter;
+        if (pCollider == nullptr)
+            continue;
+
+        _float4 vColliderPos = pCollider->Get_TempColliderPosition();
+
+        _float fDistance = sqrtf(
+            pow(vColliderPos.x - vPickedPos.x, 2) +
+            pow(vColliderPos.y - vPickedPos.y, 2) +
+            pow(vColliderPos.z - vPickedPos.z, 2)
+        );
+
+        if (fDistance < fMinDistance)
+        {
+            fMinDistance = fDistance;
+            closestIter = iter;
+        }
+    }
+
+
+    if (closestIter != m_vecTempColliderObjects.end() && fMinDistance < 1.0f)
+    {
+        CTempCollider* pClosestCollider = *closestIter;
+        m_pGameInstance->Add_DeadObject(TEXT("Layer_TriggerObject"), pClosestCollider);  
+        m_vecTempColliderObjects.erase(closestIter); 
+    }
+}
+
+void CLevel_GamePlay::Update_TriggerObjects()
+{
+    if (m_vecTempColliderObjects.empty())
+        return;
+
+    ImGui::Begin("Trigger Object Editor");
+
+    static int selectedIndex = -1; 
+    static _float3 scale = { 1.0f, 1.0f, 1.0f }; 
+
+    if (ImGui::CollapsingHeader("Trigger List"))
+    {
+        for (int i = 0; i < m_vecTempColliderObjects.size(); ++i)
+        {
+            string label = "Trigger " + to_string(i);
+            if (ImGui::Selectable(label.c_str(), selectedIndex == i))
+            {
+                selectedIndex = i;
+                scale = m_vecTempColliderObjects[i]->Get_TempColliderScale();
+            }
+        }
+    }
+
+    if (selectedIndex != -1 && selectedIndex < m_vecTempColliderObjects.size())
+    {
+        ImGui::Text("Adjust Scale");
+        if (ImGui::DragFloat3("Scale", &scale.x, 0.1f, 0.1f, 10.0f))
+        {
+            m_vecTempColliderObjects[selectedIndex]->Set_TempColliderScale(scale);
+        }
+    }
+
+
+    ImGuiIO IO = ImGui::GetIO();
+
+    if (m_bTriggerObjectMenuSelected)
+    {
+        if (!IO.WantCaptureMouse)
+        {
+            if (m_pGameInstance->isMouseEnter(DIM_RB)) 
+            {
+                Delete_TriggerObjects();
+            }
+        }
+    }
+
+    ImGui::End();
 }
 
 void CLevel_GamePlay::Update_InstanceObjects()
@@ -1749,7 +1888,7 @@ void CLevel_GamePlay::Update_InstanceObjects()
                 }
             }
         }
-      
+
     }
     ImGui::End();
 }
@@ -2176,7 +2315,7 @@ HRESULT CLevel_GamePlay::Load_TriggerObjects()
     _uint iSize = 0;
     ReadFile(hFile, &iSize, sizeof(_uint), &dwByte, nullptr);
 
-    m_vecTempColliderObjects.resize(iSize);
+    m_vecTempColliderObjects.reserve(iSize);
 
     CTempCollider::TC_INFO Info = {  };
     for (size_t i = 0; i < iSize; i++)
@@ -2185,7 +2324,7 @@ HRESULT CLevel_GamePlay::Load_TriggerObjects()
         //
         ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fRotation, sizeof(_float3), &dwByte, nullptr);
-        ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fScale, sizeof(_float3), &dwByte, nullptr);
 
         CTempCollider* pTempCollider = reinterpret_cast<CTempCollider*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_TempColliderObject"), LEVEL_GAMEPLAY, TEXT("Layer_TriggerObject"), &Desc));
 
