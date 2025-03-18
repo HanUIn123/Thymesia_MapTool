@@ -49,7 +49,7 @@ void CNonMoveObject::Update(_float fTimeDelta)
 
 void CNonMoveObject::Late_Update(_float fTimeDelta)
 {
-	if(m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_fFrustumRadius))
+	//if(m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_fFrustumRadius))
 		m_pGameInstance->Add_RenderGroup(CRenderer::RG_NONBLEND, this);
 
 }

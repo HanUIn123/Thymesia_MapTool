@@ -88,9 +88,9 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC & EngineDesc, _Inout_
 	if (nullptr == m_pFont_Manager)
 		return E_FAIL;
 
-	m_pSound_Manager = CSoundMgr::Create();
-	if (nullptr == m_pSound_Manager)
-		return E_FAIL; 
+	//m_pSound_Manager = CSoundMgr::Create();
+	//if (nullptr == m_pSound_Manager)
+	//	return E_FAIL; 
 	
 	m_pPicking = CPicking::Create(*ppDevice, *ppContext, EngineDesc.hWnd);
 	if (nullptr == m_pPicking)
@@ -582,8 +582,8 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pItemMgr);	
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pShadow);	
-	m_pSound_Manager->Release();
-	m_pSound_Manager->Free();
+	/*m_pSound_Manager->Release();
+	m_pSound_Manager->Free();*/
 
 	CGameInstance::GetInstance()->DestroyInstance();
 }

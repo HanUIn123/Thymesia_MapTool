@@ -61,9 +61,19 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_03.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_08.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_fence_15.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_0.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_3.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Brick_Floor.png"), IMG_NONANIM_MODEL, 1);
-
-    //   "Brick_Floor",
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Cross.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/HORSE_P_WoodenStand02.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BloodTent02.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_BloodWoodChair01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Boss_Floor01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Boss_Floor02.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_WoodenChair01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/chandelier04.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Tower.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Railing.png"), IMG_NONANIM_MODEL, 1);
 
     //=============================================================================================================================
 
@@ -89,10 +99,9 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_Combined_03.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_ground_Road_Middle_250x250cm_1_a.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Brick_Floor.png"), IMG_GROUND_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_0.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_3.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_5.png"), IMG_NONANIM_MODEL, 1);
-    //Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_%d.png"), IMG_GROUND_MODEL, 6);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_0.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_3.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Planks.png"), IMG_GROUND_MODEL, 1);
 
     //=============================================================================================================================
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/TempCollider/TempCollider%d.png"), IMG_TRIGGER_OBJECT, 1);
@@ -785,7 +794,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
     LightDesc.eType = LIGHT_DESC::TYPE_DIRECTIONAL;
     LightDesc.vDirection = _float4(1.f, 1.f, 1.f, 0.f);
     LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-    LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
     LightDesc.vSpecular = _float4(0.3f, 0.3f, 0.3f, 1.f);
 
     if (FAILED(m_pGameInstance->Add_Light(LightDesc)))
@@ -1014,7 +1023,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
         static int iCurrentItem = 0;
         ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-        for (_uint i = 0; i < 55; ++i)
+        for (_uint i = 0; i < 65; ++i)
         {
             _uint  iTextureIndex = iCurrentItem * 3 + i;
 
@@ -1124,10 +1133,10 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
         }
 
     }
+ }
 
     //m_strGroundObjectDeseasednames
     //m_strGroundObjectTreenames
-}
 
 void CLevel_GamePlay::Active_PreviewModelImage()
 {
@@ -1207,6 +1216,17 @@ void CLevel_GamePlay::Add_GroundObjects()
             EnvironmentDesc.ObjectName = m_strGorundobjectRailingNames[m_iGroundModelIndex];
             break;
 
+        case 7:
+            EnvironmentDesc.ObjectName = m_strGroundObjectCircusBalloonNames[m_iGroundModelIndex];
+            break;
+
+        case 8:
+            EnvironmentDesc.ObjectName = m_strGroundObjectCircusHangsNames[m_iGroundModelIndex];
+            break;
+
+        case 9:
+            EnvironmentDesc.ObjectName = m_strGroundObjectCircusTreeNames[m_iGroundModelIndex];
+            break;
         default:
             return;
 
@@ -1444,6 +1464,65 @@ void CLevel_GamePlay::Setting_GroundObjectList()
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
             ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.f };
             ObjectDesc.ObjectName = m_strGorundobjectRailingNames[m_iGroundModelIndex];
+
+        }
+    }
+
+    else if (ImGui::CollapsingHeader("Balloon Model List"))
+    {
+        m_iGroundObjectListIndex = 7;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectCircusBalloonNames, IM_ARRAYSIZE(m_strGroundObjectCircusBalloonNames)))
+        {
+            m_iGroundModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectCircusBalloonNames[m_iGroundModelIndex];
+
+        }
+
+        }
+
+    else if (ImGui::CollapsingHeader("Hangs List"))
+    {
+        m_iGroundObjectListIndex = 8;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectCircusHangsNames, IM_ARRAYSIZE(m_strGroundObjectCircusHangsNames)))
+        {
+            m_iGroundModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectCircusHangsNames[m_iGroundModelIndex];
+
+        }
+
+        }
+
+    else if (ImGui::CollapsingHeader("Circus Tree List"))
+    {
+        m_iNonMoveObjectListIndex = 8;
+
+        static int iCurrentItem = 0;
+        if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectCircusTreeNames, IM_ARRAYSIZE(m_strGroundObjectCircusTreeNames)))
+        {
+            m_iGroundModelIndex = iCurrentItem;
+
+            CObject::OBJECT_DESC ObjectDesc = {};
+            ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ObjectDesc.fFrustumRadius = m_fFrustumRadius;
+            ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.ObjectName = m_strGroundObjectCircusTreeNames[m_iGroundModelIndex];
 
         }
     }
@@ -1801,7 +1880,7 @@ void CLevel_GamePlay::Update_InstanceObjects()
                             //_vector vChangedScale = XMVector3TransformCoord(vCurrentScale, XMMatrixScaling(0.7f, 0.7f, 0.7f));
                             //XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);
 
-                            XMVECTOR quaternion = XMQuaternionRotationAxis(XMVectorSet(1, 0, 0, 0), XM_PI);
+                            XMVECTOR quaternion = XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), XM_PI);
 
                             XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], XMQuaternionMultiply(vCurrentRotation, quaternion));
 
@@ -2189,6 +2268,8 @@ HRESULT CLevel_GamePlay::Load_Objects()
     }
 
     CloseHandle(hFile);
+
+    S_OK;
 }
 
 HRESULT CLevel_GamePlay::Save_Monster_Index()

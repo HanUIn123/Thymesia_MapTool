@@ -282,8 +282,17 @@ private:
         "SM_fence_15",
         "House0",
         "House3",
-        "House5",
         "Brick_Floor",
+        "Cross",
+        "HORSE_P_WoodenStand02",
+        "P_BloodTent02",
+        "P_BloodWoodChair01",
+        "P_Boss_Floor01",
+        "P_Boss_Floor02",
+        "P_WoodenChair01",
+        "chandelier04",
+        "SM_Tower",
+        "SM_Railing",
     };
 
     const char* m_strObjectUrnNames[256] =
@@ -321,6 +330,7 @@ private:
         "SM_Wall_Combined_03",
         "SM_ground_Road_Middle_250x250cm_1_a",
         "Brick_Floor",
+        "SM_Planks",
     };
 
     const char* m_strGorundobjectClothesNames[9] =
@@ -524,6 +534,42 @@ private:
         "SM_tombstone_40",
         "SM_tombstone_41",
         "SM_tombstone_42",
+    };
+
+
+    const char* m_strGroundObjectCircusBalloonNames[7] =
+    {
+        "P_CircusBalloon01",
+        "P_CircusBalloon02",
+        "P_CircusballoonDamage01",
+        "P_CircusballoonDamage02",
+        "P_VariationBranch01_01",
+        "P_VariationBranch02",
+        "P_VariationBranch03",
+    };
+
+
+    const char* m_strGroundObjectCircusHangsNames[8] =
+    {
+        "P_Hang01",
+        "P_Hang01_02",
+        "P_Hang01_03",
+        "P_Hang02",
+        "P_Hang02_02",
+        "P_Hang03",
+        "P_Hang03_02",
+        "P_HempRope",
+    };
+
+    const char* m_strGroundObjectCircusTreeNames[7] =
+    {
+        "tree01_01",
+        "tree01_02",
+        "tree02_01",
+        "tree02_02",
+        "P_Hang02_02",
+        "tree03_01",
+        "tree03_02",
     };
 
 private:
