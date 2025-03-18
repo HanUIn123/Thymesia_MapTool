@@ -242,7 +242,7 @@ HRESULT CGroundObject::Render()
 
         if (m_iNumInstance > 0)
         {
-            m_pShaderCom->Begin(0);
+            m_pShaderCom->Begin(m_iPassIndex);
             m_pModelCom->Render_Instance(i, iVisibleCount);
         }
     }

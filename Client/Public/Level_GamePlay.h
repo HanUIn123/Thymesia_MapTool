@@ -224,6 +224,7 @@ private:
     _float                              m_fScaleMax[2] = { -1.f, 1.f };
     _float                              m_fRotationMax[2] = { -180.f, 180.f };
     _float	                            m_fRadiusMax = { 100.f };
+    _int                                m_iPassIndex = { 0 };
 
     _int                                m_iGroundObjectListIndex = { -1 };
     _int                                m_iNonMoveObjectListIndex = { -1 };

@@ -18,6 +18,7 @@ HRESULT CObject::Initialize(void* pArg)
 	CObject::OBJECT_DESC* pDesc = static_cast<CObject::OBJECT_DESC*>(pArg);
 
 	m_fFrustumRadius = pDesc->fFrustumRadius;
+	m_iCullPass = pDesc->iPassNum;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -80,6 +81,7 @@ CObject::OBJECT_INFO CObject::Get_ObjectInfo()
 	pInfo.fScale		 = m_pTransformCom->Get_Scale();
 	pInfo.fRotation		 = m_pTransformCom->Get_Rotation();
 	XMStoreFloat4(&pInfo.fPosition, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	pInfo.iPassNum		 = m_iCullPass;
 
 	return pInfo;
 }

@@ -282,6 +282,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
     ImGui::InputFloat3("Object_Scale", m_fMeshScale);
     ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
     ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
+    ImGui::InputInt("PassNumber", &m_iPassIndex);
 
     if (ImGui::Button("Delete_ObjectIndex"))
     {
@@ -974,6 +975,7 @@ void CLevel_GamePlay::Add_NonAnimObjects()
     Desc.fFrustumRadius = m_fFrustumRadius;
     Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
     Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
+    Desc.iPassNum = { (_uint)m_iPassIndex };
 
     switch (m_iNonMoveObjectListIndex)
     {
@@ -1188,6 +1190,8 @@ void CLevel_GamePlay::Add_GroundObjects()
 
         EnvironmentDesc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
         EnvironmentDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.0f };
+
+        EnvironmentDesc.iPassNum = { (_uint)m_iPassIndex };
 
         switch (m_iGroundObjectListIndex)
         {
@@ -1510,7 +1514,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
 
     else if (ImGui::CollapsingHeader("Circus Tree List"))
     {
-        m_iNonMoveObjectListIndex = 8;
+        m_iGroundObjectListIndex = 9;
 
         static int iCurrentItem = 0;
         if (ImGui::Combo("##3", &iCurrentItem, m_strGroundObjectCircusTreeNames, IM_ARRAYSIZE(m_strGroundObjectCircusTreeNames)))
@@ -1894,6 +1898,26 @@ void CLevel_GamePlay::Update_InstanceObjects()
                                 m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
                             );
                         }
+                        else if (m_pGameInstance->isKeyEnter(DIK_X))
+                        {
+                            XMVECTOR vCurrentPosition = XMLoadFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex]);
+                            XMVECTOR vCurrentScale = XMLoadFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex]);
+                            XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
+
+                            XMVECTOR quaternion = XMQuaternionRotationAxis(XMVectorSet(1.f, 0, 0, 0), XM_PI);
+
+                            XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], XMQuaternionMultiply(vCurrentRotation, quaternion));
+
+                            /*    XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);*/
+
+                            m_pSelectedInstancedObject->Update_InstanceBuffer
+                            (
+                                m_iSelectedInstanceIndex,
+                                m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex],
+                                m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex],
+                                m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]
+                            );
+                        }
                         else
                         {
                             if (ImGui::DragFloat3(("Position##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], 0.1f))
@@ -2081,6 +2105,7 @@ HRESULT CLevel_GamePlay::Save_Objects()
             WriteFile(hFile, &Info.fRotation, sizeof(_float3), &dwByte, nullptr);
             WriteFile(hFile, &Info.fScale, sizeof(_float3), &dwByte, nullptr);
             WriteFile(hFile, &Info.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
+            WriteFile(hFile, &Info.iPassNum, sizeof(_uint), &dwByte, nullptr);
         }
     }
 
@@ -2094,6 +2119,7 @@ HRESULT CLevel_GamePlay::Save_Objects()
         CEnvironmentObject::EN_OBJECT_INFO EnvironmentInfo = pEnvironmentObject->Get_EnvironmentObjectInfo();
 
         WriteFile(hFile, EnvironmentInfo.szName, MAX_PATH, &dwByte2, nullptr);
+        WriteFile(hFile, &EnvironmentInfo.iPassNum, sizeof(_uint), &dwByte, nullptr);
 
         vector<VTX_MODEL_INSTANCE> vecInstanceData = pEnvironmentObject->Get_ModelInstanceVector();
         _uint iInstanceCount = static_cast<_uint>(vecInstanceData.size());
@@ -2176,14 +2202,9 @@ HRESULT CLevel_GamePlay::Load_Objects()
         ReadFile(hFile, &Desc.fRotation, sizeof(_float3), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.iPassNum, sizeof(_uint), &dwByte, nullptr);
 
-        Desc.ObjectName = szLoadName;/*
-
-        XMStoreFloat4(&Desc.fPosition, XMVector3TransformCoord(XMLoadFloat4(&Desc.fPosition), XMMatrixScaling(0.7f, 0.7f, 0.7f)));
-
-
-        _vector newScaleMatrix = XMVectorSet(0.7f, 0.7f, 0.7f, 1.f) * XMLoadFloat3(&Desc.fScaling);
-        XMStoreFloat3(&Desc.fScaling, newScaleMatrix);*/
+        Desc.ObjectName = szLoadName;
 
         CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
 
@@ -2201,6 +2222,7 @@ HRESULT CLevel_GamePlay::Load_Objects()
         _char szLoadName[MAX_PATH] = {};
 
         ReadFile(hFile, szLoadName, MAX_PATH, &dwByte2, nullptr);
+        ReadFile(hFile, &Desc.iPassNum, sizeof(_uint), &dwByte, nullptr);
         Desc.ObjectName = szLoadName;
 
         _uint iInstanceCount = 0;
@@ -2241,6 +2263,10 @@ HRESULT CLevel_GamePlay::Load_Objects()
         Desc.vecInstanceScale = vecInstanceScale;
         Desc.vecInstanceRotation = vecInstanceRotation;
         Desc.vecBoxSize = vecBoxSize;
+
+        m_vecInstancedGroundObjectPos = vecInstancePosition;
+        m_vecInstancedGroundObjectScale = vecInstanceScale;
+        m_vecInstancedGroundObjectRotation = vecInstanceRotation;
 
         CEnvironmentObject* pEnvironment = reinterpret_cast<CEnvironmentObject*>(
             m_pGameInstance->Add_GameObject_To_Layer_Take(

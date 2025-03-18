@@ -16,6 +16,7 @@ HRESULT CEnvironmentObject::Initialize(void* _pArg)
 	CEnvironmentObject::ENVIRONMENT_OBJECT_DESC* pDesc = static_cast<CEnvironmentObject::ENVIRONMENT_OBJECT_DESC*>(_pArg);
 
 	m_fFrustumRadius = pDesc->fFrustumRadius;
+	m_iPassIndex = pDesc->iPassNum;
 
 	if (FAILED(__super::Initialize(_pArg)))
 		return E_FAIL;
@@ -94,6 +95,7 @@ CEnvironmentObject::EN_OBJECT_INFO CEnvironmentObject::Get_EnvironmentObjectInfo
 	pInfo.fScale = m_pTransformCom->Get_Scale();
 	pInfo.fRotation = m_pTransformCom->Get_Rotation();
 	XMStoreFloat4(&pInfo.fPosition, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	pInfo.iPassNum = m_iPassIndex;
 
 	return pInfo;
 }

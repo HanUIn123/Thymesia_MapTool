@@ -45,6 +45,8 @@ public:
         vector<VTX_MODEL_INSTANCE>  vecStructModelInstance;
         _int                        iBoxSize = {  };
         vector<_int>                vecBoxSize = {};
+
+        _uint                       iPassNum = { 0 };
     };
 
 public:
@@ -56,6 +58,8 @@ public:
         _float3 fRotation;
         _float fFrustumRadius;
         _int iBoxSize;
+
+        _uint                       iPassNum = { 0 };
     };
 
     struct EN_MESH_INFO
@@ -101,6 +105,7 @@ protected:
     _char		   m_EnvironmentMeshName[MAX_PATH] = {};
     _bool		   m_bFrustumSphere = { true };
     _int           m_iBoxSize = { 1 };
+    _uint          m_iPassIndex = { 0 };
 
 protected:
     vector<_float3>     m_vecInstancePosition = {};

@@ -24,6 +24,7 @@ public:
 		_float		fFrustumRadius = { 0.f };
 		_float3		fRotation = { };
 		string		ObjectName = {};
+		_uint		iPassNum = { 0 };
 
 	}OBJECT_DESC;
 
@@ -35,6 +36,7 @@ public:
 		_float3 fScale ;
 		_float3 fRotation ;
 		_float  fFrustumRadius ;
+		_uint	iPassNum;
 
 	}OBJECT_INFO;
 
@@ -80,6 +82,7 @@ protected:
 
 	_bool		   m_bFrustumSphere = { true };
 
+	_uint		   m_iCullPass = { 0 };
 protected:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT Bind_ShaderResources() PURE;
