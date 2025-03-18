@@ -1871,6 +1871,27 @@ void CLevel_GamePlay::Update_InstanceObjects()
                     {
                         _bool bInstanceTransformInfoUpdated = false;
 
+                       // auto& pInstanceObject = m_EnvironmentObjects[iGroupIndex];
+
+
+                        _uint iSize = vecInstanceData.size();
+
+                        m_vecInstancedGroundObjectPos.resize(iSize);
+                        m_vecInstancedGroundObjectScale.resize(iSize);
+                        m_vecInstancedGroundObjectRotation.resize(iSize);
+
+                        _matrix matInstance = {};
+                        matInstance.r[0] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[0]);
+                        matInstance.r[1] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[1]);
+                        matInstance.r[2] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[2]);
+                        matInstance.r[3] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[3]);
+
+                        XMVECTOR scale, rotation, translation;
+                        XMMatrixDecompose(&scale, &rotation, &translation, matInstance);
+
+                        XMStoreFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], translation);
+                        XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], scale);
+                        XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], rotation);
 
                         if (m_pGameInstance->isKeyEnter(DIK_Z))
                         {
@@ -2262,11 +2283,11 @@ HRESULT CLevel_GamePlay::Load_Objects()
         Desc.vecInstancePosition = vecInstancePosition;
         Desc.vecInstanceScale = vecInstanceScale;
         Desc.vecInstanceRotation = vecInstanceRotation;
-        Desc.vecBoxSize = vecBoxSize;
-
+        Desc.vecBoxSize = vecBoxSize;/*
         m_vecInstancedGroundObjectPos = vecInstancePosition;
         m_vecInstancedGroundObjectScale = vecInstanceScale;
-        m_vecInstancedGroundObjectRotation = vecInstanceRotation;
+        m_vecInstancedGroundObjectRotation = vecInstanceRotation;*/
+
 
         CEnvironmentObject* pEnvironment = reinterpret_cast<CEnvironmentObject*>(
             m_pGameInstance->Add_GameObject_To_Layer_Take(

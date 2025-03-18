@@ -54,6 +54,7 @@ public:
 
 	HRESULT	Create_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData);
 	HRESULT Update_InstanceBuffer(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData);
+	HRESULT Get_InstanceBuffer_Data(_uint _iNumInstances, const VTX_MODEL_INSTANCE* _TagInstanceData);
 private:
 	/* 가져온 정보를 저장한다. */
 	//const aiScene*					m_pAIScene = { nullptr };
