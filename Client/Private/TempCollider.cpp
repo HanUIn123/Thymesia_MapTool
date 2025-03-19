@@ -39,6 +39,7 @@ HRESULT CTempCollider::Initialize(void* _pArg)
 
 
     m_pTransformCom->Scaling(m_tagInfoTempCollider.fScale);
+    //m_pTransformCom->Scaling(_float3(m_tagInfoTempCollider.fScale.x * 10.0f, m_tagInfoTempCollider.fScale.y * 10.0f, m_tagInfoTempCollider.fScale.z * 10.0f));
     m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_tagInfoTempCollider.fPosition.x, m_tagInfoTempCollider.fPosition.y, m_tagInfoTempCollider.fPosition.z, m_tagInfoTempCollider.fPosition.w));
 
 
@@ -56,44 +57,6 @@ void CTempCollider::Update(_float _fTimeDelta)
 
 void CTempCollider::Late_Update(_float _fTimeDelta)
 {
-   /* if (Check_Collision_With_Player())
-    {
-        if (!m_bFade)
-        {
-            m_pGameInstance->Activate_Fade(TRIGGER_TYPE::TT_FADE_OUT, 2.0f);
-            m_bFade = true;
-        }
-    }
-    else
-    {
-        if (m_bFade)
-        {
-            m_pGameInstance->Activate_Fade(TRIGGER_TYPE::TT_FADE_IN, 2.0f);
-            m_bFade = false;
-        }
-    }*/
-
-    //if(Check_Collision_With_Player())
-    //    cout << "醱給 脾 六" << endl;
-    //else
-    //    cout << "寰脾" << endl;
-
-
-    // duration 高 還檜賊 說塭颶. 
-    //if (m_pGameInstance->Get_DIKeyState(DIK_1) & 0x80)
-    //{
-    //    m_pGameInstance->Activate_Trigger(TRIGGER_TYPE::TT_FADE_OUT, 0.5f, m_pBlackScreen);
-    //}
-    //else if (m_pGameInstance->Get_DIKeyState(DIK_2) & 0x80)
-    //{
-    //    m_pGameInstance->Activate_Trigger(TRIGGER_TYPE::TT_FADE_IN, 2.0f, m_pBlackScreen);
-    //}
-
-    //if (Check_Collision_With_Player)
-    //{
-    //    m_pGameInstance->Activate_Trigger(TRIGGER_TYPE::TT_INTERACTION)
-    //}
-
     m_pGameInstance->Add_RenderGroup(CRenderer::RG_NONBLEND, this);
 }
 
@@ -182,7 +145,6 @@ void CTempCollider::Free()
 {
     __super::Free();
 
-    //Safe_Release(m_pColliderCom);
     Safe_Release(m_pVIBufferCom);
     Safe_Release(m_pShaderCom);
 }

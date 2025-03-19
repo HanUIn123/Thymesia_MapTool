@@ -434,55 +434,65 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         {
             if (m_pGameInstance->isMouseEnter(DIM_LB))
             {
-                if (m_bIsMeshPickingMode)
+                //if (m_bIsMeshPickingMode)
+                //{
+                //    vector<Mesh_Pos> vMesh;
+
+                //    for (auto& pObject : m_Objects)
+                //    {
+                //        CObject::MESHINFO pInfo;
+
+                //        if (pObject != nullptr && pObject->Picking_Objects(pInfo))
+                //        {
+                //            Mesh_Pos vPos{};
+                //            vPos.fPosition = pInfo.fPosition;
+                //            vPos.fDist = pInfo.fDist;
+                //            vPos.pObject = pObject;
+
+                //            vMesh.push_back(vPos);
+                //        }
+                //    }
+
+                //    if (vMesh.size() != 0)
+                //    {
+                //        sort(vMesh.begin(), vMesh.end(), [](Mesh_Pos a, Mesh_Pos b) {
+                //            if (a.fDist < b.fDist) return true;
+                //            else
+                //                return false;
+                //            });
+
+                //        _float3 fPos = { 0.f ,0.f ,0.f };
+
+                //        fPos = vMesh.front().fPosition;
+
+                //        m_fMeshPickPos = fPos;
+
+                //        m_fObjectPos[0] = fPos.x;
+
+                //        m_fObjectPos[1] = fPos.y;
+
+                //        m_fObjectPos[2] = fPos.z;
+
+                //        Add_TriggerObjects();
+
+                //    }
+                //}
+                //else if (m_bIsTerrainPickingMode)
+                //{
+                //    if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_TRIGGER)))
+                //    {
+                //        Add_TriggerObjects();
+                //    }
+                //}
+
+                _float3 vPickPos = {};
+                if (m_pGameInstance->Compute_PickPos(&vPickPos))
                 {
-                    vector<Mesh_Pos> vMesh;
+                    m_fObjectPos[0] = vPickPos.x;
+                    m_fObjectPos[1] = vPickPos.y;
+                    m_fObjectPos[2] = vPickPos.z;
 
-                    for (auto& pObject : m_Objects)
-                    {
-                        CObject::MESHINFO pInfo;
-
-                        if (pObject != nullptr && pObject->Picking_Objects(pInfo))
-                        {
-                            Mesh_Pos vPos{};
-                            vPos.fPosition = pInfo.fPosition;
-                            vPos.fDist = pInfo.fDist;
-                            vPos.pObject = pObject;
-
-                            vMesh.push_back(vPos);
-                        }
-                    }
-
-                    if (vMesh.size() != 0)
-                    {
-                        sort(vMesh.begin(), vMesh.end(), [](Mesh_Pos a, Mesh_Pos b) {
-                            if (a.fDist < b.fDist) return true;
-                            else
-                                return false;
-                            });
-
-                        _float3 fPos = { 0.f ,0.f ,0.f };
-
-                        fPos = vMesh.front().fPosition;
-
-                        m_fMeshPickPos = fPos;
-
-                        m_fObjectPos[0] = fPos.x;
-
-                        m_fObjectPos[1] = fPos.y;
-
-                        m_fObjectPos[2] = fPos.z;
-
-                        Add_TriggerObjects();
-
-                    }
-                }
-                else if (m_bIsTerrainPickingMode)
-                {
-                    if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_TRIGGER)))
-                    {
-                        Add_TriggerObjects();
-                    }
+                    Add_TriggerObjects();
                 }
 
             }
@@ -1649,7 +1659,6 @@ void CLevel_GamePlay::Add_TriggerObjects()
     CTempCollider::TC_DESC Desc{};
 
     Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
-    //Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
     Desc.fScale = { m_fTriggerScale[0], m_fTriggerScale[1], m_fTriggerScale[2] };
     Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
 
@@ -1709,42 +1718,6 @@ void CLevel_GamePlay::Setting_TriggerObjects()
 
 void CLevel_GamePlay::Delete_TriggerObjects()
 {
-    //if (m_vecTempColliderObjects.empty())
-    //    return;
-
-    //_float3 vPickedPos;
-    //if (!m_pGameInstance->Compute_PickPos(&vPickedPos)) 
-    //    return;
-
-    //_float fMinDistance = FLT_MAX;
-    //CTempCollider* pClosestCollider = nullptr;
-
-    //for (auto& pCollider : m_vecTempColliderObjects)
-    //{
-    //    if (pCollider == nullptr)
-    //        continue;
-
-    //    _float4 vColliderPos = pCollider->Get_TempColliderPosition();
-
-    //    _float fDistance = sqrtf(
-    //        pow(vColliderPos.x - vPickedPos.x, 2) +
-    //        pow(vColliderPos.y - vPickedPos.y, 2) +
-    //        pow(vColliderPos.z - vPickedPos.z, 2)
-    //    );
-
-    //    if (fDistance < fMinDistance)
-    //    {
-    //        fMinDistance = fDistance;
-    //        pClosestCollider = pCollider;
-    //    }
-    //}
-
-    //if (pClosestCollider && fMinDistance < 1.0f) 
-    //{
-    //    //m_vecTempColliderObjects.erase();
-    //    m_pGameInstance->Add_DeadObject(TEXT("Layer_TriggerObject"), pClosestCollider);
-    //}
-
     if (m_vecTempColliderObjects.empty())
         return;
 
@@ -1775,7 +1748,6 @@ void CLevel_GamePlay::Delete_TriggerObjects()
             closestIter = iter;
         }
     }
-
 
     if (closestIter != m_vecTempColliderObjects.end() && fMinDistance < 1.0f)
     {
@@ -1816,7 +1788,6 @@ void CLevel_GamePlay::Update_TriggerObjects()
             m_vecTempColliderObjects[selectedIndex]->Set_TempColliderScale(scale);
         }
     }
-
 
     ImGuiIO IO = ImGui::GetIO();
 
