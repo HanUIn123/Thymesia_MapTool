@@ -3,7 +3,6 @@
 #include "GameObject.h"
 
 BEGIN(Engine)
-//class CCollider;
 class CVIBuffer_Cube;
 class CShader;
 END
@@ -17,7 +16,6 @@ public:
         _float4 fPosition = {};
         _float3 fRotation = {};
         _float3 fScale = {};
-        //TRIGGER_TYPE eTriggerType = {};
     };
 
     struct TC_INFO
@@ -55,17 +53,15 @@ public:
     _float3                                             Get_TempColliderScale()const { return m_tagInfoTempCollider.fScale; }
     void                                                Set_TempColliderScale(_float3 _vScale);
 private:
-    //CCollider* m_pColliderCom = { nullptr };
-    CVIBuffer_Cube* m_pVIBufferCom = { nullptr };
-    CShader* m_pShaderCom = { nullptr };
-
+    CVIBuffer_Cube*                                     m_pVIBufferCom = { nullptr };
+    CShader*                                            m_pShaderCom = { nullptr };
 
 private:
     _bool                                               m_bFade = { false };
     TC_INFO                                             m_tagInfoTempCollider;
 public:
-    static CTempCollider* Create(ID3D11Device* _pDevice, ID3D11DeviceContext* _pContext);
-    virtual CGameObject* Clone(void* _pArg) override;
+    static CTempCollider*                               Create(ID3D11Device* _pDevice, ID3D11DeviceContext* _pContext);
+    virtual CGameObject*                                Clone(void* _pArg) override;
     virtual void                                        Free() override;
 };
 END
