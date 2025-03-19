@@ -277,6 +277,10 @@ void CGroundObject::Update_InstanceBuffer(_uint _iInstanceIndex, const XMFLOAT3&
     for (_uint i = 0; i < m_iNumInstance; ++i)
     {
         XMVECTOR Quaternion = XMLoadFloat4(&m_vecInstanceRotation[i]);
+
+        if (XMVector3IsNaN(Quaternion))
+            return;
+
         XMMATRIX matRotation = XMMatrixRotationQuaternion(Quaternion);
 
         XMMATRIX matPosition = XMMatrixTranslation(m_vecInstancePosition[i].x, m_vecInstancePosition[i].y, m_vecInstancePosition[i].z);

@@ -35,6 +35,7 @@ public:
 	virtual void Set_BoxSize(_uint _iBoxSize) override;
 
 	void	Delete_InstanceObject(_uint _iInstanceIndex);
+
 private:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Bind_ShaderResources() override;

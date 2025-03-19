@@ -89,6 +89,9 @@ public:
     vector<_float3> Get_InstancePosition() { return m_vecInstancePosition; }
     virtual void    Set_BoxSize(_uint _iBoxSize) = 0;
     _uint           Get_BoxSize() { return m_iBoxSize; }
+
+
+    void	Get_Transforms(vector<_float3>& vecScale, vector <_float3>& vecPosition, vector <_float4>& vecRotation);
 protected:
     CShader*        m_pShaderCom = { nullptr };
     CModel*         m_pModelCom = { nullptr };

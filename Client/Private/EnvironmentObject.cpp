@@ -105,6 +105,17 @@ void CEnvironmentObject::Set_FrustumRadius(_float _fFrustumRadius)
 	m_fFrustumRadius = _fFrustumRadius;
 }
 
+void CEnvironmentObject::Get_Transforms(vector<_float3>& vecScale, vector<_float3>& vecPosition, vector<_float4>& vecRotation)
+{
+	vecScale.resize(m_vecInstanceScale.size());
+	vecPosition.resize(m_vecInstancePosition.size());
+	vecRotation.resize(m_vecInstanceRotation.size());
+
+	vecScale = m_vecInstanceScale;
+	vecPosition = m_vecInstancePosition;
+	vecRotation = m_vecInstanceRotation;
+}
+
 void CEnvironmentObject::Set_ModelInstanceVector(vector<VTX_MODEL_INSTANCE> _vecInstanceData)
 {
 	m_vecInstanceData = _vecInstanceData;

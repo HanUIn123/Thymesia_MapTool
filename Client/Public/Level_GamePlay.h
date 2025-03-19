@@ -245,7 +245,6 @@ private:
         "P_ChurchWindowGrilles01",
         "P_LongStairs01",
         "SM_Plains_CastleArch_Ruin_01",
-        "SM_Trim_01a",
         "SM_Wall_8x8_Broken_01c",
         "SM_Wall_8x8_Broken_01d",
         "SM_Wall_8x8_Broken_01e",
@@ -294,6 +293,7 @@ private:
         "chandelier04",
         "SM_Tower",
         "SM_Railing",
+        "Greenhouse_Elevator01",
     };
 
     const char* m_strObjectUrnNames[256] =
@@ -331,7 +331,11 @@ private:
         "SM_Wall_Combined_03",
         "SM_ground_Road_Middle_250x250cm_1_a",
         "Brick_Floor",
+        "House0",
+        "House3",
         "SM_Planks",
+        "SM_WoodStair03",
+        "SM_Trim_01a",
     };
 
     const char* m_strGorundobjectClothesNames[9] =

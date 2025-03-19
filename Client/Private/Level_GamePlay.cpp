@@ -25,7 +25,6 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_ChurchWindowGrilles01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_LongStairs01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Plains_CastleArch_Ruin_01.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Trim_01a.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01c.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01d.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Wall_8x8_Broken_01e.png"), IMG_NONANIM_MODEL, 1);
@@ -74,6 +73,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/chandelier04.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Tower.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Railing.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Greenhouse_Elevator01.png"), IMG_NONANIM_MODEL, 1);
 
     //=============================================================================================================================
 
@@ -102,6 +102,8 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_0.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/House_3.png"), IMG_GROUND_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Planks.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_WoodStair03.png"), IMG_GROUND_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Trim_01a.png"), IMG_GROUND_MODEL, 1);
 
     //=============================================================================================================================
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/TempCollider/TempCollider%d.png"), IMG_TRIGGER_OBJECT, 1);
@@ -1336,7 +1338,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
         static int iCurrentItem = 0;
         ImGui::Combo("##5", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-        for (_uint i = 0; i < 23; ++i)
+        for (_uint i = 0; i < 26; ++i)
         {
             _uint  iTextureIndex = iCurrentItem * 3 + i;
             m_iRandGroundModelIndex = rand() % (iTextureIndex + 1);
@@ -1871,27 +1873,43 @@ void CLevel_GamePlay::Update_InstanceObjects()
                     {
                         _bool bInstanceTransformInfoUpdated = false;
 
-                       // auto& pInstanceObject = m_EnvironmentObjects[iGroupIndex];
+                        //_uint iSize = vecInstanceData.size();
 
+                        //m_vecInstancedGroundObjectPos.resize(iSize);
+                        //m_vecInstancedGroundObjectScale.resize(iSize);
+                        //m_vecInstancedGroundObjectRotation.resize(iSize);
 
-                        _uint iSize = vecInstanceData.size();
+                        //_matrix matInstance = {};
+                        //matInstance.r[0] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[0]);
+                        //matInstance.r[1] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[1]);
+                        //matInstance.r[2] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[2]);
+                        //matInstance.r[3] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[3]);
 
-                        m_vecInstancedGroundObjectPos.resize(iSize);
-                        m_vecInstancedGroundObjectScale.resize(iSize);
-                        m_vecInstancedGroundObjectRotation.resize(iSize);
+                        //XMVECTOR scale, rotation, translation;
+                        //XMMatrixDecompose(&scale, &rotation, &translation, matInstance);
 
-                        _matrix matInstance = {};
-                        matInstance.r[0] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[0]);
-                        matInstance.r[1] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[1]);
-                        matInstance.r[2] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[2]);
-                        matInstance.r[3] = XMLoadFloat4(&vecInstanceData[m_iSelectedInstanceIndex].InstanceMatrix[3]);
+                        //_vector vPrePos, vPreScale, vPreRot;
+                        //vPrePos = XMLoadFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex]);
+                        //vPreScale = XMLoadFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex]);
+                        //vPreRot = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
 
-                        XMVECTOR scale, rotation, translation;
-                        XMMatrixDecompose(&scale, &rotation, &translation, matInstance);
+                        //_vector vTest = XMVector3Length(rotation);
 
-                        XMStoreFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], translation);
-                        XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], scale);
-                        XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], rotation);
+                  /*
+                        if (!XMVector3IsNaN(rotation) && !isnan(XMVectorGetX(vTest)) && !(XMVectorGetX(vTest) > 10000.f)) 
+                        {
+                            XMStoreFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], translation);
+                            XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], scale);
+                            XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], rotation);
+                        }
+                        else
+                        {
+                            XMStoreFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], vPrePos);
+                            XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vPreScale);
+                            XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vPreRot);
+                        }*/
+                        pEnvironmentObject->Get_Transforms(m_vecInstancedGroundObjectScale, m_vecInstancedGroundObjectPos, m_vecInstancedGroundObjectRotation);
+
 
                         if (m_pGameInstance->isKeyEnter(DIK_Z))
                         {
@@ -1899,17 +1917,13 @@ void CLevel_GamePlay::Update_InstanceObjects()
                             XMVECTOR vCurrentScale = XMLoadFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex]);
                             XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
 
-                            //_vector vChangedPos = XMVector3TransformCoord(vCurrentPosition, XMMatrixScaling(0.7f, 0.7f, 0.7f));
-                            //XMStoreFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], vChangedPos);
+                            vCurrentRotation.m128_f32[2] *= -1.f;
 
-                            //_vector vChangedScale = XMVector3TransformCoord(vCurrentScale, XMMatrixScaling(0.7f, 0.7f, 0.7f));
-                            //XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);
+                            XMVECTOR vAdditionalRotation = XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), XMConvertToRadians(180.0f));
 
-                            XMVECTOR quaternion = XMQuaternionRotationAxis(XMVectorSet(0, 1, 0, 0), XM_PI);
+                            XMVECTOR vNewRotation = XMQuaternionMultiply(vAdditionalRotation, vCurrentRotation);
 
-                            XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], XMQuaternionMultiply(vCurrentRotation, quaternion));
-
-                            /*    XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], vChangedScale);*/
+                            XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], vNewRotation);
 
                             m_pSelectedInstancedObject->Update_InstanceBuffer
                             (
@@ -1925,7 +1939,7 @@ void CLevel_GamePlay::Update_InstanceObjects()
                             XMVECTOR vCurrentScale = XMLoadFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex]);
                             XMVECTOR vCurrentRotation = XMLoadFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex]);
 
-                            XMVECTOR quaternion = XMQuaternionRotationAxis(XMVectorSet(1.f, 0, 0, 0), XM_PI);
+                            XMVECTOR quaternion = XMQuaternionRotationAxis(XMVectorSet(0, 1.f, 0, 0), XM_PI);
 
                             XMStoreFloat4(&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], XMQuaternionMultiply(vCurrentRotation, quaternion));
 
@@ -1945,11 +1959,13 @@ void CLevel_GamePlay::Update_InstanceObjects()
                                 bInstanceTransformInfoUpdated = true;
                             if (ImGui::DragFloat3(("Scale##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], 0.1f, 0.1f, 10.0f))
                                 bInstanceTransformInfoUpdated = true;
-                            if (ImGui::DragFloat4(("Rotation##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], 0.1f, -3.14f, 3.14f))
+                            if (ImGui::DragFloat4(("Rotation##" + to_string(i)).c_str(), (float*)&m_vecInstancedGroundObjectRotation[m_iSelectedInstanceIndex], 0.1f, -1.f, 1.f))
                                 bInstanceTransformInfoUpdated = true;
+
                         }
                         if (bInstanceTransformInfoUpdated)
                         {
+                        
                             m_pSelectedInstancedObject->Update_InstanceBuffer
                             (
                                 m_iSelectedInstanceIndex,
