@@ -2532,7 +2532,7 @@ HRESULT CLevel_GamePlay::Pick_Object(MENU_TYPE _eMenuType)
 
 HRESULT CLevel_GamePlay::Picking_Points()
 {
-    if (m_bIsMeshPickingMode)
+   /* if (m_bIsMeshPickingMode)
     {
         for (auto& pObject : m_Objects)
         {
@@ -2553,6 +2553,12 @@ HRESULT CLevel_GamePlay::Picking_Points()
     {
         m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))), m_pTerrain->Get_Transfrom());
         m_fWholePickPos = m_fPickPos;
+    }*/
+
+    _float3 vPickPos;
+    if (m_pGameInstance->Compute_PickPos(&vPickPos))
+    {
+        m_fWholePickPos = vPickPos;
     }
 
     if (m_fWholePickPos.y == -0.5f)
