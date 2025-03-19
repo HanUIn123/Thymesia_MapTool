@@ -2128,6 +2128,9 @@ HRESULT CLevel_GamePlay::Save_Objects()
 
         WriteFile(hFile, EnvironmentInfo.szName, MAX_PATH, &dwByte2, nullptr);
         WriteFile(hFile, &EnvironmentInfo.iPassNum, sizeof(_uint), &dwByte, nullptr);
+        WriteFile(hFile, &EnvironmentInfo.bCullingObject, sizeof(_bool), &dwByte2, nullptr);
+
+
 
         vector<VTX_MODEL_INSTANCE> vecInstanceData = pEnvironmentObject->Get_ModelInstanceVector();
         _uint iInstanceCount = static_cast<_uint>(vecInstanceData.size());
@@ -2231,7 +2234,9 @@ HRESULT CLevel_GamePlay::Load_Objects()
 
         ReadFile(hFile, szLoadName, MAX_PATH, &dwByte2, nullptr);
         ReadFile(hFile, &Desc.iPassNum, sizeof(_uint), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.isCullingObject, sizeof(_bool), &dwByte2, nullptr);
         Desc.ObjectName = szLoadName;
+
 
         _uint iInstanceCount = 0;
         ReadFile(hFile, &iInstanceCount, sizeof(_uint), &dwByte2, nullptr);
