@@ -36,6 +36,7 @@ public:
 
         _float fInstanceCount = {};
         _bool   isBasicMode = { false };
+        _bool   isCullingObject = { false };
 
         // 인스턴싱 객체들의 S R T 를 vector 컨테이너에 담아서 관리.
         vector<_float3>             vecInstancePosition = {};
@@ -47,6 +48,7 @@ public:
         vector<_int>                vecBoxSize = {};
 
         _uint                       iPassNum = { 0 };
+        _bool                           bCullingObject = { false };
     };
 
 public:
@@ -60,6 +62,7 @@ public:
         _int iBoxSize;
 
         _uint                       iPassNum = { 0 };
+        _bool                           bCullingObject = { false };
     };
 
     struct EN_MESH_INFO
@@ -117,6 +120,8 @@ protected:
     _bool               m_bModeSelected = { false };
     vector<_int>        m_vecBoxSize = {};
 
+
+    _bool               m_bCullingObject = { false };
 protected:
     vector<VTX_MODEL_INSTANCE> m_vecInstanceData;
     _uint m_iNumInstance = {};

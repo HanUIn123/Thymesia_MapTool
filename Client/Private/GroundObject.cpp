@@ -34,6 +34,8 @@ HRESULT CGroundObject::Initialize(void* _pArg)
 
     m_bModeSelected = pDesc->isBasicMode;
     m_vecBoxSize = pDesc->vecBoxSize;
+    m_bCullingObject = pDesc->isCullingObject;
+
 
     if (!m_bModeSelected)
     {
@@ -75,7 +77,7 @@ HRESULT CGroundObject::Initialize(void* _pArg)
 
             XMMATRIX matWorld = matScale * matRotation * matPosition;
 
-         
+
             XMFLOAT4X4 tempMatrix;
             XMStoreFloat4x4(&tempMatrix, matWorld);
 
@@ -197,6 +199,8 @@ void CGroundObject::Priority_Update(_float _fTimeDelta)
 
 void CGroundObject::Update(_float _fTimeDelta)
 {
+
+
     Update_InstanceBuffer_ForCulling();
 }
 
@@ -218,50 +222,49 @@ HRESULT CGroundObject::Render()
 
     _uint			iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    for (size_t i = 0; i < iNumMeshes; i++)
+    if (m_bCullingObject)
     {
-        if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, i, aiTextureType_DIFFUSE, "g_DiffuseTexture", 0)))
-            return E_FAIL;
-
-        if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, i, aiTextureType_NORMALS, "g_NormalTexture", 0)))
-            return E_FAIL;
-
-        vector<VTX_MODEL_INSTANCE> vecVTXInstance;
-        for (_uint j = 0; j < m_iNumInstance; ++j)
+        for (size_t i = 0; i < iNumMeshes; i++)
         {
-            if (m_vecVisible[j])
-                vecVTXInstance.push_back(m_vecInstanceData[j]);
-        }
+            if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, i, aiTextureType_DIFFUSE, "g_DiffuseTexture", 0)))
+                return E_FAIL;
 
-        _uint iVisibleCount = static_cast<_uint>(vecVTXInstance.size());
+            if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, i, aiTextureType_NORMALS, "g_NormalTexture", 0)))
+                return E_FAIL;
 
-        if (iVisibleCount == 0)
-            continue;
+            vector<VTX_MODEL_INSTANCE> vecVTXInstance;
+            for (_uint j = 0; j < m_iNumInstance; ++j)
+            {
+                if (m_vecVisible[j])
+                    vecVTXInstance.push_back(m_vecInstanceData[j]);
+            }
 
-        m_pModelCom->Update_InstanceBuffer(iVisibleCount, vecVTXInstance.data());
+            _uint iVisibleCount = static_cast<_uint>(vecVTXInstance.size());
 
-        if (m_iNumInstance > 0)
-        {
-            m_pShaderCom->Begin(m_iPassIndex);
-            m_pModelCom->Render_Instance(i, iVisibleCount);
+            if (iVisibleCount == 0)
+                continue;
+
+            m_pModelCom->Update_InstanceBuffer(iVisibleCount, vecVTXInstance.data());
+
+            if (m_iNumInstance > 0)
+            {
+                m_pShaderCom->Begin(m_iPassIndex);
+                m_pModelCom->Render_Instance(i, iVisibleCount);
+            }
         }
     }
-
-    //for (size_t i = 0; i < iNumMeshes; i++)
-    //{
-    //    if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, i, aiTextureType_DIFFUSE, "g_DiffuseTexture", 0)))
-    //        return E_FAIL;
-
-    //    if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, i, aiTextureType_NORMALS, "g_NormalTexture", 0)))
-    //        return E_FAIL;
-
-    //    m_pShaderCom->Begin(0);
-    //    m_pModelCom->Render_Instance(i, m_iNumInstance);
-    //}
-
-    //for (auto& pCollider : m_vecColliderCom)
-    //    pCollider[COLL_AABB].Render();
-
+    else
+    {
+        for (size_t i = 0; i < iNumMeshes; i++)
+        {
+            if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, i, aiTextureType_DIFFUSE, "g_DiffuseTexture", 0)))
+                return E_FAIL;
+            if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, i, aiTextureType_NORMALS, "g_NormalTexture", 0)))
+                return E_FAIL;
+            m_pShaderCom->Begin(0);
+            m_pModelCom->Render_Instance(i, m_iNumInstance);
+        }
+    }
     return S_OK;
 }
 

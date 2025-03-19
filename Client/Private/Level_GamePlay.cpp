@@ -2128,6 +2128,9 @@ HRESULT CLevel_GamePlay::Save_Objects()
 
         WriteFile(hFile, EnvironmentInfo.szName, MAX_PATH, &dwByte2, nullptr);
         WriteFile(hFile, &EnvironmentInfo.iPassNum, sizeof(_uint), &dwByte, nullptr);
+        WriteFile(hFile, &EnvironmentInfo.bCullingObject, sizeof(_bool), &dwByte2, nullptr);
+
+
 
         vector<VTX_MODEL_INSTANCE> vecInstanceData = pEnvironmentObject->Get_ModelInstanceVector();
         _uint iInstanceCount = static_cast<_uint>(vecInstanceData.size());
@@ -2231,7 +2234,9 @@ HRESULT CLevel_GamePlay::Load_Objects()
 
         ReadFile(hFile, szLoadName, MAX_PATH, &dwByte2, nullptr);
         ReadFile(hFile, &Desc.iPassNum, sizeof(_uint), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.isCullingObject, sizeof(_bool), &dwByte2, nullptr);
         Desc.ObjectName = szLoadName;
+
 
         _uint iInstanceCount = 0;
         ReadFile(hFile, &iInstanceCount, sizeof(_uint), &dwByte2, nullptr);
@@ -2532,7 +2537,7 @@ HRESULT CLevel_GamePlay::Pick_Object(MENU_TYPE _eMenuType)
 
 HRESULT CLevel_GamePlay::Picking_Points()
 {
-    if (m_bIsMeshPickingMode)
+   /* if (m_bIsMeshPickingMode)
     {
         for (auto& pObject : m_Objects)
         {
@@ -2553,6 +2558,12 @@ HRESULT CLevel_GamePlay::Picking_Points()
     {
         m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))), m_pTerrain->Get_Transfrom());
         m_fWholePickPos = m_fPickPos;
+    }*/
+
+    _float3 vPickPos;
+    if (m_pGameInstance->Compute_PickPos(&vPickPos))
+    {
+        m_fWholePickPos = vPickPos;
     }
 
     if (m_fWholePickPos.y == -0.5f)
