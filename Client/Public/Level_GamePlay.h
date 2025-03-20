@@ -30,6 +30,7 @@ class CLevel_GamePlay final : public CLevel
 public:
     enum IMGUI_TEXTURE_TYPE { IMG_ANIM_MODEL, IMG_NONANIM_MODEL, IMG_GROUND_MODEL, IMG_TRIGGER_OBJECT, IMG_END };
     enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI, MT_GROUND, MT_HEIGHT, MT_TERRAIN_MASK, MT_WATER_MASK, MT_TRIGGER,  MT_END };
+    enum NONMOVEOBJECT_TYPE { NONMOVEOBJECT_DEFAULT, NONMOVEOBJECT_BILLBOARD, NONMOVEOBJECT_INTERACTIVE };
 public:
     struct CELL_POINTS
     {
@@ -97,7 +98,7 @@ private:
 
 
 private:
-    void								Add_NonAnimObjects();
+    void								Add_NonAnimObjects(NONMOVEOBJECT_TYPE etype);
     void								Add_AnimObjects();
     void								Setting_NonAnimObjectList();
     void								Active_PreviewModelImage();
@@ -177,6 +178,8 @@ private:
     map<_uint, vector<_float3>>         m_mapFloorPickedPoints;
     map<_uint, vector<CELL_POINTS>>     m_mapWholeCellPoints;
 
+    NONMOVEOBJECT_TYPE                  m_eNonMoveObjectType = { NONMOVEOBJECT_DEFAULT };
+    _int                               m_iBillBoardMeshNum = { 0 };
 
 
 private:
@@ -189,7 +192,6 @@ private:
     _bool                               m_bTerrainMaskSelected = { false };
     _bool                               m_bTerrainWaterMaskSelected = { false };
     _bool                               m_bTriggerObjectMenuSelected = { false };
-
 
 
     _bool								m_bIsMeshPickingMode = { false };
@@ -294,6 +296,7 @@ private:
         "SM_Tower",
         "SM_Railing",
         "Greenhouse_Elevator01",
+        "candle01_fire",
     };
 
     const char* m_strObjectUrnNames[256] =

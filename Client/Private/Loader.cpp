@@ -20,6 +20,7 @@
 
 #pragma region 인스턴싱요소
 #include "GroundObject.h"
+#include "BillBoardObject.h"
 #pragma endregion
 
 
@@ -1392,10 +1393,17 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/SM_WoodStairs/SM_WoodStair03.fbx", CModel::MODEL_NONANIM, PreTransformMatrix))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_candle01_fire"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/candle/candle01_fire.fbx", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
+		return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"),
 		CNonMoveObject::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_BillBoardObject"),
+		CBillBoardObject::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	//if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_"),
 	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Objects/", CModel::MODEL_NONANIM, PreTransformMatrix, true))))
@@ -1439,6 +1447,7 @@ HRESULT CLoader::Loading_For_Level_GamePlay()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_GroundObject"),
 		CGroundObject::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
 #pragma endregion
 
 

@@ -19,16 +19,23 @@ BEGIN(Client)
 class CObject  abstract : public CGameObject 
 {
 public:
+	enum OBJECT_TYPE {
+		OBJECT_DEFAULT = 0x00000001,
+		OBJECT_BILLBOARD = 0x00000002,
+		OBJECT_INTERACTIVE = 0x00000004,
+	};
+
+public:
 	typedef struct Object_Desc : public CGameObject::GAMEOBJECT_DESC
 	{
 		_float		fFrustumRadius = { 0.f };
 		_float3		fRotation = { };
 		string		ObjectName = {};
 		_uint		iPassNum = { 0 };
-
+		_uint		iObjectType = { OBJECT_DEFAULT };
+		_uint		iBillBoardMeshNum = { 0 };
 	}OBJECT_DESC;
 
-public:
 	typedef struct Object_Info
 	{
 		_char szName[MAX_PATH] = {};
@@ -37,6 +44,8 @@ public:
 		_float3 fRotation ;
 		_float  fFrustumRadius ;
 		_uint	iPassNum;
+		_uint	iObjectType;
+		_uint	iBillBoardMeshNum = { 0 };
 
 	}OBJECT_INFO;
 
@@ -83,6 +92,10 @@ protected:
 	_bool		   m_bFrustumSphere = { true };
 
 	_uint		   m_iCullPass = { 0 };
+
+	_uint		   m_iObjectType = { OBJECT_DEFAULT };
+
+	_uint		   m_iBillBoardMeshNum = { 0 };
 protected:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT Bind_ShaderResources() PURE;

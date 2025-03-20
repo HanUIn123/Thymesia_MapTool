@@ -91,6 +91,9 @@
     <Filter Include="02.GameObject\TempCollider">
       <UniqueIdentifier>{2abf03a7-be9f-443d-980f-402cea0c0d16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Object\BillBoardObject">
+      <UniqueIdentifier>{4d29b075-7c14-4889-9080-62e7dd670dd4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -198,6 +201,9 @@
     <ClInclude Include="..\public\MainApp.h">
       <Filter>00.MainApp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BillBoardObject.h">
+      <Filter>02.GameObject\Object\BillBoardObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -292,6 +298,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\TempCollider.cpp">
       <Filter>02.GameObject\TempCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BillBoardObject.cpp">
+      <Filter>02.GameObject\Object\BillBoardObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

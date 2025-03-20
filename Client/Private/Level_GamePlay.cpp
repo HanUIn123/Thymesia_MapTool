@@ -74,6 +74,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Tower.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Railing.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Greenhouse_Elevator01.png"), IMG_NONANIM_MODEL, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/candle01_fire.png"), IMG_NONANIM_MODEL, 1);
 
     //=============================================================================================================================
 
@@ -279,12 +280,19 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bIsTerrainPickingMode = true;
         m_bIsMeshPickingMode = false;
     }
+    
+    _int    iObjectType = m_eNonMoveObjectType;
 
     ImGui::InputFloat3("Object_Pos", m_fObjectPos);
     ImGui::InputFloat3("Object_Scale", m_fMeshScale);
     ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
     ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
     ImGui::InputInt("PassNumber", &m_iPassIndex);
+    ImGui::InputInt("ObjectType", &iObjectType);
+    if (iObjectType == NONMOVEOBJECT_BILLBOARD)
+        ImGui::InputInt("BillBoardMeshNum", &m_iBillBoardMeshNum);
+
+    m_eNonMoveObjectType = (NONMOVEOBJECT_TYPE)(iObjectType);
 
     if (ImGui::Button("Delete_ObjectIndex"))
     {
@@ -296,7 +304,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     if (ImGui::Button("Create_Object"))
     {
-        Add_NonAnimObjects();
+        Add_NonAnimObjects(m_eNonMoveObjectType);
     }
 
     if (m_bNonAnimObjectMenuSelected)
@@ -349,14 +357,14 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
                             m_pCurrentObject = vMesh.front().pObject;
                             m_pCurrentObjectTransformCom = m_pCurrentObject->Get_Transfrom();
 
-                            Add_NonAnimObjects();
+                            Add_NonAnimObjects(m_eNonMoveObjectType);
                         }
                     }
                     else if (m_bIsTerrainPickingMode)
                     {
                         if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_PICKING_NONANIMMODEL)))
                         {
-                            Add_NonAnimObjects();
+                            Add_NonAnimObjects(m_eNonMoveObjectType);
                         }
                     }
                 }
@@ -976,7 +984,7 @@ HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageF
     return S_OK;
 }
 
-void CLevel_GamePlay::Add_NonAnimObjects()
+void CLevel_GamePlay::Add_NonAnimObjects(NONMOVEOBJECT_TYPE etype)
 {
     if (m_iNonAnimModelIndex == -1)
         return;
@@ -1014,9 +1022,26 @@ void CLevel_GamePlay::Add_NonAnimObjects()
         return;
     }
 
+    CObject* pObject = nullptr;
 
-    CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
+    switch (etype)
+    {
+    case NONMOVEOBJECT_DEFAULT:
+        pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
+        break;
 
+    case NONMOVEOBJECT_BILLBOARD:
+        pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_BillBoardObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
+        break;
+
+    case NONMOVEOBJECT_INTERACTIVE:
+        pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_InterActiveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
+        break;
+
+    default:
+        return;
+    }
+  
     if (pObject != nullptr)
         m_Objects.push_back(pObject);
 }
@@ -1037,7 +1062,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
         static int iCurrentItem = 0;
         ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-        for (_uint i = 0; i < 65; ++i)
+        for (_uint i = 0; i < 66; ++i)
         {
             _uint  iTextureIndex = iCurrentItem * 3 + i;
 
@@ -2114,6 +2139,8 @@ HRESULT CLevel_GamePlay::Save_Objects()
             WriteFile(hFile, &Info.fScale, sizeof(_float3), &dwByte, nullptr);
             WriteFile(hFile, &Info.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
             WriteFile(hFile, &Info.iPassNum, sizeof(_uint), &dwByte, nullptr);
+            WriteFile(hFile, &Info.iObjectType, sizeof(_uint), &dwByte, nullptr);
+            WriteFile(hFile, &Info.iBillBoardMeshNum, sizeof(_uint), &dwByte, nullptr);
         }
     }
 
@@ -2214,11 +2241,20 @@ HRESULT CLevel_GamePlay::Load_Objects()
         ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
         ReadFile(hFile, &Desc.iPassNum, sizeof(_uint), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.iObjectType, sizeof(_uint), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.iBillBoardMeshNum, sizeof(_uint), &dwByte, nullptr);
 
         Desc.ObjectName = szLoadName;
 
-        CObject* pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
+        CObject* pObject = nullptr;
 
+        if(Desc.iObjectType == CObject::OBJECT_DEFAULT)
+            pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
+        else if (Desc.iObjectType == CObject::OBJECT_BILLBOARD)
+            pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_BillBoardObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
+        else if (Desc.iObjectType == CObject::OBJECT_INTERACTIVE)
+            pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_InterActiveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
+ 
         if (pObject != nullptr)
             m_Objects.push_back(pObject);
     }

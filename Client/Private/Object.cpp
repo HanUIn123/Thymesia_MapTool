@@ -19,6 +19,7 @@ HRESULT CObject::Initialize(void* pArg)
 
 	m_fFrustumRadius = pDesc->fFrustumRadius;
 	m_iCullPass = pDesc->iPassNum;
+	m_iObjectType = pDesc->iObjectType;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -82,6 +83,10 @@ CObject::OBJECT_INFO CObject::Get_ObjectInfo()
 	pInfo.fRotation		 = m_pTransformCom->Get_Rotation();
 	XMStoreFloat4(&pInfo.fPosition, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	pInfo.iPassNum		 = m_iCullPass;
+	pInfo.iObjectType	 = m_iObjectType;
+
+	if (pInfo.iObjectType == OBJECT_BILLBOARD)
+		pInfo.iBillBoardMeshNum = m_iBillBoardMeshNum;
 
 	return pInfo;
 }

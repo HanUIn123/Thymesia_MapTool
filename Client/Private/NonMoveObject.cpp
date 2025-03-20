@@ -27,6 +27,16 @@ HRESULT CNonMoveObject::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	m_iObjectType = OBJECT_DEFAULT;
+
+
+	/*
+	if (m_iState & STATE_WALK)
+	{
+		m_iState ^= STATE_WALK;
+		m_iState |= STATE_IDLE;
+
+	}*/
 	return S_OK;
 }
 
