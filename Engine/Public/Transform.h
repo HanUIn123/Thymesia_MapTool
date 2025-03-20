@@ -77,6 +77,7 @@ public:
 	void Turn_Axis(_fvector vAxis);
 	void Rotation(_fvector vAxis, _float fRadians); /* 고정 회전 : 항상 항등상태를 기준으로 전달해준 각도로 회전해놓는다.  */
 	void Rotation(_float fX, _float fY, _float fZ);
+	void Rotation(_float fX, _float fY, _float fZ, _float fW);
 	void Turn_Move(_fvector vAxis, _float fTimeDelta);
 	void Orbit_Move(_fvector vAxis, _float fTimeDelta, _fvector vCenter);
 
@@ -92,7 +93,7 @@ public:
 	void Set_RotationSpeed(_float _fSpeed) { m_fRotationPerSec = _fSpeed; }
 	_float3 Compute_Scaled();
 
-	_float3 Get_Rotation() { return m_fRotation; }
+	_float4 Get_Rotation() { return m_fRotation; }
 	_float3 Get_Scale() { return m_fScaling; }
 
 private:
@@ -102,7 +103,7 @@ private:
 	_float					m_fRotationPerSec = { 0.f };
 	_float4					m_fPosition = {};
 	_float3					m_fScaling = {};
-	_float3					m_fRotation = {}; // quaternion;
+	_float4					m_fRotation = {}; // quaternion;
 
 
 

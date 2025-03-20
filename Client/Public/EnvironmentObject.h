@@ -57,7 +57,7 @@ public:
         _char szName[MAX_PATH] = {};
         _float4 fPosition;
         _float3 fScale;
-        _float3 fRotation;
+        _float4 fRotation;
         _float fFrustumRadius;
         _int iBoxSize;
 

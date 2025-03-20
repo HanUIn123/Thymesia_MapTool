@@ -37,7 +37,7 @@ public:
 	virtual void Free() override;
 
 private:
-	const _float4x4* m_pOriginalMatrix = {};
+	_float4x4 m_pOriginalMatrix = {};
 
 };
 

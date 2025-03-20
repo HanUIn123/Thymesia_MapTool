@@ -285,7 +285,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     ImGui::InputFloat3("Object_Pos", m_fObjectPos);
     ImGui::InputFloat3("Object_Scale", m_fMeshScale);
-    ImGui::InputFloat3("Object_Rotation (Quaternion)", m_fObjectRotation);
+    ImGui::InputFloat4("Object_Rotation", m_fObjectRotation);
     ImGui::InputFloat("FrustumRadius", &m_fFrustumRadius);
     ImGui::InputInt("PassNumber", &m_iPassIndex);
     ImGui::InputInt("ObjectType", &iObjectType);
@@ -442,57 +442,6 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         {
             if (m_pGameInstance->isMouseEnter(DIM_LB))
             {
-                //if (m_bIsMeshPickingMode)
-                //{
-                //    vector<Mesh_Pos> vMesh;
-
-                //    for (auto& pObject : m_Objects)
-                //    {
-                //        CObject::MESHINFO pInfo;
-
-                //        if (pObject != nullptr && pObject->Picking_Objects(pInfo))
-                //        {
-                //            Mesh_Pos vPos{};
-                //            vPos.fPosition = pInfo.fPosition;
-                //            vPos.fDist = pInfo.fDist;
-                //            vPos.pObject = pObject;
-
-                //            vMesh.push_back(vPos);
-                //        }
-                //    }
-
-                //    if (vMesh.size() != 0)
-                //    {
-                //        sort(vMesh.begin(), vMesh.end(), [](Mesh_Pos a, Mesh_Pos b) {
-                //            if (a.fDist < b.fDist) return true;
-                //            else
-                //                return false;
-                //            });
-
-                //        _float3 fPos = { 0.f ,0.f ,0.f };
-
-                //        fPos = vMesh.front().fPosition;
-
-                //        m_fMeshPickPos = fPos;
-
-                //        m_fObjectPos[0] = fPos.x;
-
-                //        m_fObjectPos[1] = fPos.y;
-
-                //        m_fObjectPos[2] = fPos.z;
-
-                //        Add_TriggerObjects();
-
-                //    }
-                //}
-                //else if (m_bIsTerrainPickingMode)
-                //{
-                //    if (SUCCEEDED(Pick_Object(MENU_TYPE::MT_TRIGGER)))
-                //    {
-                //        Add_TriggerObjects();
-                //    }
-                //}
-
                 _float3 vPickPos = {};
                 if (m_pGameInstance->Compute_PickPos(&vPickPos))
                 {
@@ -518,12 +467,12 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
         _vector vCurPos = XMLoadFloat4(&Info.fPosition);
         _vector vCurScale = XMLoadFloat3(&Info.fScale);
-        _vector vCurRotation = XMLoadFloat3(&Info.fRotation);
+        _vector vCurRotation = XMLoadFloat4(&Info.fRotation);
         _float  fFrustumRadius = Info.fFrustumRadius;
 
         _float vCurPosArray[3] = { XMVectorGetX(vCurPos), XMVectorGetY(vCurPos),  XMVectorGetZ(vCurPos) };
         _float vCurScaleArray[3] = { XMVectorGetX(vCurScale), XMVectorGetY(vCurScale),  XMVectorGetZ(vCurScale) };
-        _float vCurRotationArray[3] = { XMVectorGetX(vCurRotation), XMVectorGetY(vCurRotation),  XMVectorGetZ(vCurRotation) };
+        _float vCurRotationArray[4] = { XMVectorGetX(vCurRotation), XMVectorGetY(vCurRotation),  XMVectorGetZ(vCurRotation), XMVectorGetW(vCurRotation)};
 
         ImGui::InputFloat2("Position_Min_Max", m_fPosMax);
 
@@ -533,13 +482,13 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         ImGui::SliderFloat3("Scale", vCurScaleArray, m_fScaleMax[0], m_fScaleMax[1]);
 
         ImGui::InputFloat2("Rotation_Min_Max", m_fRotationMax);
-        ImGui::SliderFloat3("Rotation", vCurRotationArray, m_fRotationMax[0], m_fRotationMax[1]);
+        ImGui::SliderFloat4("Rotation", vCurRotationArray, m_fRotationMax[0], m_fRotationMax[1]);
 
         ImGui::InputFloat("Radius_MAx", &m_fRadiusMax);
         ImGui::SliderFloat("fFrustumRadius", &fFrustumRadius, 1.f, m_fRadiusMax);
 
         m_pCurrentObjectTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vCurPosArray[0], vCurPosArray[1], vCurPosArray[2], 1.f));
-        m_pCurrentObjectTransformCom->Rotation(XMConvertToRadians(vCurRotationArray[0]), XMConvertToRadians(vCurRotationArray[1]), XMConvertToRadians(vCurRotationArray[2]));
+        m_pCurrentObjectTransformCom->Rotation(vCurRotationArray[0], vCurRotationArray[1], vCurRotationArray[2], vCurRotationArray[3]);
         m_pCurrentObjectTransformCom->Scaling(_float3(vCurScaleArray[0], vCurScaleArray[1], vCurScaleArray[2]));
         m_pCurrentObject->Set_FrustumRadius(fFrustumRadius);
 
@@ -994,8 +943,9 @@ void CLevel_GamePlay::Add_NonAnimObjects(NONMOVEOBJECT_TYPE etype)
     Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
     Desc.fFrustumRadius = m_fFrustumRadius;
     Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
-    Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] };
+    Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2], m_fObjectRotation[3]};
     Desc.iPassNum = { (_uint)m_iPassIndex };
+    Desc.iBillBoardMeshNum = { (_uint)m_iBillBoardMeshNum };
 
     switch (m_iNonMoveObjectListIndex)
     {
@@ -1078,7 +1028,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
                     ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
                     ObjectDesc.fFrustumRadius = m_fFrustumRadius;
                     ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-                    ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f };
+                    ObjectDesc.fRotation = { 0.0f, 0.0f, 0.0f, 1.f };
                     ObjectDesc.ObjectName = m_strObjectNames[m_iNonAnimModelIndex];
 
                     //m_pPrevObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &ObjectDesc));
@@ -1109,7 +1059,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strGroundObjectGraveStoneNames[m_iNonAnimModelIndex];
 
         }
@@ -1128,7 +1078,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strObjectUrnNames[m_iNonAnimModelIndex];
 
         }
@@ -1147,7 +1097,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strGroundObjectDeseasednames[m_iNonAnimModelIndex];
 
         }
@@ -1166,7 +1116,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strGroundObjectTombStoneNames[m_iNonAnimModelIndex];
 
         }
@@ -1485,7 +1435,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strGroundObjectTreenames[m_iGroundModelIndex];
 
         }
@@ -1503,7 +1453,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 0.f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strGorundobjectRailingNames[m_iGroundModelIndex];
 
         }
@@ -1522,7 +1472,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strGroundObjectCircusBalloonNames[m_iGroundModelIndex];
 
         }
@@ -1542,7 +1492,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strGroundObjectCircusHangsNames[m_iGroundModelIndex];
 
         }
@@ -1562,7 +1512,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strGroundObjectCircusTreeNames[m_iGroundModelIndex];
 
         }
@@ -1735,7 +1685,7 @@ void CLevel_GamePlay::Setting_TriggerObjects()
             ObjectDesc.fPosition = { 0.0f, 0.0f, 0.0f, 1.0f };
             ObjectDesc.fFrustumRadius = m_fFrustumRadius;
             ObjectDesc.fScaling = { 0.0f, 0.0f, 0.0f };
-            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f };
+            ObjectDesc.fRotation = { 0.0f, 0.1f, 0.0f, 1.f };
             ObjectDesc.ObjectName = m_strGroundObjectGraveStoneNames[m_iNonAnimModelIndex];
         }
     }
@@ -2135,7 +2085,7 @@ HRESULT CLevel_GamePlay::Save_Objects()
 
             WriteFile(hFile, Info.szName, MAX_PATH, &dwByte, nullptr);
             WriteFile(hFile, &Info.fPosition, sizeof(_float4), &dwByte, nullptr);
-            WriteFile(hFile, &Info.fRotation, sizeof(_float3), &dwByte, nullptr);
+            WriteFile(hFile, &Info.fRotation, sizeof(_float4), &dwByte, nullptr);
             WriteFile(hFile, &Info.fScale, sizeof(_float3), &dwByte, nullptr);
             WriteFile(hFile, &Info.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
             WriteFile(hFile, &Info.iPassNum, sizeof(_uint), &dwByte, nullptr);
@@ -2237,7 +2187,7 @@ HRESULT CLevel_GamePlay::Load_Objects()
 
         ReadFile(hFile, szLoadName, MAX_PATH, &dwByte, nullptr);
         ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte, nullptr);
-        ReadFile(hFile, &Desc.fRotation, sizeof(_float3), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fRotation, sizeof(_float4), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte, nullptr);
         ReadFile(hFile, &Desc.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
         ReadFile(hFile, &Desc.iPassNum, sizeof(_uint), &dwByte, nullptr);

@@ -29,7 +29,7 @@ public:
 	typedef struct Object_Desc : public CGameObject::GAMEOBJECT_DESC
 	{
 		_float		fFrustumRadius = { 0.f };
-		_float3		fRotation = { };
+		_float4		fRotation = { };
 		string		ObjectName = {};
 		_uint		iPassNum = { 0 };
 		_uint		iObjectType = { OBJECT_DEFAULT };
@@ -41,7 +41,7 @@ public:
 		_char szName[MAX_PATH] = {};
 		_float4	fPosition ;
 		_float3 fScale ;
-		_float3 fRotation ;
+		_float4 fRotation ;
 		_float  fFrustumRadius ;
 		_uint	iPassNum;
 		_uint	iObjectType;

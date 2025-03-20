@@ -277,7 +277,26 @@ void CTransform::Rotation(_float fX, _float fY, _float fZ)
 	Set_State(STATE_UP, XMVector3TransformNormal(vUp, RotationMatrix));
 	Set_State(STATE_LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
 
-	m_fRotation = _float3(XMConvertToDegrees(fX), XMConvertToDegrees(fY), XMConvertToDegrees(fZ));
+	m_fRotation = _float4(XMVectorGetX(vQuaternion), XMVectorGetY(vQuaternion), XMVectorGetZ(vQuaternion), XMVectorGetW(vQuaternion));
+}
+
+void CTransform::Rotation(_float fX, _float fY, _float fZ, _float fW)
+{
+	_float3			vScaled = Compute_Scaled();
+
+	_vector			vRight = XMVectorSet(1.f, 0.f, 0.f, 0.f) * vScaled.x;
+	_vector			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f) * vScaled.y;
+	_vector			vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f) * vScaled.z;
+
+	_vector		vQuaternion = XMVectorSet(fX, fY, fZ, fW);
+
+	_matrix		RotationMatrix = XMMatrixRotationQuaternion(vQuaternion);
+
+	Set_State(STATE_RIGHT, XMVector3TransformNormal(vRight, RotationMatrix));
+	Set_State(STATE_UP, XMVector3TransformNormal(vUp, RotationMatrix));
+	Set_State(STATE_LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
+
+	m_fRotation = _float4(fX, fY, fZ, fW);
 }
 
 HRESULT CTransform::Bind_ShaderResource(CShader* pShader, const _char* pConstantName)

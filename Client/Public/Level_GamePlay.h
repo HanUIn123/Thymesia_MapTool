@@ -154,15 +154,15 @@ private:
     HRESULT                             Show_MouseRange(MENU_TYPE _eMenuType, _float _fTimeDelta);
 
 private:
-    HRESULT                                 Ready_TerrainMasking();
-    HRESULT		                            Make_MaskTexture(_vector vPickPos);
-    HRESULT                                 Erase_MaskTexture(_vector vPickPos);
-    HRESULT                                 Make_WaterMapTexture(_vector vPickPos);
-    HRESULT                                 Erase_WaterMapTexture(_vector vPickPos);
-    HRESULT                                 Save_MaskTexture(_int iFileIndex);
-    HRESULT                                 Save_WaterMapTexture(_int iFileIndex);
-    HRESULT                                 Load_MaskTexture(_int iFileIndex);
-    HRESULT                                 Load_WaterMapTexture(_int iFileIndex);
+    HRESULT                             Ready_TerrainMasking();
+    HRESULT		                        Make_MaskTexture(_vector vPickPos);
+    HRESULT                             Erase_MaskTexture(_vector vPickPos);
+    HRESULT                             Make_WaterMapTexture(_vector vPickPos);
+    HRESULT                             Erase_WaterMapTexture(_vector vPickPos);
+    HRESULT                             Save_MaskTexture(_int iFileIndex);
+    HRESULT                             Save_WaterMapTexture(_int iFileIndex);
+    HRESULT                             Load_MaskTexture(_int iFileIndex);
+    HRESULT                             Load_WaterMapTexture(_int iFileIndex);
 
 private:
     _uint                               m_iNumCellCount = {};
@@ -211,7 +211,7 @@ private:
     _int                                m_iObjectArray = { 0 };
     _float                              m_fObjectPos[3] = { 1.f, 1.f ,1.f };
     _float                              m_fMeshScale[3] = { 0.01f, 0.01f, 0.01f };
-    _float                              m_fObjectRotation[3] = { 0.f, 0.f, 0.f };
+    _float                              m_fObjectRotation[4] = { 0.f, 0.f, 0.f, 0.f };
     _float	                            m_fFrustumRadius = { 1.f };
 
     _float                              m_fTriggerScale[3] = { 0.1f, 0.1f, 0.1f };
@@ -224,7 +224,7 @@ private:
     _float3                             m_fMeshPickPos = { 0.f, 0.f, 0.f };
     _float                              m_fPosMax[2] = { -100.f, 100.f };
     _float                              m_fScaleMax[2] = { -1.f, 1.f };
-    _float                              m_fRotationMax[2] = { -180.f, 180.f };
+    _float                              m_fRotationMax[2] = { -1.f, 1.f };
     _float	                            m_fRadiusMax = { 100.f };
     _int                                m_iPassIndex = { 0 };
 
