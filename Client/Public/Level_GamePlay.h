@@ -13,6 +13,7 @@
 
 #include "GroundObject.h"
 #include "TempCollider.h"
+#include "SpecificObject.h"
 
 
 
@@ -28,8 +29,8 @@ BEGIN(Client)
 class CLevel_GamePlay final : public CLevel
 {
 public:
-    enum IMGUI_TEXTURE_TYPE { IMG_ANIM_MODEL, IMG_NONANIM_MODEL, IMG_GROUND_MODEL, IMG_TRIGGER_OBJECT, IMG_END };
-    enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI, MT_GROUND, MT_HEIGHT, MT_TERRAIN_MASK, MT_WATER_MASK, MT_TRIGGER,  MT_END };
+    enum IMGUI_TEXTURE_TYPE { IMG_ANIM_MODEL, IMG_NONANIM_MODEL, IMG_GROUND_MODEL, IMG_TRIGGER_OBJECT, IMG_SPECIFIC_OBJECT, IMG_END };
+    enum MENU_TYPE { MT_PICKING_ANIMMODEL, MT_PICKING_NONANIMMODEL, MT_NAVI, MT_GROUND, MT_HEIGHT, MT_TERRAIN_MASK, MT_WATER_MASK, MT_TRIGGER, MT_SPECIFIC,  MT_END };
     enum NONMOVEOBJECT_TYPE { NONMOVEOBJECT_DEFAULT, NONMOVEOBJECT_BILLBOARD, NONMOVEOBJECT_INTERACTIVE };
 public:
     struct CELL_POINTS
@@ -93,6 +94,8 @@ private:
     vector<ID3D11ShaderResourceView*>	m_vecNonAnimModelSRVs;
     vector<ID3D11ShaderResourceView*>	m_vecGroundModelSRVs;
     vector<ID3D11ShaderResourceView*>	m_vecTriggerObjectSRVs;
+    vector<ID3D11ShaderResourceView*>	m_vecSpecificObjectSRVs;
+    //vector< ID3D11ShaderResourceView*>  m_vecSpecificObjectSRVs;
 
 
 
@@ -114,6 +117,12 @@ private:
     void                                Delete_TriggerObjects();
     void                                Update_TriggerObjects();
 
+    void                                Add_SpecificObjects();
+    void                                Setting_SpecificObjects();
+    void                                Delete_SpecificObjects();
+    void                                Update_SpecificObjects();
+
+
     void                                Update_InstanceObjects();
     void                                Update_InstanceMove();
     XMFLOAT3                            Compute_ClosestInstanceModelPoint(const XMFLOAT3& _fClickPos);
@@ -126,6 +135,9 @@ private:
 
     HRESULT                             Save_TriggerObjects();
     HRESULT                             Load_TriggerObjects();
+
+    HRESULT                             Save_SpecificObjects();
+    HRESULT                             Load_SpecificObjects();
 
     HRESULT                             Save_HeightMap();
     HRESULT                             Load_HeightMap();
@@ -192,6 +204,7 @@ private:
     _bool                               m_bTerrainMaskSelected = { false };
     _bool                               m_bTerrainWaterMaskSelected = { false };
     _bool                               m_bTriggerObjectMenuSelected = { false };
+    _bool                               m_bSpecificObjectMenuSelected = { false };
 
 
     _bool								m_bIsMeshPickingMode = { false };
@@ -203,6 +216,7 @@ private:
     _int                                m_iRandGroundModelIndex = {};
 
     _float3								m_fWholePickPos = {};
+    _uint                               m_iSelectedFloor = { 1 };
 
 
 private:
@@ -216,9 +230,13 @@ private:
 
     _float                              m_fTriggerScale[3] = { 0.1f, 0.1f, 0.1f };
 
+    _float                              m_fSpecificPos[3] = { 1.0f, 1.0f, 1.0f };
+    _float                              m_fSpecificScale[3] = { 0.01f, 0.01f, 0.01f };
+
     list<CObject*>                      m_Objects;
     vector<CEnvironmentObject*>         m_EnvironmentObjects;
     vector<CTempCollider*>              m_vecTempColliderObjects;
+    vector<CSpecificObject*>            m_vecSpecificObjects;
 
 
     _float3                             m_fMeshPickPos = { 0.f, 0.f, 0.f };
@@ -231,6 +249,10 @@ private:
     _int                                m_iGroundObjectListIndex = { -1 };
     _int                                m_iNonMoveObjectListIndex = { -1 };
     _int                                m_iTempColliderListIndex = { -1 };
+    _int                                m_iSpecificListIndex = { -1 };
+    _int                                m_iSelectedIndex = {};
+
+
 
 
     const char* m_strObjectNames[256] =
@@ -297,6 +319,7 @@ private:
         "SM_Railing",
         "Greenhouse_Elevator01",
         "candle01_fire",
+        "NPCLamp"
     };
 
     const char* m_strObjectUrnNames[256] =
@@ -579,6 +602,14 @@ private:
         "tree03_01",
         "tree03_02",
     };
+
+    const char* m_strSpecificNames[3] =
+    {
+        "P_Archive_Chair01",
+        "NPCLamp",
+        "SM_Woods"
+    };
+
 
 private:
     CCamera_Free* m_pCamera = { nullptr };

@@ -54,7 +54,7 @@ _bool CFrustum::isIn_WorldSpace(_fvector vWorldPoint, _float fRange)
 
 _bool CFrustum::isIn_AABB_Box(const XMFLOAT3& _fMin, const XMFLOAT3& _fMax)
 {
-	_float fOffset = 1.0f;
+	_float fOffset = 0.1f;
 	XMFLOAT3 fAdjustMin = XMFLOAT3(_fMin.x - fOffset, _fMin.y - fOffset, _fMin.z - fOffset);
 	XMFLOAT3 fAdjustMax = XMFLOAT3(_fMin.x + fOffset, _fMin.y + fOffset, _fMin.z + fOffset);
 

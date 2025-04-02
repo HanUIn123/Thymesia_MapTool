@@ -94,6 +94,9 @@
     <Filter Include="02.GameObject\Object\BillBoardObject">
       <UniqueIdentifier>{4d29b075-7c14-4889-9080-62e7dd670dd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\SpecificObject">
+      <UniqueIdentifier>{630c3dd5-484a-40b0-a52b-5ab874c03497}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -204,6 +207,9 @@
     <ClInclude Include="..\Public\BillBoardObject.h">
       <Filter>02.GameObject\Object\BillBoardObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SpecificObject.h">
+      <Filter>02.GameObject\SpecificObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -301,6 +307,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BillBoardObject.cpp">
       <Filter>02.GameObject\Object\BillBoardObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SpecificObject.cpp">
+      <Filter>02.GameObject\SpecificObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
