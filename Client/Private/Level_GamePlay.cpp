@@ -46,8 +46,8 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs02.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_CemeteryStairs03.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Archive_Chair01.png"), IMG_NONANIM_MODEL, 1);
-    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Ladder.png"), IMG_NONANIM_MODEL, 1);
+    //Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Archive_Chair01.png"), IMG_NONANIM_MODEL, 1);
+    //Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Ladder.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_05.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_crypt_06.png"), IMG_NONANIM_MODEL, 1);
@@ -75,6 +75,7 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Railing.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Greenhouse_Elevator01.png"), IMG_NONANIM_MODEL, 1);
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/candle01_fire.png"), IMG_NONANIM_MODEL, 1);
+    //Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Lamp.png"), IMG_NONANIM_MODEL, 1);
 
     //=============================================================================================================================
 
@@ -107,7 +108,31 @@ CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/SM_Trim_01a.png"), IMG_GROUND_MODEL, 1);
 
     //=============================================================================================================================
+
+    // TriggerObject
     Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/TempCollider/TempCollider%d.png"), IMG_TRIGGER_OBJECT, 1);
+
+
+    // SpecificObject
+    //=============================================================================================================================
+
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/P_Archive_Chair01.png"), IMG_SPECIFIC_OBJECT, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Lamp.png"), IMG_SPECIFIC_OBJECT, 1);
+    Resister_ObjectList_PreviewImage(TEXT("../Bin/Resources/Textures/Imgui_PreviewTextures/Ladder.png"), IMG_SPECIFIC_OBJECT, 1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /*
@@ -166,6 +191,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
         m_bTriggerObjectMenuSelected = false;
+        m_bSpecificObjectMenuSelected = false;
         m_iNonAnimModelIndex = -1;
     }
     if (ImGui::RadioButton("ANIM_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_PICKING_ANIMMODEL))
@@ -178,6 +204,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
         m_bTriggerObjectMenuSelected = false;
+        m_bSpecificObjectMenuSelected = false;
     }
     if (ImGui::RadioButton("NAVIGATION_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_NAVI))
     {
@@ -189,6 +216,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
         m_bTriggerObjectMenuSelected = false;
+        m_bSpecificObjectMenuSelected = false;
     }
     if (ImGui::RadioButton("GROUND_MODEL_PICKING", &iMenuTypeNumber, MENU_TYPE::MT_GROUND))
     {
@@ -200,6 +228,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
         m_bTriggerObjectMenuSelected = false;
+        m_bSpecificObjectMenuSelected = false;
     }
     if (ImGui::RadioButton("TERRAIN_HEIGHT", &iMenuTypeNumber, MENU_TYPE::MT_HEIGHT))
     {
@@ -211,6 +240,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = false;
         m_bTriggerObjectMenuSelected = false;
+        m_bSpecificObjectMenuSelected = false;
     }
 
     if (ImGui::RadioButton("TERRAIN_MASK", &iMenuTypeNumber, MENU_TYPE::MT_TERRAIN_MASK))
@@ -223,6 +253,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainMaskSelected = true;
         m_bTerrainWaterMaskSelected = false;
         m_bTriggerObjectMenuSelected = false;
+        m_bSpecificObjectMenuSelected = false;
     }
 
 
@@ -236,6 +267,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bTerrainMaskSelected = false;
         m_bTerrainWaterMaskSelected = true;
         m_bTriggerObjectMenuSelected = false;
+        m_bSpecificObjectMenuSelected = false;
     }
 
     if (ImGui::RadioButton("TRIGGER OBJECT PICKING", &iMenuTypeNumber, MENU_TYPE::MT_TRIGGER))
@@ -248,7 +280,23 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bAnimObjectMenuSelected = false;
         m_bTerrainWaterMaskSelected = false;
         m_bTerrainMaskSelected = false;
+        m_bSpecificObjectMenuSelected = false;
     }
+
+    if (ImGui::RadioButton("Specific Object Picking", &iMenuTypeNumber, MENU_TYPE::MT_SPECIFIC))
+    {
+        m_bSpecificObjectMenuSelected = true;
+        m_bTriggerObjectMenuSelected = false;
+        m_bTerrainHeightSelected = false;
+        m_bGrondMenuSelected = false;
+        m_bNaviMenuSelected = false;
+        m_bNonAnimObjectMenuSelected = false;
+        m_bAnimObjectMenuSelected = false;
+        m_bTerrainWaterMaskSelected = false;
+        m_bTerrainMaskSelected = false;
+    }
+
+
 
     if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)
     {
@@ -280,7 +328,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         m_bIsTerrainPickingMode = true;
         m_bIsMeshPickingMode = false;
     }
-    
+
     _int    iObjectType = m_eNonMoveObjectType;
 
     ImGui::InputFloat3("Object_Pos", m_fObjectPos);
@@ -455,6 +503,26 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
             }
         }
     }
+    else if (m_bSpecificObjectMenuSelected)
+    {
+        if (!IO.WantCaptureMouse)
+        {
+            if (m_pGameInstance->isMouseEnter(DIM_LB))
+            {
+                _float3 vPickPos = {};
+                if (m_pGameInstance->Compute_PickPos(&vPickPos))
+                {
+                    m_fSpecificPos[0] = vPickPos.x;
+                    m_fSpecificPos[1] = vPickPos.y;
+                    m_fSpecificPos[2] = vPickPos.z;
+
+                    //Add_TriggerObjects();
+                    Add_SpecificObjects();
+                }
+
+            }
+        }
+    }
 
 
     if (m_pCurrentObject != nullptr)
@@ -472,7 +540,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
         _float vCurPosArray[3] = { XMVectorGetX(vCurPos), XMVectorGetY(vCurPos),  XMVectorGetZ(vCurPos) };
         _float vCurScaleArray[3] = { XMVectorGetX(vCurScale), XMVectorGetY(vCurScale),  XMVectorGetZ(vCurScale) };
-        _float vCurRotationArray[4] = { XMVectorGetX(vCurRotation), XMVectorGetY(vCurRotation),  XMVectorGetZ(vCurRotation), XMVectorGetW(vCurRotation)};
+        _float vCurRotationArray[4] = { XMVectorGetX(vCurRotation), XMVectorGetY(vCurRotation),  XMVectorGetZ(vCurRotation), XMVectorGetW(vCurRotation) };
 
         ImGui::InputFloat2("Position_Min_Max", m_fPosMax);
 
@@ -538,6 +606,28 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         {
             Load_Navi(1);
         }
+
+        ImGui::Begin("Navi Floor Selector");
+
+        ImGui::Text("Choose Floor:");
+        if (ImGui::Button("1st Floor")) m_iSelectedFloor = 1;
+        ImGui::SameLine();
+        if (ImGui::Button("2nd Floor")) m_iSelectedFloor = 2;
+        ImGui::SameLine();
+        if (ImGui::Button("3rd Floor")) m_iSelectedFloor = 3;
+        ImGui::SameLine();
+        if (ImGui::Button("4rd Floor")) m_iSelectedFloor = 4;
+        ImGui::SameLine();
+        if (ImGui::Button("5rd Floor")) m_iSelectedFloor = 5;
+        ImGui::SameLine();
+        if (ImGui::Button("6rd Floor")) m_iSelectedFloor = 6;
+        ImGui::SameLine();
+        if (ImGui::Button("7rd Floor")) m_iSelectedFloor = 7;
+
+
+        ImGui::Text("Current Floor: %d", m_iSelectedFloor);
+        //ImGui::Checkbox("Finish Picking", &m_bFinishPickingNavi_InCurrentFloor);
+        ImGui::End();
     }
 
     if (iMenuTypeNumber == MENU_TYPE::MT_HEIGHT)
@@ -566,6 +656,17 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         //ImGui::CollapsingHeader("Trigger Object Settings");
         //ImGui::InputFloat3("Trigger_ObjectScale", m_fTriggerScale);
         //ImGui::End();
+    }
+
+    if (iMenuTypeNumber == MENU_TYPE::MT_SPECIFIC)
+    {
+        if (ImGui::Button("Save_Specific"))
+            Save_SpecificObjects();
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Load_Specific"))
+            Load_SpecificObjects();
     }
 
     ImGui::Checkbox("Creating NaviTerritory", &m_bFinishPickingNavi_InCurrentFloor);
@@ -608,7 +709,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
     //Active_PreviewModelImage();
 
-    Delete_Cell_Mode(1);
+    //Delete_Cell_Mode(1);
+    Delete_Cell_Mode(m_iSelectedFloor);
 
     ImGui::InputFloat4("Monster_Pos", m_vMonsterPos);
     ImGui::InputInt("Monster_Index", &m_fMonsterIndex);
@@ -728,6 +830,13 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
         Setting_TriggerObjects();
 
         Update_TriggerObjects();
+    }
+
+    if (m_bSpecificObjectMenuSelected)
+    {
+        Setting_SpecificObjects();
+
+        Update_SpecificObjects();
     }
 
     Update_InstanceObjects();
@@ -926,6 +1035,9 @@ HRESULT CLevel_GamePlay::Resister_ObjectList_PreviewImage(const _tchar* _pImageF
             case IMG_TRIGGER_OBJECT:
                 m_vecTriggerObjectSRVs.push_back(pSRV);
                 break;
+            case IMG_SPECIFIC_OBJECT:
+                m_vecSpecificObjectSRVs.push_back(pSRV);
+                break;
             }
         }
     }
@@ -943,7 +1055,7 @@ void CLevel_GamePlay::Add_NonAnimObjects(NONMOVEOBJECT_TYPE etype)
     Desc.fPosition = { m_fObjectPos[0], m_fObjectPos[1], m_fObjectPos[2], 1.f };
     Desc.fFrustumRadius = m_fFrustumRadius;
     Desc.fScaling = { m_fMeshScale[0], m_fMeshScale[1], m_fMeshScale[2] };
-    Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2], m_fObjectRotation[3]};
+    Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2], m_fObjectRotation[3] };
     Desc.iPassNum = { (_uint)m_iPassIndex };
     Desc.iBillBoardMeshNum = { (_uint)m_iBillBoardMeshNum };
 
@@ -991,7 +1103,7 @@ void CLevel_GamePlay::Add_NonAnimObjects(NONMOVEOBJECT_TYPE etype)
     default:
         return;
     }
-  
+
     if (pObject != nullptr)
         m_Objects.push_back(pObject);
 }
@@ -1012,7 +1124,7 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
         static int iCurrentItem = 0;
         ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-        for (_uint i = 0; i < 66; ++i)
+        for (_uint i = 0; i < 67; ++i)
         {
             _uint  iTextureIndex = iCurrentItem * 3 + i;
 
@@ -1122,10 +1234,10 @@ void CLevel_GamePlay::Setting_NonAnimObjectList()
         }
 
     }
- }
+}
 
-    //m_strGroundObjectDeseasednames
-    //m_strGroundObjectTreenames
+//m_strGroundObjectDeseasednames
+//m_strGroundObjectTreenames
 
 void CLevel_GamePlay::Active_PreviewModelImage()
 {
@@ -1477,7 +1589,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
 
         }
 
-        }
+    }
 
     else if (ImGui::CollapsingHeader("Hangs List"))
     {
@@ -1497,7 +1609,7 @@ void CLevel_GamePlay::Setting_GroundObjectList()
 
         }
 
-        }
+    }
 
     else if (ImGui::CollapsingHeader("Circus Tree List"))
     {
@@ -1654,7 +1766,7 @@ void CLevel_GamePlay::Setting_TriggerObjects()
         static int iCurrentItem = 0;
         ImGui::Combo("##3", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
 
-        for (_uint i = 0; i < 2; ++i)
+        for (_uint i = 0; i < 4; ++i)
         {
             _uint  iTextureIndex = iCurrentItem * 3 + i;
 
@@ -1727,8 +1839,8 @@ void CLevel_GamePlay::Delete_TriggerObjects()
     if (closestIter != m_vecTempColliderObjects.end() && fMinDistance < 1.0f)
     {
         CTempCollider* pClosestCollider = *closestIter;
-        m_pGameInstance->Add_DeadObject(TEXT("Layer_TriggerObject"), pClosestCollider);  
-        m_vecTempColliderObjects.erase(closestIter); 
+        m_pGameInstance->Add_DeadObject(TEXT("Layer_TriggerObject"), pClosestCollider);
+        m_vecTempColliderObjects.erase(closestIter);
     }
 }
 
@@ -1739,8 +1851,8 @@ void CLevel_GamePlay::Update_TriggerObjects()
 
     ImGui::Begin("Trigger Object Editor");
 
-    static int selectedIndex = -1; 
-    static _float3 scale = { 1.0f, 1.0f, 1.0f }; 
+    static int selectedIndex = -1;
+    static _float3 scale = { 1.0f, 1.0f, 1.0f };
 
     if (ImGui::CollapsingHeader("Trigger List"))
     {
@@ -1770,7 +1882,7 @@ void CLevel_GamePlay::Update_TriggerObjects()
     {
         if (!IO.WantCaptureMouse)
         {
-            if (m_pGameInstance->isMouseEnter(DIM_RB)) 
+            if (m_pGameInstance->isMouseEnter(DIM_RB))
             {
                 Delete_TriggerObjects();
             }
@@ -1778,6 +1890,172 @@ void CLevel_GamePlay::Update_TriggerObjects()
     }
 
     ImGui::End();
+}
+
+void CLevel_GamePlay::Add_SpecificObjects()
+{
+    CSpecificObject::SpecificObject_Desc Desc = {};
+
+    Desc.fPosition = { m_fSpecificPos[0], m_fSpecificPos[1], m_fSpecificPos[2], 1.f };
+    Desc.fScaling = { m_fSpecificScale[0], m_fSpecificScale[1], m_fSpecificScale[2] };
+    Desc.fRotation = { m_fObjectRotation[0], m_fObjectRotation[1] , m_fObjectRotation[2] , m_fObjectRotation[3] };
+
+    Desc.ObjectName = m_strSpecificNames[m_iSelectedIndex];
+
+    CSpecificObject* pSpecificObject = reinterpret_cast<CSpecificObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_SpecificObject"), LEVEL_GAMEPLAY, TEXT("Layer_SpecificObject"), &Desc));
+
+    if (pSpecificObject != nullptr)
+        m_vecSpecificObjects.push_back(pSpecificObject);
+}
+
+void CLevel_GamePlay::Setting_SpecificObjects()
+{
+    if (ImGui::CollapsingHeader("Specific Model List"))
+    {
+        m_iSpecificListIndex = 0;
+
+        const char* szItems[] = { "Specific Model List" };
+
+        static int iCurrentItem = 0;
+        ImGui::Combo("##6", &iCurrentItem, szItems, IM_ARRAYSIZE(szItems));
+
+        for (_uint i = 0; i < 3; ++i)
+        {
+            _uint  iTextureIndex = iCurrentItem * 3 + i;
+
+            if (iTextureIndex < m_vecSpecificObjectSRVs.size())
+            {
+                if (ImGui::ImageButton(("SpecificObject" + to_string(iTextureIndex)).c_str(), (ImTextureID)m_vecSpecificObjectSRVs[iTextureIndex], ImVec2(50.0f, 50.0f)))
+                {
+                    m_iSpecificListIndex = iTextureIndex;
+                    m_iSelectedIndex = m_iSpecificListIndex;
+                }
+
+                if ((i + 1) % 4 != 0)
+                {
+                    ImGui::SameLine();
+                }
+            }
+        }
+    }
+
+}
+
+void CLevel_GamePlay::Delete_SpecificObjects()
+{
+    if (m_vecSpecificObjects.empty())
+        return;
+
+    _float3 vPickedPos;
+    if (!m_pGameInstance->Compute_PickPos(&vPickedPos))
+        return;
+
+    _float fMinDistance = FLT_MAX;
+    auto closestIter = m_vecSpecificObjects.end();
+
+    for (auto iter = m_vecSpecificObjects.begin(); iter != m_vecSpecificObjects.end(); ++iter)
+    {
+        CSpecificObject* pSpecificObject = *iter;
+        if (pSpecificObject == nullptr)
+            continue;
+
+        _float4 vSpecificPos = pSpecificObject->Get_SpecificObjectPosition();
+
+        _float fDistance = sqrtf(
+            pow(vSpecificPos.x - vPickedPos.x, 2) +
+            pow(vSpecificPos.y - vPickedPos.y, 2) +
+            pow(vSpecificPos.z - vPickedPos.z, 2)
+        );
+
+        if (fDistance < fMinDistance)
+        {
+            fMinDistance = fDistance;
+            closestIter = iter;
+        }
+    }
+
+    if (closestIter != m_vecSpecificObjects.end() && fMinDistance < 1.0f)
+    {
+        CSpecificObject* pSpecificObject = *closestIter;
+        m_vecSpecificObjects.erase(closestIter);
+        m_pGameInstance->Add_DeadObject(TEXT("Layer_SpecificObject"), pSpecificObject);
+    }
+}
+
+void CLevel_GamePlay::Update_SpecificObjects()
+{
+    if (m_vecSpecificObjects.empty())
+        return;
+
+    ImGui::Begin("Specific Object Editor");
+
+    static int selectedIndex = -1;
+    static _float4 position = { m_fSpecificPos[0],m_fSpecificPos[1], m_fSpecificPos[2], 1.0f };
+    static _float3 scale = { 0.01f, 0.01f, 0.01f };
+    static _float4 rotation = { 0.0f, 0.0f, 0.0f, 0.0f };
+    static _float frustumRadius = { 0.0f };
+
+    if (ImGui::CollapsingHeader("Specific List"))
+    {
+        for (int i = 0; i < m_vecSpecificObjects.size(); ++i)
+        {
+            string label = "Specific " + to_string(i);
+            if (ImGui::Selectable(label.c_str(), selectedIndex == i))
+            {
+                selectedIndex = i;
+
+                position = m_vecSpecificObjects[i]->Get_SpecificObjectPosition();
+                scale = m_vecSpecificObjects[i]->Get_SpecificObjectScale();
+                rotation = m_vecSpecificObjects[i]->Get_SpecificObjectRotation();
+                frustumRadius = m_vecSpecificObjects[i]->Get_SpecificObjectFrustumRadius();
+            }
+        }
+    }
+
+    if (selectedIndex != -1 && selectedIndex < m_vecSpecificObjects.size())
+    {
+        ImGui::Text("Adjust Position");
+        if (ImGui::DragFloat3("Position", &position.x, 0.1f, 0.1f, 10.0f))
+        {
+            m_vecSpecificObjects[selectedIndex]->Set_SpecificObjectPosition(position);
+        }
+
+        ImGui::Text("Adjust Scale");
+        if (ImGui::DragFloat3("Scale", &scale.x, 0.1f, 0.1f, 10.0f))
+        {
+            m_vecSpecificObjects[selectedIndex]->Set_SpecificObjectScale(scale);
+        }
+
+        if (ImGui::SliderFloat3("Rotation (XYZ)", reinterpret_cast<_float*>(&rotation), 0.0f, 360.0f))
+        {
+            _float4 radRotation = {XMConvertToRadians(rotation.x),XMConvertToRadians(rotation.y),XMConvertToRadians(rotation.z), 0.0f};
+
+            m_vecSpecificObjects[selectedIndex]->Set_SpecificObjectRotation(radRotation);
+        }
+
+        ImGui::Text("Adjust Frustum");
+        if (ImGui::DragFloat("Frustum", &frustumRadius, 0.1f))
+        {
+            m_vecSpecificObjects[selectedIndex]->Set_FrustumRadius(frustumRadius);
+        }
+
+    }
+
+    ImGuiIO IO = ImGui::GetIO();
+
+    if (m_bSpecificObjectMenuSelected)
+    {
+        if (!IO.WantCaptureMouse)
+        {
+            if (m_pGameInstance->isMouseEnter(DIM_RB))
+            {
+                Delete_SpecificObjects();
+            }
+        }
+    }
+
+    ImGui::End();
+
 }
 
 void CLevel_GamePlay::Update_InstanceObjects()
@@ -1842,7 +2120,7 @@ void CLevel_GamePlay::Update_InstanceObjects()
                         //_vector vTest = XMVector3Length(rotation);
 
                   /*
-                        if (!XMVector3IsNaN(rotation) && !isnan(XMVectorGetX(vTest)) && !(XMVectorGetX(vTest) > 10000.f)) 
+                        if (!XMVector3IsNaN(rotation) && !isnan(XMVectorGetX(vTest)) && !(XMVectorGetX(vTest) > 10000.f))
                         {
                             XMStoreFloat3(&m_vecInstancedGroundObjectPos[m_iSelectedInstanceIndex], translation);
                             XMStoreFloat3(&m_vecInstancedGroundObjectScale[m_iSelectedInstanceIndex], scale);
@@ -1911,7 +2189,7 @@ void CLevel_GamePlay::Update_InstanceObjects()
                         }
                         if (bInstanceTransformInfoUpdated)
                         {
-                        
+
                             m_pSelectedInstancedObject->Update_InstanceBuffer
                             (
                                 m_iSelectedInstanceIndex,
@@ -2106,9 +2384,35 @@ HRESULT CLevel_GamePlay::Save_Objects()
         WriteFile(hFile, EnvironmentInfo.szName, MAX_PATH, &dwByte2, nullptr);
         WriteFile(hFile, &EnvironmentInfo.iPassNum, sizeof(_uint), &dwByte, nullptr);
         WriteFile(hFile, &EnvironmentInfo.bCullingObject, sizeof(_bool), &dwByte2, nullptr);
-
-
-
+        //if (!strcmp(EnvironmentInfo.szName, ("P_Cloth01")) ||
+        //    !strcmp(EnvironmentInfo.szName, ("P_Cloth02")) ||
+        //    !strcmp(EnvironmentInfo.szName, ("P_Cloth03")) ||
+        //    !strcmp(EnvironmentInfo.szName, ("P_Cloth04")) ||
+        //    !strcmp(EnvironmentInfo.szName, ("P_Cloth05")) ||
+        //    !strcmp(EnvironmentInfo.szName, ("P_Cloth06")) ||
+        //    !strcmp(EnvironmentInfo.szName, ("P_Cloth07")) ||
+        //    !strcmp(EnvironmentInfo.szName, ("P_Cloth08")) ||
+        //    !strcmp(EnvironmentInfo.szName, ("tree03_01")) ||
+        //    !strcmp(EnvironmentInfo.szName, ("tree03_02")))
+        //{
+        //    EnvironmentInfo.bCullingObject = false;
+        //    WriteFile(hFile, &EnvironmentInfo.bCullingObject, sizeof(_bool), &dwByte2, nullptr);
+        //}
+        //else
+        //{
+        //    EnvironmentInfo.bCullingObject = true;
+        //    WriteFile(hFile, &EnvironmentInfo.bCullingObject, sizeof(_bool), &dwByte2, nullptr);
+        //}
+        //if (!strcmp(EnvironmentInfo.szName, ("SM_BigTree006_02")))
+        //{
+        //    EnvironmentInfo.bCullingObject = false;
+        //    WriteFile(hFile, &EnvironmentInfo.bCullingObject, sizeof(_bool), &dwByte2, nullptr);
+        //}
+        //else
+        //{
+        //    EnvironmentInfo.bCullingObject = true;
+        //    WriteFile(hFile, &EnvironmentInfo.bCullingObject, sizeof(_bool), &dwByte2, nullptr);
+        //}
         vector<VTX_MODEL_INSTANCE> vecInstanceData = pEnvironmentObject->Get_ModelInstanceVector();
         _uint iInstanceCount = static_cast<_uint>(vecInstanceData.size());
 
@@ -2198,13 +2502,13 @@ HRESULT CLevel_GamePlay::Load_Objects()
 
         CObject* pObject = nullptr;
 
-        if(Desc.iObjectType == CObject::OBJECT_DEFAULT)
+        if (Desc.iObjectType == CObject::OBJECT_DEFAULT)
             pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_NonMoveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
         else if (Desc.iObjectType == CObject::OBJECT_BILLBOARD)
             pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_BillBoardObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
         else if (Desc.iObjectType == CObject::OBJECT_INTERACTIVE)
             pObject = reinterpret_cast<CObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_Object_InterActiveObject"), LEVEL_GAMEPLAY, TEXT("Layer_Object"), &Desc));
- 
+
         if (pObject != nullptr)
             m_Objects.push_back(pObject);
     }
@@ -2441,6 +2745,98 @@ HRESULT CLevel_GamePlay::Load_TriggerObjects()
     return S_OK;
 }
 
+HRESULT CLevel_GamePlay::Save_SpecificObjects()
+{
+    wstring fileName;
+    OpenFileDialoge(L"SpecificObjectData.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Create SpecificObject File!");
+        return E_FAIL;
+    }
+
+    DWORD dwByte = 0;
+
+    _uint iSpecificCount = static_cast<_uint>(m_vecSpecificObjects.size());
+    WriteFile(hFile, &iSpecificCount, sizeof(_uint), &dwByte, nullptr);
+
+    for (auto& pObject : m_vecSpecificObjects)
+    {
+        if (pObject != nullptr)
+        {
+            CSpecificObject::SpecificObject_Info Info= pObject->Get_SpecificObjectInfo(); 
+            WriteFile(hFile, Info.szName, MAX_PATH, &dwByte, nullptr);
+            WriteFile(hFile, &Info.fPosition, sizeof(_float4), &dwByte, nullptr);
+            WriteFile(hFile, &Info.fRotation, sizeof(_float4), &dwByte, nullptr);
+            WriteFile(hFile, &Info.fScale, sizeof(_float3), &dwByte, nullptr);
+            WriteFile(hFile, &Info.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
+        }
+    }
+
+    MSG_BOX("세이브성공ㅋ");
+
+    CloseHandle(hFile);
+    return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Load_SpecificObjects()
+{
+    wstring fileName;
+    OpenFileDialoge(L"SpecificObjectData.txt", L"Text Files\0*.TXT\0All Files\0*.*\0", fileName);
+    if (fileName.empty())
+        return E_FAIL;
+
+    HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        MSG_BOX("Failed To Load SpecificObject File!");
+        return E_FAIL;
+    }
+
+    for (auto& pObject : m_vecSpecificObjects)
+    {
+        m_pGameInstance->Add_DeadObject(L"Layer_SpecificObject", pObject);
+    }
+    m_vecSpecificObjects.clear();
+    
+    DWORD dwByte = 0;
+
+    _uint iSize = 0;
+    ReadFile(hFile, &iSize, sizeof(_uint), &dwByte, nullptr);
+
+    for (size_t i = 0; i < iSize; i++)
+    {
+        //CObject::OBJECT_DESC Desc{};
+        CSpecificObject::SpecificObject_Desc Desc{};
+
+        _char szLoadName[MAX_PATH] = {};
+
+        ReadFile(hFile, szLoadName, MAX_PATH, &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fPosition, sizeof(_float4), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fRotation, sizeof(_float4), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fScaling, sizeof(_float3), &dwByte, nullptr);
+        ReadFile(hFile, &Desc.fFrustumRadius, sizeof(_float), &dwByte, nullptr);
+
+        Desc.ObjectName = szLoadName;
+
+
+        CSpecificObject* pObject = nullptr;
+        if (pObject == nullptr)
+        {
+            pObject = reinterpret_cast<CSpecificObject*>(m_pGameInstance->Add_GameObject_To_Layer_Take(LEVEL_GAMEPLAY, TEXT("Prototype_GameObject_SpecificObject"), LEVEL_GAMEPLAY, TEXT("Layer_SpecificObject"), &Desc));
+            m_vecSpecificObjects.push_back(pObject);
+        }
+    }
+    
+    return S_OK;
+}
+
 HRESULT CLevel_GamePlay::Save_HeightMap()
 {
     wstring fileName;
@@ -2523,28 +2919,28 @@ HRESULT CLevel_GamePlay::Pick_Object(MENU_TYPE _eMenuType)
 
 HRESULT CLevel_GamePlay::Picking_Points()
 {
-   /* if (m_bIsMeshPickingMode)
-    {
-        for (auto& pObject : m_Objects)
-        {
-            _float3 fPos = { 0.f, 0.f, 0.f };
-            CObject::MESHINFO pInfo;
+    /* if (m_bIsMeshPickingMode)
+     {
+         for (auto& pObject : m_Objects)
+         {
+             _float3 fPos = { 0.f, 0.f, 0.f };
+             CObject::MESHINFO pInfo;
 
-            if (pObject != nullptr && pObject->Picking_Objects(pInfo))
-            {
-                Mesh_Pos vPos{};
-                vPos.fPosition = pInfo.fPosition;
-                vPos.fDist = pInfo.fDist;
-                vPos.pObject = pObject;
-                m_fWholePickPos = vPos.fPosition;
-            }
-        }
-    }
-    else
-    {
-        m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))), m_pTerrain->Get_Transfrom());
-        m_fWholePickPos = m_fPickPos;
-    }*/
+             if (pObject != nullptr && pObject->Picking_Objects(pInfo))
+             {
+                 Mesh_Pos vPos{};
+                 vPos.fPosition = pInfo.fPosition;
+                 vPos.fDist = pInfo.fDist;
+                 vPos.pObject = pObject;
+                 m_fWholePickPos = vPos.fPosition;
+             }
+         }
+     }
+     else
+     {
+         m_fPickPos = m_pCamera->Terrain_PickPoint(g_hWnd, static_cast<CVIBuffer_Terrain*>(m_pTerrain->Find_Component(TEXT("Com_VIBuffer_Terrain"))), m_pTerrain->Get_Transfrom());
+         m_fWholePickPos = m_fPickPos;
+     }*/
 
     _float3 vPickPos;
     if (m_pGameInstance->Compute_PickPos(&vPickPos))
@@ -2554,6 +2950,10 @@ HRESULT CLevel_GamePlay::Picking_Points()
 
     if (m_fWholePickPos.y == -0.5f)
         return S_OK;
+
+    cout << "X : " << " " << m_fWholePickPos.x << endl;
+    cout << "Y : " << " " << m_fWholePickPos.y << endl;
+    cout << "Z : " << " " << m_fWholePickPos.z << endl;
 
     m_fWholePickPos.y += 0.2f;
 
@@ -2801,7 +3201,8 @@ _uint CLevel_GamePlay::Determine_FloorNumber(_float3 _fPickPos)
      else if (_fPickPos.y > 19.0f)
          return 3;*/
 
-    return 1;
+    //return 1;
+    return m_iSelectedFloor;
 }
 
 HRESULT CLevel_GamePlay::Delete_Cell_Mode(_uint _iFloorNumber)
@@ -2913,6 +3314,7 @@ HRESULT CLevel_GamePlay::Load_Navi(_uint _iFloorNumber)
         {
             CELL_POINTS cellPoints;
             ReadFile(hFile, cellPoints.fCellPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+            //cellPoints.fCellPoints->y -= 0.2f;
 
             _bool bIsDuplicate = false;
 
@@ -3406,6 +3808,10 @@ void CLevel_GamePlay::Free()
     for (auto& pSRV : m_vecTriggerObjectSRVs)
         Safe_Release(pSRV);
     m_vecTriggerObjectSRVs.clear();
+
+    for (auto& pSRV : m_vecSpecificObjectSRVs)
+        Safe_Release(pSRV);
+    m_vecSpecificObjectSRVs.clear();
 
     Safe_Release(m_pMaskTexture);
     Safe_Release(m_pCopyMaskTexture);

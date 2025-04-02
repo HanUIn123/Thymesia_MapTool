@@ -96,6 +96,7 @@ CEnvironmentObject::EN_OBJECT_INFO CEnvironmentObject::Get_EnvironmentObjectInfo
 	pInfo.fRotation = m_pTransformCom->Get_Rotation();
 	XMStoreFloat4(&pInfo.fPosition, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	pInfo.iPassNum = m_iPassIndex;
+	pInfo.bCullingObject = m_bCullingObject;
 
 	return pInfo;
 }

@@ -195,6 +195,7 @@
     <ClInclude Include="..\Public\Object.h" />
     <ClInclude Include="..\public\Player.h" />
     <ClInclude Include="..\public\Sky.h" />
+    <ClInclude Include="..\Public\SpecificObject.h" />
     <ClInclude Include="..\Public\TempCollider.h" />
     <ClInclude Include="..\Public\TempManager.h" />
     <ClInclude Include="..\public\Terrain.h" />
@@ -224,6 +225,7 @@
     <ClCompile Include="..\Private\Object.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
     <ClCompile Include="..\private\Sky.cpp" />
+    <ClCompile Include="..\Private\SpecificObject.cpp" />
     <ClCompile Include="..\Private\TempCollider.cpp" />
     <ClCompile Include="..\Private\TempManager.cpp" />
     <ClCompile Include="..\private\Terrain.cpp" />

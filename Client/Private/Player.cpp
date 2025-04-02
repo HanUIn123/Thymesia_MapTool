@@ -46,14 +46,22 @@ HRESULT CPlayer::Initialize(void* pArg)
 		return E_FAIL;
 
 	//_vector vInitialPosition = XMVectorSet(70.9525f, 4.39096f, -111.377373f, 1.0f);
-	_vector vInitialPosition = XMVectorSet(71.55f, 1.f, -111.497373f, 1.0f);
+	//_vector vInitialPosition = XMVectorSet(71.55f, 1.f, -111.497373f, 1.0f);
+	_vector vInitialPosition = XMVectorSet(75.55f, 1.f, -103.497373f, 1.0f);
+	/*_float fPosX = XMVectorGetX(vInitialPosition);
+	_float fPosY = XMVectorGetX(vInitialPosition);
+	_float fPosZ = XMVectorGetX(vInitialPosition);
+	cout << "x" << fPosX << endl;
+	cout << "y" << fPosY << endl;
+	cout << "z" << fPosZ << endl;
+	 */
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vInitialPosition);
 
 	m_pGameInstance->Add_ObjCollider(GROUP_TYPE::PLAYER, this);
 
 	m_pTransformCom->Scaling(_float3(0.002f, 0.002f, 0.002f));
 
-	m_pNavigationCom->Set_CurrentNaviIndex(vInitialPosition);
+	//m_pNavigationCom->Set_CurrentNaviIndex(vInitialPosition);
 
 	return S_OK;
 }
@@ -67,6 +75,13 @@ void CPlayer::Priority_Update(_float fTimeDelta)
 
 	_vector vCurPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
+	//_float fPosX = XMVectorGetX(vCurPosition);
+	//_float fPositionY = XMVectorGetY(vCurPosition);
+	//_float fPosZ = XMVectorGetZ(vCurPosition);
+	//cout << "x" << fPosX << endl;
+	//cout << "y" << fPositionY << endl;
+	//cout << "z" << fPosZ << endl;
+
 	_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 	_vector CamRight = XMVector3Normalize(m_pGameInstance->Get_Transform_Matrix_Inverse(CPipeLine::D3DTS_VIEW).r[0]);
 	_vector CamLeft = XMVector3Normalize(m_pGameInstance->Get_Transform_Matrix_Inverse(CPipeLine::D3DTS_VIEW).r[0]) * -1.f;
@@ -77,30 +92,30 @@ void CPlayer::Priority_Update(_float fTimeDelta)
 #pragma endregion 
 
 #pragma region KeyBoard Input
-	if (m_pGameInstance->Get_DIKeyState(DIK_UP) & 0x80)
-	{
-		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
-	}
-	if (m_pGameInstance->Get_DIKeyState(DIK_DOWN) & 0x80)
-	{
-		m_pTransformCom->Go_Backward(fTimeDelta, m_pNavigationCom);
-	}
-	if (m_pGameInstance->Get_DIKeyState(DIK_LEFT) & 0x80)
-	{
-		m_pTransformCom->Go_Left(fTimeDelta, m_pNavigationCom);
-	}
-	if (m_pGameInstance->Get_DIKeyState(DIK_RIGHT) & 0x80)
-	{
-		m_pTransformCom->Go_Right(fTimeDelta, m_pNavigationCom);
-	}
+	//if (m_pGameInstance->Get_DIKeyState(DIK_UP) & 0x80)
+	//{
+	//	m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
+	//}
+	//if (m_pGameInstance->Get_DIKeyState(DIK_DOWN) & 0x80)
+	//{
+	//	m_pTransformCom->Go_Backward(fTimeDelta, m_pNavigationCom);
+	//}
+	//if (m_pGameInstance->Get_DIKeyState(DIK_LEFT) & 0x80)
+	//{
+	//	m_pTransformCom->Go_Left(fTimeDelta, m_pNavigationCom);
+	//}
+	//if (m_pGameInstance->Get_DIKeyState(DIK_RIGHT) & 0x80)
+	//{
+	//	m_pTransformCom->Go_Right(fTimeDelta, m_pNavigationCom);
+	//}
 
 	//_float fPosY = XMVectorGetY(vCurPosition);
 
 	//if (m_pGameInstance->Get_DIKeyState(DIK_E) & 0x80)
 	//{
 	//	m_bRiding = true;
-	//	fPosY += fTimeDelta;
-	//	cout << "플레이어 높이 : " << fPosY << endl;
+	//	fPosY += fTimeDelta * 3.0f;
+	//	//cout << "플레이어 높이 : " << fPosY << endl;
 
 	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vCurPosition, fPosY));
 	//	m_pNavigationCom->Set_CurCellIndex(m_pNavigationCom->Find_Closest_Cell(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
@@ -112,7 +127,9 @@ void CPlayer::Priority_Update(_float fTimeDelta)
 	//if (m_pGameInstance->Get_DIKeyState(DIK_R) & 0x80)
 	//{
 	//	m_bRiding = true;
-	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vCurPosition, 0.1f));
+	//	fPosY -= fTimeDelta * 3.0f;
+
+	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vCurPosition, fPosY));
 	//	m_pNavigationCom->Set_CurCellIndex(m_pNavigationCom->Find_Closest_Cell(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
 	//}
 #pragma endregion 
@@ -124,9 +141,9 @@ void CPlayer::Update(_float fTimeDelta)
 	_vector		vCurPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	_vector test = { 0.f,0.f,0.f,1.f };
 
-	_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	/*_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	if (!m_bRiding)
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, m_pNavigationCom->Compute_Height(vPosition)));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, m_pNavigationCom->Compute_Height(vPosition)));*/
 
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix_Ptr()));
 
